@@ -1,0 +1,14 @@
+.pluginname-admin {
+	[data-pluginname-menu-builder] {
+		background: var(--bs-tertiary-bg);
+		border-color: var(--bs-border-color) !important;
+	}
+
+	[data-pluginname-nav-items] {
+		min-height: 2.75rem;
+	}
+
+	[data-pluginname-nav-item] {
+		cursor: grab;
+	}
+}
