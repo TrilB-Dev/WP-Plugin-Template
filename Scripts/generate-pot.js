@@ -83,15 +83,15 @@ function writeCatalog() {
 
   const sorted = [...entries.values()].sort((a, b) => a.singular.localeCompare(b.singular));
   const header = [
-    '# Translation catalog for the external WikiPress plugin template.',
-    '# Copyright (C) 2026 WikiPress contributors',
+    '# Translation catalog for PluginName',
+    '# Copyright (C) 2026 PluginName contributors',
     '# This file is distributed under the same license as the plugin.',
     'msgid ""',
     'msgstr ""',
-    '"Project-Id-Version: WikiPress external plugin template 1.0.0\\n"',
+    '"Project-Id-Version: PluginName 1.0.0\\n"',
     '"Content-Type: text/plain; charset=UTF-8\\n"',
     '"Content-Transfer-Encoding: 8bit\\n"',
-    '"X-Domain: your-plugin-name\\n"',
+    '"X-Domain: pluginname\\n"',
     '',
   ];
 

@@ -24,6 +24,12 @@ const fontAwesomeEntries = {
     './src/includes/Plugins/FontAwesome/Assets/scss/icon-picker.scss',
   ],
 };
+const tinyMCEEntries = {
+  'tinyMCE': [
+    './src/includes/Plugins/TinyMCE/Assets/js/tinymce.js',
+    './src/includes/Plugins/TinyMCE/Assets/scss/tinymce.scss',
+  ],
+};
 
 const jsDirectory = path.resolve(__dirname, 'src/Assets/js');
 fs.readdirSync(jsDirectory)
@@ -88,6 +94,18 @@ module.exports = [
     entry: fontAwesomeEntries,
     output: {
       path: path.resolve(__dirname, 'src/includes/Plugins/FontAwesome/Assets/dist'),
+      filename: 'js/[name].js',
+      clean: true,
+    },
+    plugins: [
+      new MiniCssExtractPlugin({ filename: 'css/[name].css' }),
+    ],
+  },
+  {
+    ...shared,
+    entry: tinyMCEEntries,
+    output: {
+      path: path.resolve(__dirname, 'src/includes/Plugins/TinyMCE/Assets/dist'),
       filename: 'js/[name].js',
       clean: true,
     },

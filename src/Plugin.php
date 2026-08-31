@@ -40,7 +40,7 @@ use PluginName\PublicArea\Frontend;
  * @subpackage PluginName/src
  * @author     MrTrilB <mrtrilb@trilb.dev>
  */
-class PluginName {
+class Plugin {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
