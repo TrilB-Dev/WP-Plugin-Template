@@ -13,6 +13,7 @@
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       pluginname
+ * Version:           1.0.0
  * Domain Path:       src/languages
  */
 
@@ -26,8 +27,9 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'PLUGINNAME_VERSION', '0.4.2-Dev' );
+define( 'PLUGINNAME_VERSION', '1.0.0' );
 define( 'PLUGINNAME_NAME', 'pluginname' );
+define( 'PLUGINNAME_DEFAULT_LANGUAGE', 'en_GB' );
 define( 'PLUGINNAME_FILE', __FILE__ );
 define( 'PLUGINNAME_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PLUGINNAME_URL', plugin_dir_url( __FILE__ ) );
@@ -73,7 +75,7 @@ register_deactivation_hook( __FILE__, 'deactivate_pluginname' );
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require_once PLUGINNAME_DIR . 'src/Plugin.php';
+require_once PLUGINNAME_DIR . 'src/PluginName.php';
 
 /**
  * Begins execution of the plugin.

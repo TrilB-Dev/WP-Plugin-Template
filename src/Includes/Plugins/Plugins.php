@@ -90,7 +90,7 @@ class Plugins {
          * Plugins installed via the normal WordPress plugin system can hook
          * into this action and call PluginName\Plugins::register_plugin().
          */
-        do_action( 'pluginpress_register_plugin', $this );
+        do_action( 'pluginname_register_plugin', $this );
     }
     /**
      * Retrieves the list of loaded plugin class names.
@@ -180,13 +180,13 @@ class Plugins {
      * @return string The resolved plugin directory path.
      */
     private function resolve_plugin_directory(): string {
-        $path = trim( Settings::get( 'pluginpress_plugin_directory', WIKIPRESS_PLUGINS ) );
+        $path = trim( Settings::get( 'pluginname_plugin_directory', PLUGINNAME_PLUGINS ) );
         $resolved = $this->is_absolute_path( $path )
             ? untrailingslashit( $path )
-            : untrailingslashit( WIKIPRESS_ROOT ) . '/' . ltrim( str_replace( '\\', '/', $path ), '/' );
+            : untrailingslashit( PLUGINNAME_ROOT ) . '/' . ltrim( str_replace( '\\', '/', $path ), '/' );
 
         if ( ! is_dir( $resolved ) ) {
-            return WIKIPRESS_PLUGINS;
+            return PLUGINNAME_PLUGINS;
         }
 
         return $resolved;
@@ -329,7 +329,7 @@ class Plugins {
      * @return bool True if plugins should be auto-activated, false otherwise.
      */
     private function should_auto_activate(): bool {
-        return Settings::get( 'wiki_plugin_auto_activate', 'on' ) === 'on';
+        return Settings::get( 'mod_plugin_auto_activate', 'on' ) === 'on';
     }
     /**
      * Initializes a registered plugin instance if it is active.

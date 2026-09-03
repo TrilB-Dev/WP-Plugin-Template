@@ -8,14 +8,14 @@
  * @since 1.0.0
  */
 
-namespace PluginName\Includes\Plugins\FontAwesome\Includes;
+namespace PluginName\Includes\Plugins\FontAwesome\Includes\Core;
 
 final class I18n {
     public static function load_textdomain(): void {
         load_plugin_textdomain(
             'pluginname',
             false,
-            dirname( plugin_basename( WIKIPRESS_FILE ) ) . '/src/includes/Plugins/FontAwesome/Language/'
+            dirname( plugin_basename( PLUGINNAME_FILE ) ) . '/src/Includes/Plugins/FontAwesome/Language/'
         );
     }
 }

@@ -1,0 +1,1 @@
+document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("[data-pluginname-count]").forEach(e=>{e.classList.add("pluginname-count-ready")})});

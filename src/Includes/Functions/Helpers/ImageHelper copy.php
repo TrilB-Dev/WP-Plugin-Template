@@ -5,7 +5,7 @@
  * @since 1.0.0
  * 
  */
-namespace PluginPress\Includes\Functions\Helpers;
+namespace PluginName\Includes\Functions\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;

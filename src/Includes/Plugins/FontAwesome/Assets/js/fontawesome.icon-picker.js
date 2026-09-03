@@ -1,18 +1,18 @@
 /**
- * WikiPress FontAwesome Icon Picker JavaScript
+ * PluginName FontAwesome Icon Picker JavaScript
  *
- * @package WikiPress
+ * @package PluginName
  * @subpackage FontAwesome
  * @since 1.0.0
  */
 
-(function($) {
+(($) => {
     'use strict';
 
     /**
      * FontAwesome Icon Picker
      */
-    var WikiPressFAIconPicker = {
+    var PluginNameFAIconPicker = {
 
         /**
          * Initialize the icon picker
@@ -28,28 +28,28 @@
             var self = this;
 
             // Open picker modal
-            $(document).on('click', '.wikipress-fa-picker-button', function(e) {
+            $(document).on('click', '.pluginname-fa-picker-button', function(e) {
                 e.preventDefault();
                 var pickerId = $(this).data('picker-id');
                 self.openPicker(pickerId);
             });
 
             // Close picker modal
-            $(document).on('click', '.wikipress-fa-picker-close, .wikipress-fa-picker-overlay, .wikipress-fa-picker-cancel', function(e) {
+            $(document).on('click', '.pluginname-fa-picker-close, .pluginname-fa-picker-overlay, .pluginname-fa-picker-cancel', (e) => {
                 e.preventDefault();
                 self.closePicker();
             });
 
             // Search icons
-            $(document).on('input', '.wikipress-fa-picker-search-input', function() {
+            $(document).on('input', '.pluginname-fa-picker-search-input', () => {
                 self.searchIcons();
             });
 
             // Filter by pack
-            $(document).on('change', '.wikipress-fa-picker-pack-filter', function() {
+            $(document).on('change', '.pluginname-fa-picker-pack-filter', function() {
                 var pack = $(this).val();
-                var $container = $(this).closest('.wikipress-fa-picker-modal');
-                var $styleFilter = $container.find('.wikipress-fa-picker-style-filter');
+                var $container = $(this).closest('.pluginname-fa-picker-modal');
+                var $styleFilter = $container.find('.pluginname-fa-picker-style-filter');
 
                 // Handle brands pack - it only has one style
                 if (pack === 'brands') {
@@ -64,23 +64,23 @@
             });
 
             // Filter by style
-            $(document).on('change', '.wikipress-fa-picker-style-filter', function() {
+            $(document).on('change', '.pluginname-fa-picker-style-filter', () => {
                 self.searchIcons();
             });
 
             // Select icon
-            $(document).on('click', '.wikipress-fa-picker-icon-item', function() {
+            $(document).on('click', '.pluginname-fa-picker-icon-item', function() {
                 self.selectIcon($(this));
                 self.confirmSelection();
             });
 
             // Confirm selection
-            $(document).on('click', '.wikipress-fa-picker-select', function() {
+            $(document).on('click', '.pluginname-fa-picker-select', () => {
                 self.confirmSelection();
             });
 
             // Load more icons (pagination)
-            $(document).on('click', '.wikipress-fa-picker-load-more', function() {
+            $(document).on('click', '.pluginname-fa-picker-load-more', () => {
                 self.loadMoreIcons();
             });
         },
@@ -96,14 +96,14 @@
             this.selectedIcon = null;
 
             var $container = $('#' + pickerId);
-            var $modal = $container.find('.wikipress-fa-picker-modal');
+            var $modal = $container.find('.pluginname-fa-picker-modal');
 
             // Show modal
             $modal.show();
 
             // Handle initial pack selection
-            var $packFilter = $modal.find('.wikipress-fa-picker-pack-filter');
-            var $styleFilter = $modal.find('.wikipress-fa-picker-style-filter');
+            var $packFilter = $modal.find('.pluginname-fa-picker-pack-filter');
+            var $styleFilter = $modal.find('.pluginname-fa-picker-style-filter');
             var pack = $packFilter.val();
 
             if (pack === 'brands') {
@@ -120,7 +120,7 @@
          * Close the icon picker modal
          */
         closePicker: function() {
-            $('.wikipress-fa-picker-modal').hide();
+            $('.pluginname-fa-picker-modal').hide();
             this.currentPickerId = null;
             this.selectedIcon = null;
         },
@@ -131,40 +131,40 @@
         searchIcons: function() {
             var self = this;
             var $container = $('#' + this.currentPickerId);
-            var $searchInput = $container.find('.wikipress-fa-picker-search-input');
-            var $packFilter = $container.find('.wikipress-fa-picker-pack-filter');
-            var $styleFilter = $container.find('.wikipress-fa-picker-style-filter');
-            var $results = $container.find('.wikipress-fa-picker-results');
+            var $searchInput = $container.find('.pluginname-fa-picker-search-input');
+            var $packFilter = $container.find('.pluginname-fa-picker-pack-filter');
+            var $styleFilter = $container.find('.pluginname-fa-picker-style-filter');
+            var $results = $container.find('.pluginname-fa-picker-results');
 
             var search = $searchInput.val();
             var pack = $packFilter.val();
             var style = $styleFilter.val();
 
             // Show loading
-            $results.html('<div class="wikipress-fa-picker-loading">' + wikipress_fa_picker.strings.loading + '</div>');
+            $results.html('<div class="pluginname-fa-picker-loading">' + pluginname_fa_picker.strings.loading + '</div>');
 
             // AJAX request
             $.ajax({
-                url: wikipress_fa_picker.ajax_url,
+                url: pluginname_fa_picker.ajax_url,
                 type: 'POST',
                 data: {
-                    action: 'wikipress_fontawesome_search_icons',
-                    nonce: wikipress_fa_picker.nonce,
+                    action: 'pluginname_fontawesome_search_icons',
+                    nonce: pluginname_fa_picker.nonce,
                     search: search,
                     pack: pack,
                     style: style,
                     page: this.currentPage,
                     per_page: 50
                 },
-                success: function(response) {
+                success: (response) => {
                     if (response.success) {
                         self.displayIcons(response.data, pack, style);
                     } else {
-                        $results.html('<div class="wikipress-fa-picker-error">' + response.data + '</div>');
+                        $results.html('<div class="pluginname-fa-picker-error">' + response.data + '</div>');
                     }
                 },
-                error: function() {
-                    $results.html('<div class="wikipress-fa-picker-error">' + wikipress_fa_picker.strings.no_icons_found + '</div>');
+                error: () => {
+                    $results.html('<div class="pluginname-fa-picker-error">' + pluginname_fa_picker.strings.no_icons_found + '</div>');
                 }
             });
         },
@@ -179,21 +179,21 @@
         displayIcons: function(data, pack, style) {
             var self = this;
             var $container = $('#' + this.currentPickerId);
-            var $results = $container.find('.wikipress-fa-picker-results');
+            var $results = $container.find('.pluginname-fa-picker-results');
 
             if (!data.icons || data.icons.length === 0) {
-                $results.html('<div class="wikipress-fa-picker-no-results">' + wikipress_fa_picker.strings.no_icons_found + '</div>');
+                $results.html('<div class="pluginname-fa-picker-no-results">' + pluginname_fa_picker.strings.no_icons_found + '</div>');
                 return;
             }
 
-            var html = '<div class="wikipress-fa-picker-grid">';
+            var html = '<div class="pluginname-fa-picker-grid">';
 
-            data.icons.forEach(function(icon) {
+            data.icons.forEach((icon) => {
                 var iconClass = data.prefix + ' fa-' + icon.name;
 
-                html += '<div class="wikipress-fa-picker-icon-item" data-icon-name="' + icon.name + '" data-icon-pack="' + pack + '" data-icon-style="' + style + '" data-icon-prefix="' + data.prefix + '">';
+                html += '<div class="pluginname-fa-picker-icon-item" data-icon-name="' + icon.name + '" data-icon-pack="' + pack + '" data-icon-style="' + style + '" data-icon-prefix="' + data.prefix + '">';
                 html += '<i class="' + iconClass + '"></i>';
-                html += '<span class="wikipress-fa-picker-icon-label">' + icon.label + '</span>';
+                html += '<span class="pluginname-fa-picker-icon-label">' + icon.label + '</span>';
                 html += '</div>';
             });
 
@@ -201,8 +201,8 @@
 
             // Add pagination if needed
             if (data.total_pages > 1 && data.page < data.total_pages) {
-                html += '<div class="wikipress-fa-picker-pagination">';
-                html += '<button class="btn btn-link wikipress-fa-picker-load-more" data-next-page="' + (data.page + 1) + '">' + 'Load More' + '</button>';
+                html += '<div class="pluginname-fa-picker-pagination">';
+                html += '<button class="btn btn-link pluginname-fa-picker-load-more" data-next-page="' + (data.page + 1) + '">' + 'Load More' + '</button>';
                 html += '</div>';
             }
 
@@ -218,7 +218,7 @@
             var $container = $('#' + this.currentPickerId);
 
             // Remove previous selection
-            $container.find('.wikipress-fa-picker-icon-item').removeClass('selected');
+            $container.find('.pluginname-fa-picker-icon-item').removeClass('selected');
 
             // Add selection to clicked item
             $iconItem.addClass('selected');
@@ -233,7 +233,7 @@
             };
 
             // Enable select button
-            $container.find('.wikipress-fa-picker-select').prop('disabled', false);
+            $container.find('.pluginname-fa-picker-select').prop('disabled', false);
         },
 
         /**
@@ -245,8 +245,8 @@
             }
 
             var $container = $('#' + this.currentPickerId);
-            var $input = $container.find('.wikipress-fa-picker-input');
-            var $preview = $container.find('.wikipress-fa-picker-preview');
+            var $input = $container.find('.pluginname-fa-picker-input');
+            var $preview = $container.find('.pluginname-fa-picker-preview');
 
             // Update hidden input
             $input.val(this.selectedIcon.class).trigger('change');
@@ -274,7 +274,7 @@
          */
         loadMoreIcons: function() {
             var $container = $('#' + this.currentPickerId);
-            var $loadMoreBtn = $container.find('.wikipress-fa-picker-load-more');
+            var $loadMoreBtn = $container.find('.pluginname-fa-picker-load-more');
 
             this.currentPage = parseInt($loadMoreBtn.data('next-page'));
 
@@ -287,11 +287,11 @@
     };
 
     // Initialize when document is ready
-    $(document).ready(function() {
-        WikiPressFAIconPicker.init();
+    $(document).ready(() => {
+        PluginNameFAIconPicker.init();
     });
 
     // Expose to global scope for potential external use
-    window.WikiPressFAIconPicker = WikiPressFAIconPicker;
+    window.PluginNameFAIconPicker = PluginNameFAIconPicker;
 
 })(jQuery);

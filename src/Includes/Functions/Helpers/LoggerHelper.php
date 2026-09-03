@@ -5,7 +5,7 @@
  * 
  * 
  * @package    Wikipress
- * @subpackage Wikipress/includes
+ * @subpackage Wikipress/Includes
  * @since      1.0.0
  * @author     MrTrilB <
  */

@@ -7,8 +7,8 @@
         }
 
         var frame = window.wp.media({
-            title: window.wikipressTinyMCE?.mediaTitle || '',
-            button: { text: window.wikipressTinyMCE?.mediaButton || '' },
+            title: window.pluginnameTinyMCE?.mediaTitle || '',
+            button: { text: window.pluginnameTinyMCE?.mediaButton || '' },
             multiple: false
         });
 
@@ -24,11 +24,16 @@
     };
 
     const initialize = () => {
-        if (!window.tinymce) {
-            return;
+        if (!window.tinymce || typeof window.tinymce.init !== 'function') {
+            return false;
         }
 
-        document.querySelectorAll('.wikipress-tinymce-config').forEach((node) => {
+        document.querySelectorAll('.pluginname-tinymce-config').forEach((node) => {
+            const editorId = node.dataset.editor;
+            if (!editorId || window.tinymce.get(editorId)) {
+                return;
+            }
+
             let settings;
             try {
                 settings = JSON.parse(node.textContent || '{}');
@@ -38,21 +43,35 @@
 
             settings.setup = (editor) => {
                 if (settings.media_buttons) {
-                    editor.ui.registry.addButton('wikipressmedia', {
+                    editor.ui.registry.addButton('pluginnamemedia', {
                         icon: 'image',
-                        tooltip: window.wikipressTinyMCE?.mediaTooltip || '',
+                        tooltip: window.pluginnameTinyMCE?.mediaTooltip || '',
                         onAction: () => insertMedia(editor)
                     });
                 }
             };
 
-            window.tinymce.init(settings);
+            window.tinymce.init(settings).catch((error) => {
+                console.error('PluginName TinyMCE initialization failed.', error);
+            });
         });
+
+        return true;
     };
 
+    const initializeWhenReady = () => {
+        if (initialize()) {
+            return;
+        }
+
+        window.setTimeout(initializeWhenReady, 50);
+    };
+
+    window.addEventListener('pluginname:settings-tab-loaded', initialize);
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initialize);
+        document.addEventListener('DOMContentLoaded', initializeWhenReady);
     } else {
-        initialize();
+        initializeWhenReady();
     }
 })();

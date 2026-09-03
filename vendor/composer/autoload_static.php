@@ -7,45 +7,26 @@ namespace Composer\Autoload;
 class ComposerStaticInit63b9c64bbeb3b3ae65e485664320ebb9
 {
     public static $files = array (
-        'dd7e654558706c7496b96cdc935fee14' => __DIR__ . '/../..' . '/src/includes/Plugins/PluginsInterface.php',
+        '449380338f0b6850a0687f4690d53610' => __DIR__ . '/../..' . '/src/Includes/Plugins/PluginsInterface.php',
     );
 
     public static $prefixLengthsPsr4 = array (
         'P' =>
         array (
-            'PluginName\\PublicArea\\' => 22,
-            'PluginName\\Includes\\' => 20,
-            'PluginName\\Assets\\' => 18,
-            'PluginName\\Admin\\' => 17,
-            'PluginName\\API\\' => 15,
+            'PluginName\\' => 11,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'PluginName\\PublicArea\\' =>
+        'PluginName\\' =>
         array (
-            0 => __DIR__ . '/../..' . '/src/Public',
-        ),
-        'PluginName\\Includes\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/includes',
-        ),
-        'PluginName\\Assets\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/Assets',
-        ),
-        'PluginName\\Admin\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/Admin',
-        ),
-        'PluginName\\API\\' =>
-        array (
-            0 => __DIR__ . '/../..' . '/src/API',
+            0 => __DIR__ . '/../..' . '/src',
         ),
     );
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'PluginName\\PluginName' => __DIR__ . '/../..' . '/src/PluginName.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

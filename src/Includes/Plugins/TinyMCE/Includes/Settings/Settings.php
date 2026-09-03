@@ -2,7 +2,7 @@
 /**
  * Settings for the TinyMCE plugin.
  * @package PluginName
- * @subpackage Admin\Wiki\Plugins\TinyMCE\Includes
+ * @subpackage Includes\Plugins\TinyMCE\Includes\Settings
  * @since 1.0.0
  */
 namespace PluginName\Includes\Plugins\TinyMCE\Includes\Settings;
@@ -77,6 +77,7 @@ final class Settings {
     public function get_settings_page(): array {
         return [
             'slug' => self::GROUP,
+            'settings_group' => self::GROUP,
             'label' => __( 'TinyMCE', 'pluginname' ),
             'title' => __( 'TinyMCE integration', 'pluginname' ),
             'layout' => 'table',

@@ -1,6 +1,6 @@
 <?php
 
-namespace PluginName\PublicArea;
+namespace PluginName\Public;
 
 use PluginName\Includes\Core\PostType;
 use PluginName\Includes\Functions\Helpers\ContentHelper;

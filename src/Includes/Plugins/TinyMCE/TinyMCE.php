@@ -24,7 +24,7 @@ final class TinyMCE implements PluginInterface, SettingsProviderInterface, Setti
      * @return string The plugin slug.
      */
     public function get_slug(): string {
-        return 'tinymce-plugin';
+        return 'pluginname-tinymce';
     }
     /**
      * Get the plugin name.
@@ -43,12 +43,20 @@ final class TinyMCE implements PluginInterface, SettingsProviderInterface, Setti
         return '1.0.0';
     }
     /**
+     * Get the plugin icon.
+     *
+     * @return string The plugin icon.
+     */
+    public function get_icon(): string {
+        return Assets::get_image( 'logo/tinymce.svg' );
+    }
+    /**
      * Get the plugin author.
      *
      * @return string The plugin author.
      */
     public function get_author(): string {
-        return 'PluginName Team';
+        return 'TrilB.Dev Team';
     }
     /**
      * Get the plugin author URI.

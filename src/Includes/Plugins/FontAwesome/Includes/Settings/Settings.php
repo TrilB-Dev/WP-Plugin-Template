@@ -2,8 +2,8 @@
 /**
  * Settings for the Font Awesome PluginName plugin.
  * 
- * @package    Wikipress
- * @subpackage Wikipress/includes
+ * @package    PluginName
+ * @subpackage PluginName/Includes
  */
 namespace PluginName\Includes\Plugins\FontAwesome\Includes\Settings;
 use PluginName\Includes\Settings\Settings as BaseSettings;
@@ -34,6 +34,7 @@ final class Settings {
     public function get_settings_page(): array {
         return [
             'slug' => 'fontawesome',
+            'settings_group' => 'fontawesome',
             'label' => __( 'Font Awesome', 'pluginname' ),
             'title' => __( 'Font Awesome integration', 'pluginname' ),
             'layout' => 'table',

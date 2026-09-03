@@ -8,18 +8,20 @@ PluginName/
 |  |- dist/
 |  |  |- css/
 |  |  `- js/
+|  |- images/
 |  |- js/
 |  |- scss/
 |  `- Assets.php
 |- Includes/
 |  |- Core/
 |  |  `- Capabilities.php
+|  |  `- I18n.php
+|  |- Functions/
 |  |- Settings/
 |  |  `- Settings.php
-|  |- I18n.php
 |  `- Includes.php
 |- Language/
-|  `- PluginName.pot
+|  `- PluginName-lng_code.pot
 `- PluginName.php
 ```
 

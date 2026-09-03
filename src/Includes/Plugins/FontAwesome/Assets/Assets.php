@@ -1,107 +1,165 @@
 <?php
-
+/**
+ * PluginName - FontAwesome Assets
+ *
+ * @package PluginName
+ * @since 1.0.0
+ */
 namespace PluginName\Includes\Plugins\FontAwesome\Assets;
 
+use PluginName\Includes\Functions\Helpers\ImageHelper;
 use PluginName\Includes\Functions\Helpers\LoaderHelper;
+use PluginName\Includes\Functions\Helpers\RequestHelper;
 use PluginName\Includes\Plugins\FontAwesome\Includes\Settings\Settings as FontAwesomeSettings;
 
 final class Assets {
+    /**
+     * The loader helper instance.
+     *
+     * @var LoaderHelper
+     */
     private LoaderHelper $loader;
 
+    /**
+     * Constructor for the Assets class.
+     *
+     * @param LoaderHelper|null $loader The loader helper instance.
+     */
     public function __construct( ?LoaderHelper $loader = null ) {
         $this->loader = $loader ?? new LoaderHelper();
     }
 
+    /**
+     * Registers the assets for the plugin.
+     *
+     * @return void
+     */
     public function register(): void {
-        $this->loader->register_component( $this, [
-            [ 'type' => 'action', 'hook' => 'admin_enqueue_scripts', 'callback' => 'enqueue_admin_assets' ],
-        ] )->run();
+        $this->loader->register_component(
+            $this,
+            [
+                [
+                    'type' => 'action',
+                    'hook' => 'admin_enqueue_scripts',
+                    'callback' => 'enqueue_wordpress_fontawesome_handles',
+                    'accepted_args' => 1,
+                ],
+                [
+                    'type' => 'filter',
+                    'hook' => 'pluginname_admin_assets',
+                    'callback' => 'register_icon_picker_assets',
+                    'accepted_args' => 2,
+                ],
+            ]
+        )->run();
     }
 
-    public function enqueue_admin_assets( string $hook_suffix = '' ): void {
-        $this->enqueue_fontawesome_vendor_assets( $hook_suffix );
-        $this->enqueue_icon_picker();
-    }
-
-    private function enqueue_fontawesome_vendor_assets( string $hook_suffix ): void {
-        $page = sanitize_key( $_GET['page'] ?? '' );
+    /**
+     * Enqueue the active WordPress FontAwesome plugin handles.
+     *
+     * We intentionally only use the WordPress plugin handles so we do not load a
+     * duplicate PluginName-managed FontAwesome bundle.
+     *
+     * @param string $hook_suffix The current admin page hook suffix.
+     * @return void
+     */
+    public function enqueue_wordpress_fontawesome_handles( string $hook_suffix = '' ): void {
+        $page = RequestHelper::get_key( 'page' );
         if ( false === strpos( $hook_suffix, 'pluginname' ) && 0 !== strpos( $page, 'pluginname' ) ) {
             return;
         }
 
-        $source = FontAwesomeSettings::source();
-        $kit_id = FontAwesomeSettings::kit_id();
-        $use_kit = '' !== $kit_id;
-
-        if ( $use_kit ) {
-            foreach ( [ 'font-awesome-kit', 'font-awesome-cdn' ] as $handle ) {
-                wp_dequeue_style( $handle );
-                wp_dequeue_script( $handle );
-            }
-        }
-
-        wp_add_inline_script(
-            'pluginname-admin-ui',
-            'window.pluginnameFontAwesomeSettings = ' . wp_json_encode( [
-                'source' => $source,
-                'kit_id' => $kit_id,
-            ] ) . ';',
-            'before'
-        );
-
-        if ( $use_kit ) {
+        $handle = $this->resolve_wordpress_fontawesome_handle();
+        if ( '' === $handle ) {
             return;
         }
 
-        $handle = 'kit' === $source ? 'font-awesome-kit' : 'font-awesome-cdn';
         if ( wp_style_is( $handle, 'registered' ) || wp_style_is( $handle, 'enqueued' ) ) {
-                wp_enqueue_style( $handle );
+            LoaderHelper::enqueue_style( $handle );
         }
 
         if ( wp_script_is( $handle, 'registered' ) || wp_script_is( $handle, 'enqueued' ) ) {
-            wp_enqueue_script( $handle );
+            LoaderHelper::enqueue_script( $handle );
         }
     }
 
-    public function enqueue_icon_picker(): void {
+    /**
+     * Add the icon picker assets to the central asset bundle.
+     *
+     * @param array  $assets The current asset bundle.
+     * @param string $context The asset context.
+     * @return array Updated asset bundle.
+     */
+    public function register_icon_picker_assets( array $assets, string $context = 'admin' ): array {
         if ( ! $this->should_enqueue_icon_picker() ) {
-            return;
+            return $assets;
         }
 
-        wp_enqueue_style(
-            'pluginname-fontawesome-icon-picker',
-            WIKIPRESS_URL . 'src/includes/Plugins/FontAwesome/Assets/dist/css/icon-picker.css',
-            [],
-            WIKIPRESS_VERSION
-        );
-        wp_enqueue_script(
-            'pluginname-fontawesome-icon-picker',
-            WIKIPRESS_URL . 'src/includes/Plugins/FontAwesome/Assets/dist/js/icon-picker.js',
-            [ 'jquery' ],
-            WIKIPRESS_VERSION,
-            true
-        );
-
-        wp_localize_script( 'pluginname-fontawesome-icon-picker', 'pluginname_fa_picker', [
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce' => wp_create_nonce( 'pluginname_fontawesome_picker' ),
-            'strings' => [
-                'search_placeholder' => __( 'Search icons...', 'pluginname' ),
-                'no_icons_found' => __( 'No icons found', 'pluginname' ),
-                'loading' => __( 'Loading...', 'pluginname' ),
-                'select_icon' => __( 'Select Icon', 'pluginname' ),
-                'close' => __( 'Close', 'pluginname' ),
+        $assets['styles'][] = [
+            'handle' => 'pluginname-fontawesome-icon-picker',
+            'src' => PLUGINNAME_URL . 'src/Includes/Plugins/FontAwesome/Assets/dist/css/fontawesome.icon-picker.css',
+        ];
+        $assets['scripts'][] = [
+            'handle' => 'pluginname-fontawesome-icon-picker',
+            'src' => PLUGINNAME_URL . 'src/Includes/Plugins/FontAwesome/Assets/dist/js/fontawesome.icon-picker.js',
+            'deps' => [ 'jquery' ],
+            'in_footer' => true,
+            'localize' => [
+                'object_name' => 'pluginname_fa_picker',
+                'data' => [
+                    'ajax_url' => admin_url( 'admin-ajax.php' ),
+                    'nonce' => wp_create_nonce( 'pluginname_fontawesome_picker' ),
+                    'strings' => [
+                        'search_placeholder' => __( 'Search icons...', 'pluginname' ),
+                        'no_icons_found' => __( 'No icons found', 'pluginname' ),
+                        'loading' => __( 'Loading...', 'pluginname' ),
+                        'select_icon' => __( 'Select Icon', 'pluginname' ),
+                        'close' => __( 'Close', 'pluginname' ),
+                    ],
+                ],
             ],
-        ] );
+        ];
+
+        return $assets;
     }
 
+    /**
+     * Resolve the active WordPress FontAwesome handle.
+     *
+     * @return string The handle to enqueue: font-awesome-kit or font-awesome-cdn.
+     */
+    private function resolve_wordpress_fontawesome_handle(): string {
+        $source = strtolower( (string) FontAwesomeSettings::source() );
+
+        if ( 'kit' === $source ) {
+            return 'font-awesome-kit';
+        }
+
+        return 'font-awesome-cdn';
+    }
+
+    /**
+     * Determine whether the icon picker should be loaded for the current screen.
+     *
+     * @return bool True when the picker is valid for the current screen.
+     */
     private function should_enqueue_icon_picker(): bool {
-        $screen = get_current_screen();
+        $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
         if ( ! $screen ) {
             return false;
         }
 
-        return strpos( $screen->id, 'pluginname' ) !== false
+        return false !== strpos( $screen->id, 'pluginname' )
             || in_array( $screen->id, [ 'post', 'page', 'custom_css', 'customize' ], true );
+    }
+
+    /**
+     * Get an image asset URL from the core Images directory.
+     *
+     * @param string $file The image path relative to Assets/images.
+     * @return string The image URL, or an empty string when the path is invalid.
+     */
+    public static function get_image( string $file ): string {
+        return ImageHelper::get_image_url( 'pluginname-fontawesome', $file );
     }
 }

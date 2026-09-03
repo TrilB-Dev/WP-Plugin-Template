@@ -10,7 +10,7 @@
  * @since      1.0.0
  *
  * @package    Wikipress
- * @subpackage Wikipress/includes
+ * @subpackage Wikipress/Includes
  */
 namespace PluginName\Includes\Core\WP;
 
@@ -22,7 +22,7 @@ namespace PluginName\Includes\Core\WP;
  *
  * @since      1.0.0
  * @package    Wikipress
- * @subpackage Wikipress/includes
+ * @subpackage Wikipress/Includes
  * @author     MrTrilB <mrtrilb@trilb.dev>
  */
 final class I18n {

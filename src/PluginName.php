@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The file that defines the core plugin class
+ * The file that defines the core PluginName class
  *
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
@@ -10,7 +10,7 @@
  * @since      1.0.0
  *
  * @package    PluginName
- * @subpackage PluginName/includes
+ * @subpackage PluginName/Includes
  */
 namespace PluginName;
 use PluginName\Admin\Admin;
@@ -25,7 +25,7 @@ use PluginName\Includes\Functions\Admin\FunctionsSettings;
 use PluginName\API\Routes;
 use PluginName\Includes\Analytics\Analytics;
 use PluginName\Includes\Plugins\Plugins;
-use PluginName\PublicArea\Frontend;
+use PluginName\Public\Frontend;
 /**
  * The core plugin class.
  *
@@ -40,7 +40,7 @@ use PluginName\PublicArea\Frontend;
  * @subpackage PluginName/src
  * @author     MrTrilB <mrtrilb@trilb.dev>
  */
-class Plugin {
+class PluginName {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -57,9 +57,26 @@ class Plugin {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $plugin_file    The file path to the main plugin file.
+	 * @var      string    $pluginname_file    The file path to the main plugin file.
 	 */
-	protected string $plugin_file;
+	protected string $pluginname_file;
+	/**
+	 * The unique identifier of this plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      string    $pluginname_name    The string used to uniquely identify this plugin.
+	 */
+	protected $pluginname_name;
+
+	/**
+	 * The current version of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      string    $version    The current version of the plugin.
+	 */
+	protected $version;
 	/**
 	 * The instance of the Includes class that handles the plugin's includes.
 	 *
@@ -130,24 +147,6 @@ class Plugin {
 	protected FunctionsSettings $settings_functions;
 
 	/**
-	 * The unique identifier of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
-	 */
-	protected $plugin_name;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
-
-	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -156,9 +155,9 @@ class Plugin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct( string $plugin_file = PLUGINNAME_FILE, string $plugin_name = PLUGINNAME_NAME, string $version = PLUGINNAME_VERSION ) {
-		$this->plugin_file = $plugin_file;
-		$this->plugin_name = sanitize_key( $plugin_name );
+	public function __construct( string $pluginname_file = PLUGINNAME_FILE, string $pluginname_name = PLUGINNAME_NAME, string $version = PLUGINNAME_VERSION ) {
+		$this->pluginname_file = $pluginname_file;
+		$this->pluginname_name = sanitize_key( $pluginname_name );
 		$this->version = $version;
 
 		$this->load_dependencies();
@@ -199,7 +198,7 @@ class Plugin {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new I18n( $this->plugin_name, null, $this->plugin_file );
+		$plugin_i18n = new I18n( $this->pluginname_name, null, $this->pluginname_file );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
 
@@ -254,7 +253,7 @@ class Plugin {
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
-		return $this->plugin_name;
+		return $this->pluginname_name;
 	}
 	/**
 	 * Retrieve the version number of the plugin.
@@ -263,7 +262,7 @@ class Plugin {
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_plugin_file(): string {
-		return $this->plugin_file;
+		return $this->pluginname_file;
 	}
 	/**
 	 * Retrieve the version number of the plugin.

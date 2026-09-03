@@ -1,26 +1,26 @@
 <?php
 /**
- * Font Awesome plugin integration for PuginName.
+ * Font Awesome plugin integration for PluginName.
  *
  * @package FontAwesome
  * @textdomain pluginname
  * @domainpath Languages
- * @author PuginName Team
+ * @author PluginName Team
  */
 
-namespace PuginName\Includes\Plugins\FontAwesome;
+namespace PluginName\Includes\Plugins\FontAwesome;
 
-use PuginName\Includes\Plugins\AssetsProviderInterface;
-use PuginName\Includes\Plugins\I18nProviderInterface;
-use PuginName\Includes\Plugins\PluginInterface;
-use PuginName\Includes\Plugins\SettingsProviderInterface;
-use PuginName\Includes\Plugins\SettingsPageProviderInterface;
-use PuginName\Includes\Plugins\FontAwesome\Assets\Assets;
-use PuginName\Includes\Plugins\FontAwesome\Includes\IconPicker;
-use PuginName\Includes\Plugins\FontAwesome\API\FontAwesomeAPI;
-use PuginName\Includes\Plugins\FontAwesome\Includes\I18n;
-use PuginName\Includes\Plugins\FontAwesome\Includes\Includes;
-use PuginName\Includes\Core\WP\Activator;
+use PluginName\Includes\Plugins\AssetsProviderInterface;
+use PluginName\Includes\Plugins\I18nProviderInterface;
+use PluginName\Includes\Plugins\PluginInterface;
+use PluginName\Includes\Plugins\SettingsProviderInterface;
+use PluginName\Includes\Plugins\SettingsPageProviderInterface;
+use PluginName\Includes\Plugins\FontAwesome\Assets\Assets;
+use PluginName\Includes\Plugins\FontAwesome\Includes\IconPicker;
+use PluginName\Includes\Plugins\FontAwesome\API\FontAwesomeAPI;
+use PluginName\Includes\Plugins\FontAwesome\Includes\Core\I18n;
+use PluginName\Includes\Plugins\FontAwesome\Includes\Includes;
+use PluginName\Includes\Core\WP\Activator;
 
 final class FontAwesome implements PluginInterface, SettingsProviderInterface, SettingsPageProviderInterface, AssetsProviderInterface, I18nProviderInterface {
     /**
@@ -52,12 +52,24 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
         return 'FontAwesome';
     }
     /**
+     * Get the plugin icon.
+     *
+     * @return array{0: string, 1: string} The plugin icon class and color.
+     */
+    public function get_icon(): array {
+        return ['fab fa-font-awesome', '#74c1fcff'];
+    }
+    /**
      * Get the plugin version.
      *
      * @return string The plugin version.
      */
     public function get_version(): string {
-        return PLUGINNAME_VERSION;
+        if ( self::is_wordpress_fontawesome_active() && function_exists( 'FortAwesome\\fa' ) && class_exists( '\\FortAwesome\\FontAwesome' ) ) {
+            return \FortAwesome\fa()->version();
+        }
+
+        return '1.0.0';
     }
     /**
      * Get the plugin author.
@@ -65,7 +77,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @return string The plugin author.
      */
     public function get_author(): string {
-        return 'PuginName Team';
+        return 'TrilB.Dev Team';
     }
     /**
      * Get the plugin author URI.
@@ -81,7 +93,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @return string The plugin description.
      */
     public function get_description(): string {
-        return __( 'Provides Font Awesome loading, icon picking, and styling APIs for PuginName.', 'pluginname' );
+        return __( 'Provides Font Awesome enqueueing in Admin, Frontend, Login Page, icon picking, and styling APIs for PluginName.', 'pluginname' );
     }
     /**
      * Get the plugin URI.
@@ -157,7 +169,27 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @return bool True if the FontAwesome library is available, false otherwise.
      */
     public function is_available(): bool {
-        return function_exists( 'FortAwesome\\fa' ) && class_exists( '\\FortAwesome\\FontAwesome' );
+        return self::is_wordpress_fontawesome_active() || ( function_exists( 'FortAwesome\\fa' ) && class_exists( '\\FortAwesome\\FontAwesome' ) );
+    }
+
+    /**
+     * Determine whether a FontAwesome instance is already present.
+     *
+     * WordPress FontAwesome wins first, and PluginName reuses that namespace and
+     * bootstrap instead of loading a second copy from Composer.
+     *
+     * @return bool True when an active FontAwesome loader or plugin is present.
+     */
+    public static function is_wordpress_fontawesome_active(): bool {
+        if ( function_exists( 'FortAwesome\\fa' ) || class_exists( '\\FortAwesome\\FontAwesome' ) || class_exists( '\\FortAwesome\\FontAwesome_Loader' ) ) {
+            return true;
+        }
+
+        if ( defined( 'FONTAWESOME_PLUGIN_FILE' ) && function_exists( 'is_plugin_active' ) ) {
+            return is_plugin_active( FONTAWESOME_PLUGIN_FILE );
+        }
+
+        return false;
     }
     /**
      * Get the IconPicker instance for the FontAwesome plugin.
@@ -178,19 +210,28 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
     /**
      * Private constructor to prevent direct instantiation.
      */
-    private function __construct() {
+    /**private function __construct() {
         $this->load_vendor();
         Activator::register( static function (): void {
+            if ( self::is_wordpress_fontawesome_active() ) {
+                return;
+            }
+
             if ( class_exists( '\\FortAwesome\\FontAwesome_Loader' ) ) {
                 \FortAwesome\FontAwesome_Loader::initialize();
             }
         } );
-    }
+    }*/
 
     /**
-     * Loads the FontAwesome package as part of this internal plugin.
+     * Loads the bundled FontAwesome package only when some other active
+     * WordPress FontAwesome integration has not already claimed the namespace.
      */
     private function load_vendor(): void {
+        if ( self::is_wordpress_fontawesome_active() ) {
+            return;
+        }
+
         $vendor_file = PLUGINNAME_DIR . 'vendor/fortawesome/wordpress-fontawesome/index.php';
         if ( is_readable( $vendor_file ) ) {
             require_once $vendor_file;

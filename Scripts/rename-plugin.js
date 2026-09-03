@@ -21,28 +21,6 @@ function required(value, label, pattern, example) {
   return value;
 }
 
-function toSlug(value) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .replace(/-{2,}/g, '-');
-}
-
-function toIdentifier(value) {
-  return value
-    .replace(/[^a-zA-Z0-9]+(.)/g, (_, character) => character.toUpperCase())
-    .replace(/[^a-zA-Z0-9]/g, '');
-}
-
-function toPascalCase(value) {
-  return value
-    .split(/[^a-zA-Z0-9]+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
-}
-
 function filesIn(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const fullPath = path.join(directory, entry.name);
@@ -60,9 +38,11 @@ function isTextFile(filePath) {
 }
 
 function replaceAll(value, replacements) {
-  return [...replacements]
-    .sort(([left], [right]) => right.length - left.length)
-    .reduce((result, [from, to]) => result.split(from).join(to), value);
+  let updated = value;
+  for (const [search, replacement] of replacements) {
+    updated = updated.split(search).join(replacement);
+  }
+  return updated;
 }
 
 function relative(filePath) {
@@ -72,44 +52,43 @@ function relative(filePath) {
 async function collectAnswers() {
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   try {
-    const displayName = await ask(rl, 'Display name', 'Plugin Name');
-    const slug = await ask(rl, 'Plugin slug (lowercase e.g. kebab-case)', toSlug(displayName));
-    const namespace = await ask(rl, 'PHP namespace (without trailing backslash)', toPascalCase(displayName).toUpperCase());
-    const className = await ask(rl, 'Main plugin class', toPascalCase(displayName));
-    const shortcodePrefix = await ask(rl, 'Shortcode/settings prefix (lowercase snake_case)', slug.replaceAll('-', '_'));
-    const textDomain = await ask(rl, 'Text domain (lowercase kebab-case)', slug);
-    const bootstrapFilename = await ask(rl, 'Bootstrap filename', `${slug}.php`);
-    const assetBasename = await ask(rl, 'Asset basename (without extension)', slug);
-    const author = await ask(rl, 'Author', 'YourName');
-    const authorUri = await ask(rl, 'Author URI', 'https://example.com');
-    const pluginUri = await ask(rl, 'Plugin URI', `https://example.com/${slug}`);
-    const packageVendor = await ask(rl, 'Composer package vendor e.g author/pluginname', slug.replaceAll('-', ''));
+    const pluginName = await ask(rl, 'Plugin Name', 'PluginName');
+    const pluginSlug = await ask(rl, 'Plugin Slug', 'plugin-name');
+    const constantPrefix = await ask(rl, 'Plugin Constant Prefix', 'PLUGINNAME');
+    const description = await ask(rl, 'Plugin Description', 'A WordPress plugin.');
+    const pluginUri = await ask(rl, 'Plugin URI', `https://trilb.dev/${pluginSlug}`);
+    const defaultLanguage = await ask(rl, 'Default Language', 'en_GB');
+    const authorUsername = await ask(rl, 'Author User Name', 'CaptainUnderpants123');
+    const authorFullName = await ask(rl, 'Author Full Name', 'Bob Marley');
+    const authorEmail = await ask(rl, 'Author Email Address', 'bob@trilb.dev');
+    const authorUri = await ask(rl, 'Author URI', 'https://trilb.dev');
 
-    required(displayName, 'Display name', /\S/, 'at least one non-space character');
-    required(slug, 'Plugin slug', /^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase kebab-case');
-    required(namespace, 'PHP namespace', /^[A-Z][A-Za-z0-9]*(?:\\[A-Z][A-Za-z0-9]*)*$/, 'PascalCase segments separated by backslashes');
-    required(className, 'Main plugin class', /^[A-Z][A-Za-z0-9]*$/, 'a PHP class name beginning with an uppercase letter');
-    required(shortcodePrefix, 'Shortcode/settings prefix', /^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/, 'lowercase snake_case');
-    required(textDomain, 'Text domain', /^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase kebab-case');
-    required(bootstrapFilename, 'Bootstrap filename', /^[a-z0-9]+(?:-[a-z0-9]+)*\.php$/, 'a lowercase PHP filename');
-    required(assetBasename, 'Asset basename', /^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase kebab-case');
-    required(packageVendor, 'Composer package vendor', /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/, 'lowercase letters, numbers, hyphens, or underscores');
+    required(pluginName, 'Plugin Name', /^[A-Za-z_][A-Za-z0-9_]*$/, 'letters, digits, or underscores; no spaces');
+    required(pluginSlug, 'Plugin Slug', /^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase letters, digits, or dashes');
+    required(constantPrefix, 'Plugin Constant Prefix', /^[A-Z0-9_]+$/, 'uppercase letters, digits, or underscores');
+    required(description, 'Plugin Description', /\S/, 'a description');
+    required(pluginUri, 'Plugin URI', /^https?:\/\/[^\s]+$/, 'a valid URL');
+    required(defaultLanguage, 'Default Language', /^[a-z]{2}_[A-Z]{2}$/, 'e.g. en_GB');
+    required(authorUsername, 'Author User Name', /^[A-Za-z0-9_-]+$/, 'letters, digits, underscores, or dashes');
+    required(authorFullName, 'Author Full Name', /^[A-Za-z][A-Za-z .'-]*$/, 'a valid name');
+    required(authorEmail, 'Author Email Address', /^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'a valid email address');
+    required(authorUri, 'Author URI', /^https?:\/\/[^\s]+$/, 'a valid URL');
 
     return {
-      displayName,
-      slug,
-      namespace,
-      className,
-      shortcodePrefix,
-      shortcode: `${shortcodePrefix}_status`,
-      textDomain,
-      bootstrapFilename,
-      assetBasename,
-      author,
-      authorUri,
+      pluginName,
+      pluginSlug,
+      constantPrefix,
+      description,
       pluginUri,
-      packageName: `${packageVendor}/${slug}`,
-      compactSlug: slug.replaceAll('-', ''),
+      defaultLanguage,
+      authorUsername,
+      authorFullName,
+      authorEmail,
+      authorUri,
+      bootstrapFilename: `${pluginSlug}.php`,
+      composerName: `${authorUsername}/${pluginSlug}`,
+      packageName: pluginSlug,
+      phpNamespace: pluginName,
     };
   } finally {
     rl.close();
@@ -117,67 +96,68 @@ async function collectAnswers() {
 }
 
 function buildReplacements(values) {
-  return new Map([
-    ['author/pluginname', values.packageName],
-    ['pluginname/pluginname', values.packageName],
-    ['https://example.com/plugin-name', values.pluginUri],
-    ['Text Domain: pluginname', `Text Domain: ${values.textDomain}`],
-    ['X-Domain: plugin-name', `X-Domain: ${values.textDomain}`],
-    ["'pluginname'", `'${values.textDomain}'`],
-    ['"pluginname"', `"${values.textDomain}"`],
-    ['https://example.com', values.authorUri],
-    ['Plugin Name', values.displayName],
-    ['pluginname_status', values.shortcode],
-    ['pluginname', values.shortcodePrefix],
-    ['pluginname.js', `${values.assetBasename}.js`],
-    ['pluginname.css', `${values.assetBasename}.css`],
-    ['pluginname.php', values.bootstrapFilename],
-    ['pluginname', values.slug],
-    ['PluginName', values.className],
-    ['PLUGINNAME', values.namespace],
-    ['Author', values.author],
-    ['pluginname_status', values.shortcode],
-    ['pluginname', values.shortcodePrefix],
-    ['pluginname', values.slug],
-    ['pluginname', values.compactSlug],
-    ['PluginName', values.displayName],
-  ]);
+  return [
+    ['PluginName', values.pluginName],
+    ['PLUGINNAME', values.constantPrefix],
+    ['pluginname', values.pluginSlug],
+  ];
+}
+
+function updatePluginHeader(content, values) {
+  const oldHeader = `/**\n * PluginName - A WordPress Plugin\n *\n * This is the main plugin file for the PluginName WordPress plugin. It contains the plugin metadata and initializes the plugin by including necessary files and setting up activation and deactivation hooks.\n *\n * Plugin Name:       PluginName\n * Plugin URI:        https://trilb.dev/collection/web-extension/wordpress/pluginname\n * Description:       PluginName is a WordPress plugin.\n * Author:            MrTrilB\n * Author URI:        https://trilb.dev\n * License:           GPL-2.0+\n * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt\n * Text Domain:       pluginname\n * Version:           1.0.0\n * Domain Path:       src/languages\n */`;
+
+  const newHeader = `/**\n * ${values.pluginName} - A WordPress Plugin\n *\n * This is the main plugin file for the ${values.pluginName} WordPress plugin. It contains the plugin metadata and initializes the plugin by including necessary files and setting up activation and deactivation hooks.\n *\n * Plugin Name:       ${values.pluginName}\n * Plugin URI:        ${values.pluginUri}\n * Description:       ${values.description}\n * Author:            ${values.authorFullName}\n * Author URI:        ${values.authorUri}\n * License:           GPL-2.0+\n * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt\n * Text Domain:       ${values.pluginSlug}\n * Version:           1.0.0\n * Domain Path:       src/languages\n */`;
+
+  return content.includes(oldHeader) ? content.replace(oldHeader, newHeader) : content;
 }
 
 function planChanges(values) {
-  const replacements = buildReplacements(values);
   const changes = [];
 
   for (const filePath of filesIn(root)) {
     const oldRelative = relative(filePath);
-    let newRelative = replaceAll(oldRelative, replacements);
+    let newRelative = oldRelative;
+
     if (oldRelative === 'pluginname.php') {
       newRelative = values.bootstrapFilename;
     }
+
+    if (oldRelative === 'src/PluginName.php') {
+      newRelative = `src/${values.pluginName}.php`;
+    }
+
     if (newRelative !== oldRelative) {
       changes.push({ type: 'rename', from: oldRelative, to: newRelative });
     }
 
     if (isTextFile(filePath)) {
       const oldContent = fs.readFileSync(filePath, 'utf8');
-      const newContent = replaceAll(oldContent, replacements);
+      let newContent = replaceAll(oldContent, buildReplacements(values));
+
+      if (oldRelative === 'pluginname.php' || oldRelative === values.bootstrapFilename) {
+        newContent = updatePluginHeader(newContent, values);
+      }
+
       if (newContent !== oldContent) {
         changes.push({ type: 'content', filePath: oldRelative, oldContent, newContent });
       }
     }
   }
 
-  return { replacements, changes };
+  return { changes };
 }
 
 function printPlan(values, changes) {
   console.log('\nRename summary');
-  console.log(`  Display name: ${values.displayName}`);
-  console.log(`  Namespace:    ${values.namespace}`);
-  console.log(`  Class:        ${values.className}`);
-  console.log(`  Slug:         ${values.slug}`);
-  console.log(`  Prefix:       ${values.shortcodePrefix}`);
-  console.log(`  Package:      ${values.packageName}`);
+  console.log(`  Plugin name:        ${values.pluginName}`);
+  console.log(`  Plugin slug:        ${values.pluginSlug}`);
+  console.log(`  Constant prefix:    ${values.constantPrefix}`);
+  console.log(`  Description:        ${values.description}`);
+  console.log(`  Plugin URI:         ${values.pluginUri}`);
+  console.log(`  Author user:        ${values.authorUsername}`);
+  console.log(`  Author full name:   ${values.authorFullName}`);
+  console.log(`  Author email:       ${values.authorEmail}`);
+  console.log(`  Composer package:   ${values.composerName}`);
   console.log(`\nPlanned changes: ${changes.length}`);
 
   for (const change of changes) {
@@ -223,7 +203,7 @@ async function main() {
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
     console.log('Usage: npm run rename [-- --dry-run]');
     console.log('');
-    console.log('Guides you through renaming the WikiPress external plugin template.');
+    console.log('Guides you through renaming this WordPress plugin template.');
     console.log('The default mode previews changes and asks you to type APPLY.');
     console.log('--dry-run  Preview changes without asking for confirmation or writing files.');
     return;
@@ -231,7 +211,7 @@ async function main() {
 
   const dryRunOnly = process.argv.includes('--dry-run');
   const applyImmediately = process.argv.includes('--apply');
-  console.log('WikiPress external plugin rename assistant');
+  console.log('WordPress plugin rename assistant');
   console.log('This tool excludes .git, vendor, node_modules, compiled output, and itself.');
   console.log('The default mode previews changes and asks for confirmation. Use --dry-run to skip confirmation or --apply to apply after the questions.');
 

@@ -7,9 +7,6 @@
  */
 namespace PluginName\Includes\Plugins;
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit;
-}
 /**
  * Plugin interface for all plugins.
  */
@@ -186,7 +183,7 @@ interface AdminSidebarProviderInterface extends PluginInterface {
     /**
      * Return sidebar item and group definitions.
      *
-     * An item uses `type => item` and a `parent` of `manage-wiki`, `settings`,
+     * An item uses `type => item` and a `parent` of `manage-mod`, `settings`,
      * or `tools`. A group uses `type => group` and an `items` array.
      *
      * @return array<int, array<string, mixed>>

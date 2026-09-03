@@ -6,9 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PluginName\\PublicArea\\' => array($baseDir . '/src/Public'),
-    'PluginName\\Includes\\' => array($baseDir . '/src/includes'),
-    'PluginName\\Assets\\' => array($baseDir . '/src/Assets'),
-    'PluginName\\Admin\\' => array($baseDir . '/src/Admin'),
-    'PluginName\\API\\' => array($baseDir . '/src/API'),
+    'PluginName\\' => array($baseDir . '/src'),
 );

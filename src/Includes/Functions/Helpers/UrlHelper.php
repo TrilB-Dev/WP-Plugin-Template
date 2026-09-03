@@ -1,13 +1,13 @@
 <?php
 /**
- * URL builders for PluginPress and extensions.
+ * URL builders for PluginName and extensions.
  *
- * @package PluginPress
+ * @package PluginName
  * @subpackage Includes\Functions\Helpers
  * @since 1.0.0
  */
 
-namespace PluginPress\Includes\Functions\Helpers;
+namespace PluginName\Includes\Functions\Helpers;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
