@@ -114,3 +114,5 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.location.hash && 'layout' !== initial.tab && (initial.tab !== panel.dataset.currentTab || initial.section !== panel.dataset.currentSection)) loadTab(initial.tab, initial.section, false);
   bindForms();
 });
+
+

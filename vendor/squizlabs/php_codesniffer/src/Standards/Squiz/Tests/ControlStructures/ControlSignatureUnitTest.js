@@ -133,3 +133,6 @@ if ($("#myid").rotationDegrees()=='90')
 
 if ($("#myid").rotationDegrees()=='90')
     $foo = {'transform': 'rotate(90deg)'};
+
+
+

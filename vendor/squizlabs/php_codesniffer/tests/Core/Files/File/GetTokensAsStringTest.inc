@@ -23,3 +23,6 @@ echo 'foo',
 
 /* testEndOfFile */
 echo   $foo;
+
+
+

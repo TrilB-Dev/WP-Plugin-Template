@@ -98,3 +98,6 @@ class EmptyClassDefinitionSniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

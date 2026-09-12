@@ -522,3 +522,6 @@ class EmbeddedPhpSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -96,3 +96,6 @@ $instance = new class () extends SomeClass implements
 $anon = new readonly class {};
 $anon = new readonly class {};
 $anon = new readonly class {};
+
+
+

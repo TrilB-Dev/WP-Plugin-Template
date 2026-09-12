@@ -94,3 +94,6 @@ final class AssignmentInConditionUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

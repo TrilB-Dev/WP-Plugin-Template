@@ -7,3 +7,5 @@ return MyClass::VARIABLE;
 return $variable;
 return ($var + 1);
 ?>
+
+

@@ -66,3 +66,6 @@ final class MemberVarScopeUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -317,3 +317,6 @@ function brokenMatchAlternativeSyntax($x) {
 /* testLiveCoding */
 // Intentional parse error. This has to be the last test in the file.
 echo match
+
+
+

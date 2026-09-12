@@ -101,3 +101,6 @@ final class ClassDeclarationUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

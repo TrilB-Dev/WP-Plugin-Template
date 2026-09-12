@@ -230,3 +230,6 @@ function variableAssignmentAfterOpeningBrace() { $a = 1;
 abstract class MyClass {
     abstract public function abstractMethod();
 }
+
+
+

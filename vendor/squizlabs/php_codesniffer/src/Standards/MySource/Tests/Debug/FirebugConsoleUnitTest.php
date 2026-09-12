@@ -64,3 +64,6 @@ final class FirebugConsoleUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

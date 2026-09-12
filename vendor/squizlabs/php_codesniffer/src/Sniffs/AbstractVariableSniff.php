@@ -228,3 +228,6 @@ abstract class AbstractVariableSniff extends AbstractScopeSniff
 
 
 }//end class
+
+
+

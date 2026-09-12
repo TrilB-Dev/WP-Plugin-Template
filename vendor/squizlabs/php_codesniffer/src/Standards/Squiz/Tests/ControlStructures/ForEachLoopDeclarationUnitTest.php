@@ -59,3 +59,6 @@ final class ForEachLoopDeclarationUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

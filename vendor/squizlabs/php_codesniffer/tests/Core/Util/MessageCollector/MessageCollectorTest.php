@@ -536,3 +536,6 @@ final class MessageCollectorTest extends TestCase
 
 
 }//end class
+
+
+

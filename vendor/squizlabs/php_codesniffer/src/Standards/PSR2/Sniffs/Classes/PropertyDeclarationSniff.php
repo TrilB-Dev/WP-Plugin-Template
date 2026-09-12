@@ -309,3 +309,6 @@ class PropertyDeclarationSniff extends AbstractVariableSniff
 
 
 }//end class
+
+
+

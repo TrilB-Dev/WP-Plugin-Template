@@ -69,3 +69,6 @@ variable = (variable2 == false) ? variable1 : "foobar";
 variable = (variable2 === 0) ? variable1 : "foobar";
 
 variable = (variable2 == 0) ? variable1 : "foobar";
+
+
+

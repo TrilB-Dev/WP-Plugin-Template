@@ -26,3 +26,6 @@ class MockGenerator extends Generator
         echo $this->getTitle($doc), PHP_EOL;
     }
 }
+
+
+

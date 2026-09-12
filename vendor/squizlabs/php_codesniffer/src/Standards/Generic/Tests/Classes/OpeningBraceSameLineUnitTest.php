@@ -66,3 +66,6 @@ final class OpeningBraceSameLineUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

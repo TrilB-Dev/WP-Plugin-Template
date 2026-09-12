@@ -64,3 +64,6 @@ final class ReturnTypeDeclarationUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -122,3 +122,6 @@ class OpeningBraceSameLineSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -56,3 +56,6 @@ final class NamespaceDeclarationUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -31,3 +31,6 @@ catalogs.forEach((potPath) => {
   const sourceType = sourcePath === poPath ? 'PO' : 'POT template';
   console.log(`${path.relative(root, moPath)}: ${compiled.length} bytes (${sourceType})`);
 });
+
+
+

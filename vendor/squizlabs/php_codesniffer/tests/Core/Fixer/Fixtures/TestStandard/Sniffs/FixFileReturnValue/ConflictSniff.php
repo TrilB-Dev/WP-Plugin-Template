@@ -99,3 +99,6 @@ class ConflictSniff implements Sniff
         return $phpcsFile->numTokens;
     }
 }
+
+
+

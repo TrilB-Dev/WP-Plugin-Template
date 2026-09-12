@@ -70,3 +70,6 @@ final class SpreadOperatorSpacingAfterUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

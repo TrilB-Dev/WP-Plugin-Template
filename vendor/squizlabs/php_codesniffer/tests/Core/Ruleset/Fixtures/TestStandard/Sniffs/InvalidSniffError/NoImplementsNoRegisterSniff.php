@@ -17,3 +17,6 @@ final class NoImplementsNoRegisterSniff
         // Do something.
     }
 }
+
+
+

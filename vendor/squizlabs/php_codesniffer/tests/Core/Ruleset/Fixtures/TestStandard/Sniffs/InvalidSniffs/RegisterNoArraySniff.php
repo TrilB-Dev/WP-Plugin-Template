@@ -23,3 +23,6 @@ class RegisterNoArraySniff implements Sniff
         // Do something.
     }
 }
+
+
+

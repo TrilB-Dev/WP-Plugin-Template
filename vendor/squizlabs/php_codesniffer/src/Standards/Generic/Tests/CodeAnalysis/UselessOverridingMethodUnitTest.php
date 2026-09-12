@@ -70,3 +70,6 @@ final class UselessOverridingMethodUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

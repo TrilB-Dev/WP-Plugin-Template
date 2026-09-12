@@ -115,3 +115,6 @@ final class LowerCaseTypeUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

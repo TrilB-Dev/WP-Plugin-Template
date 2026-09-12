@@ -347,3 +347,6 @@ class InlineCommentSniff implements Sniff
 
 
 }//end class
+
+
+

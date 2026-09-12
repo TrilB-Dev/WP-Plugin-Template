@@ -12,3 +12,6 @@ $bar = (  bool  ) $foo;
 $bar = ( int ) $foo;
 $bar = (     bool   	    ) $foo;
 $bar = (  int) $foo;
+
+
+

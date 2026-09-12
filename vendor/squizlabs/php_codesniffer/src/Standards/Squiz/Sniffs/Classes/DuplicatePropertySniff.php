@@ -119,3 +119,6 @@ class DuplicatePropertySniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

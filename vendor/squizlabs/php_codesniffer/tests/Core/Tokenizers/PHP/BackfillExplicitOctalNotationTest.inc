@@ -29,3 +29,6 @@ $foo = 0o2_82;
 
 /* testInvalid7 */
 $foo = 0o;
+
+
+

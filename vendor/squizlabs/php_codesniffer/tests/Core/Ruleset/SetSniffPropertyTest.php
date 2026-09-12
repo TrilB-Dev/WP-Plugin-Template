@@ -419,3 +419,6 @@ final class SetSniffPropertyTest extends AbstractRulesetTestCase
 
 
 }//end class
+
+
+

@@ -22,3 +22,6 @@ final class MissingCategoryDirSniff implements Sniff
         // Do something.
     }
 }
+
+
+

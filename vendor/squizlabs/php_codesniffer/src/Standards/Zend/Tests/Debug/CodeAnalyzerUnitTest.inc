@@ -4,3 +4,6 @@ function myFunction($variable) {
     echo 'hi';
 }
 ?>
+
+
+

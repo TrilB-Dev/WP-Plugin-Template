@@ -120,3 +120,6 @@ Extension detection system
 == Upgrade Notice ==
 1.0.0
 Initial release of PluginName. No upgrade actions required.
+
+
+

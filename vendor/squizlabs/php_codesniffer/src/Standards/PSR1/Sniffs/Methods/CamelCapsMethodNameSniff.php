@@ -89,3 +89,6 @@ class CamelCapsMethodNameSniff extends GenericCamelCapsFunctionNameSniff
 
 
 }//end class
+
+
+

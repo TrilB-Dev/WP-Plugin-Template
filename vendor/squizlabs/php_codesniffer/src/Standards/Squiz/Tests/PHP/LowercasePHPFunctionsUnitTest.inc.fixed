@@ -48,3 +48,6 @@ class AttributesShouldBeIgnored
     public function foo(): void
     {}
 }
+
+
+

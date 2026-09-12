@@ -171,3 +171,6 @@ class SniffShouldHandlePHPOpenCloseTagsCorrectly {
         return 1;
     }
 }
+
+
+

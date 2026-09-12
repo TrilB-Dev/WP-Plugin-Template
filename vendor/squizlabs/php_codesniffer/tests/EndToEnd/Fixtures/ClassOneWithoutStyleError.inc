@@ -16,3 +16,6 @@ class ClassOneWithoutStyleError
         return 'bar';
     }
 }
+
+
+

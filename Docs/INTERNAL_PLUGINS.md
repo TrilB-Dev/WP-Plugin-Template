@@ -64,3 +64,7 @@ Run `npm run i18n:pot` and `npm run i18n:mo` from the host root when those scrip
 `Plugins::get_instance()` returns the manager singleton. `get_loaded_plugins()` returns discovered class names and `get_registered_plugins()` returns registered instances. Use `register_plugin_instance()` inside the host registration callback, or `Plugins::register_plugin()` as a convenience method. Duplicate slugs should be ignored.
 
 Use `LoggerHelper` for diagnostics. The loader should log invalid plugin classes and initialization failures without exposing sensitive data.
+
+
+
+

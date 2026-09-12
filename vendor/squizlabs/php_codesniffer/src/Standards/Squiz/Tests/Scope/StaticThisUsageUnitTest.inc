@@ -125,3 +125,6 @@ enum MyEnum {
         $this->doSomething();
     }
 }
+
+
+

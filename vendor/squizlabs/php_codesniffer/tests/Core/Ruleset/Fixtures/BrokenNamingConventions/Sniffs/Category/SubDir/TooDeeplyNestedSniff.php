@@ -22,3 +22,6 @@ final class TooDeeplyNestedSniff implements Sniff
         // Do something.
     }
 }
+
+
+

@@ -798,3 +798,6 @@ class FunctionCommentSniff extends PEARFunctionCommentSniff
 
 
 }//end class
+
+
+

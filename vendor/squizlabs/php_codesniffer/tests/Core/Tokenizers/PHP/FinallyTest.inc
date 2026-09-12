@@ -38,3 +38,6 @@ class FinallyAsMethod {
         $this->finally = 'foo';
     }
 }
+
+
+

@@ -6,3 +6,6 @@ interface YourInterface {}
 namespace Foo /*comment*/ \ /*comment*/ Bar;
 class MyClass {}
 interface YourInterface {}
+
+
+

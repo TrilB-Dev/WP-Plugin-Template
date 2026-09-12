@@ -156,3 +156,6 @@ final class GetDeclarationNameJSTest extends AbstractMethodUnitTest
 
 
 }//end class
+
+
+

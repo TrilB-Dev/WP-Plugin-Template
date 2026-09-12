@@ -187,3 +187,6 @@ abstract class AbstractScopeSniff implements Sniff
 
 
 }//end class
+
+
+

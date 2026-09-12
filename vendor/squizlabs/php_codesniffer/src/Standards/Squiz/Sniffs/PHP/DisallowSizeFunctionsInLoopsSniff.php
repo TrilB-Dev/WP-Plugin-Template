@@ -114,3 +114,6 @@ class DisallowSizeFunctionsInLoopsSniff implements Sniff
 
 
 }//end class
+
+
+

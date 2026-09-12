@@ -16,3 +16,5 @@ six = [arrayOne, arrayTwo].join();
 
 // This is fine because the array is not created inline.
 var x = 'x' + test[x].join('p') + 't';
+
+

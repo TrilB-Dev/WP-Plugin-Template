@@ -234,3 +234,6 @@ class ForEachLoopDeclarationSniff implements Sniff
 
 
 }//end class
+
+
+

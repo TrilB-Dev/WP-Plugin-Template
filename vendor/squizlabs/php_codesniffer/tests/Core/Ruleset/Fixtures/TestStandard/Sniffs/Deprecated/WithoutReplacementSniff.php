@@ -39,3 +39,6 @@ class WithoutReplacementSniff implements Sniff, DeprecatedSniff
         // Do something.
     }
 }
+
+
+

@@ -58,3 +58,6 @@ final class EmptyCatchCommentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

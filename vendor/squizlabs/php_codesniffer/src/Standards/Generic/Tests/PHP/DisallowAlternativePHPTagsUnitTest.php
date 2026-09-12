@@ -108,3 +108,6 @@ final class DisallowAlternativePHPTagsUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

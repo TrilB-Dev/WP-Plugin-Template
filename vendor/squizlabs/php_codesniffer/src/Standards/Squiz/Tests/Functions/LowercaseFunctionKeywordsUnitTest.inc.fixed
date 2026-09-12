@@ -26,3 +26,6 @@ abstract class Bar {
 }
 
 $a = fn($x) => $x;
+
+
+

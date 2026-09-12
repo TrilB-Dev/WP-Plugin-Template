@@ -65,3 +65,6 @@ final class FunctionCommentThrowTagUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

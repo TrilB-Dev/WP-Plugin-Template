@@ -5,3 +5,6 @@
 <p><?php echo 'foo';  
 
 /* phpcs:set foo bar */ ?>
+
+
+

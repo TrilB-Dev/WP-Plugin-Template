@@ -25,3 +25,6 @@ div#annotations {-webkit-tap-highlight-color:transparent;/* phpcs:disable Standa
 
 div#comments {height:100%;/*comment*/
 width:100%;}
+
+
+

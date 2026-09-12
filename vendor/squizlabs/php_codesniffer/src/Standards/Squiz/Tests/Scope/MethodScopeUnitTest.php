@@ -56,3 +56,6 @@ final class MethodScopeUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

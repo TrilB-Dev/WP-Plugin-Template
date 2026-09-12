@@ -55,3 +55,6 @@ final class CompoundNamespaceDepthUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

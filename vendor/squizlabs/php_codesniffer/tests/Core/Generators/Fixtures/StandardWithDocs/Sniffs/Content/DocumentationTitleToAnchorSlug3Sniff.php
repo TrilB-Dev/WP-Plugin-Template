@@ -10,3 +10,6 @@ namespace Fixtures\StandardWithDocs\Sniffs\Content;
 use Fixtures\StandardWithDocs\Sniffs\DummySniff;
 
 final class DocumentationTitleToAnchorSlug3Sniff extends DummySniff {}
+
+
+

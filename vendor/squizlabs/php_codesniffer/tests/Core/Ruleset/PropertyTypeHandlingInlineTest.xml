@@ -4,3 +4,6 @@
     <rule ref="./tests/Core/Ruleset/Fixtures/TestStandard/Sniffs/SetProperty/PropertyTypeHandlingSniff.php"/>
 
 </ruleset>
+
+
+

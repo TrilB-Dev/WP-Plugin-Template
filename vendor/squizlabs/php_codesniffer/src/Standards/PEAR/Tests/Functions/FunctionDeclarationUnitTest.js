@@ -57,3 +57,6 @@ class test
 
 ( function ( $ ) {
     foo(function ( value ) {} )( jQuery );
+
+
+

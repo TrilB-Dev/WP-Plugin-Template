@@ -10,8 +10,8 @@ namespace PluginName\Includes\Functions\Admin;
 
 use PluginName\Admin\Admin;
 use PluginName\Includes\Functions\Helpers\LoggerHelper;
-use PluginName\Includes\Functions\Helpers\PAMHelper;
-use PluginName\Includes\Functions\Helpers\PASMHelper;
+use PluginName\Includes\Functions\Helpers\LPAMHelper;
+use PluginName\Includes\Functions\Helpers\LPASMHelper;
 use PluginName\Includes\Plugins\AdminMenuProviderInterface;
 use PluginName\Includes\Plugins\AdminSidebarProviderInterface;
 use PluginName\Includes\Plugins\Plugins;
@@ -20,12 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Owns PluginName menu data and registration.
- *
- * Rendering remains in Admin and Sidebar. This class builds menu data,
- * applies extension filters, and calls the WordPress admin API.
- */
 final class FunctionsSidebar {
 	/**
 	 * Register the core WordPress menu followed by plugin-provided menus.
@@ -38,7 +32,7 @@ final class FunctionsSidebar {
 			self::register_wordpress_menu( $menu );
 		}
 
-		foreach ( PAMHelper::filter( self::plugin_wordpress_menus() ) as $menu ) {
+		foreach ( LPAMHelper::filter( self::plugin_wordpress_menus() ) as $menu ) {
 			self::register_wordpress_menu( $menu );
 		}
 	}
@@ -50,7 +44,7 @@ final class FunctionsSidebar {
 	 */
 	public static function get_sidebar_groups(): array {
 		$groups = self::core_sidebar_groups();
-		$menus  = PASMHelper::filter( self::plugin_sidebar_menus() );
+		$menus  = LPASMHelper::filter( self::plugin_sidebar_menus() );
 
 		// Create parents first so children can target a parent in any order.
 		foreach ( $menus as $menu ) {
@@ -66,13 +60,16 @@ final class FunctionsSidebar {
 			}
 		}
 
-		foreach ( $groups as &$group ) {
-			$group['items'] = array_filter(
-				$group['items'],
-				static fn ( array $item ): bool => '' === ( $capability = sanitize_key( (string) ( $item['capability'] ?? '' ) ) ) || current_user_can( $capability )
-			);
+		foreach ( $groups as $group_key => $group ) {
+			$filtered_items = array();
+			foreach ( $group['items'] as $item ) {
+				$capability = sanitize_key( (string) ( $item['capability'] ?? '' ) );
+				if ( '' === $capability || current_user_can( $capability ) ) {
+					$filtered_items[] = $item;
+				}
+			}
+			$groups[ $group_key ]['items'] = $filtered_items;
 		}
-		unset( $group );
 
 		return array_filter( $groups, static fn ( array $group ): bool => ! empty( $group['items'] ) );
 	}
@@ -87,86 +84,177 @@ final class FunctionsSidebar {
 		return admin_url( 'admin.php?page=' . $slug );
 	}
 
-	/** @return array<int, array<string, mixed>> */
+	/**
+	 * Get the core WordPress menus for the plugin.
+	 *
+	 * @param Admin $admin Core admin callbacks and capability resolver.
+	 * @return array<int, array<string, mixed>>
+	 */
 	private static function core_wordpress_menus( Admin $admin ): array {
-		return [
-			[
+		return array(
+			array(
 				'name'       => __( 'PluginName', 'pluginname' ),
 				'slug'       => 'pluginname',
 				'icon'       => 'dashicons-book-alt',
 				'parent'     => '',
-				'callback'   => [ $admin, 'render_dashboard' ],
+				'callback'   => array( $admin, 'render_dashboard' ),
 				'capability' => 'pluginname_admin_view',
 				'position'   => 30,
-			],
-			[
+			),
+			array(
 				'name'       => __( 'Dashboard', 'pluginname' ),
 				'slug'       => 'pluginname',
 				'parent'     => 'pluginname',
-				'callback'   => [ $admin, 'render_dashboard' ],
+				'callback'   => array( $admin, 'render_dashboard' ),
 				'capability' => 'pluginname_admin_view',
-			],
-			[
-				'name'       => __( 'Manage Wiki', 'pluginname' ),
-				'slug'       => 'pluginname-manage',
+			),
+			array(
+				'name'       => __( 'Licences', 'pluginname' ),
+				'slug'       => 'pluginname-licences',
 				'parent'     => 'pluginname',
-				'callback'   => [ $admin, 'render_wikis' ],
-				'capability' => 'pluginname_admin_view',
-			],
-			[
+				'callback'   => array( $admin, 'render_licences' ),
+				'capability' => 'pluginname_licence_view',
+			),
+			array(
+				'name'       => __( 'Add Licence Type', 'pluginname' ),
+				'slug'       => 'pluginname-licence-types-add',
+				'parent'     => 'pluginname-licences',
+				'callback'   => array( $admin, 'render_licence_type_add' ),
+				'capability' => 'pluginname_licence_issue',
+			),
+			array(
+				'name'       => __( 'Manage Licence Types', 'pluginname' ),
+				'slug'       => 'pluginname-licence-types',
+				'parent'     => 'pluginname-licences',
+				'callback'   => array( $admin, 'render_licence_types' ),
+				'capability' => 'pluginname_licence_view',
+			),
+			array(
+				'name'       => __( 'Manage Licences', 'pluginname' ),
+				'slug'       => 'pluginname-licence-management',
+				'parent'     => 'pluginname-licences',
+				'callback'   => array( $admin, 'render_licence_management' ),
+				'capability' => 'pluginname_licence_view',
+			),
+			array(
 				'name'       => __( 'Settings', 'pluginname' ),
 				'slug'       => 'pluginname-settings',
 				'parent'     => 'pluginname',
-				'callback'   => [ $admin, 'render_settings' ],
+				'callback'   => array( $admin, 'render_settings' ),
 				'capability' => 'pluginname_settings_general_view',
-			],
-			[
+			),
+			array(
 				'name'       => __( 'Tools', 'pluginname' ),
 				'slug'       => 'pluginname-tools',
 				'parent'     => 'pluginname',
-				'callback'   => [ $admin, 'render_tools' ],
+				'callback'   => array( $admin, 'render_tools' ),
 				'capability' => 'pluginname_tools_debug',
-			],
-		];
+			),
+		);
 	}
 
-	/** @return array<string, array<string, mixed>> */
+	/**
+	 * Get the core sidebar groups for the plugin.
+	 *
+	 * @return array<string, array<string, mixed>>
+	 */
 	private static function core_sidebar_groups(): array {
-		return [
-			'manage-wiki' => [
-				'label' => __( 'Manage Wiki', 'pluginname' ),
-				'icon'  => 'fa-solid fa-file-lines',
-				'items' => [
-					'pluginname-manage'                  => [ 'label' => __( 'Manage Wiki', 'pluginname' ), 'icon' => 'fa-solid fa-book-open-lines', 'capability' => 'pluginname_admin_view' ],
-					'pluginname-manage&wiki=categories' => [ 'label' => __( 'Categories', 'pluginname' ), 'icon' => 'fa-book-open-lines-category', 'capability' => 'pluginname_edit' ],
-					'pluginname-manage&wiki=tags'       => [ 'label' => __( 'Tags', 'pluginname' ), 'icon' => 'fa-kit fa-solid-book-open-lines-tag', 'capability' => 'pluginname_edit' ],
-					'pluginname-manage&wiki=new'        => [ 'label' => __( 'New Wiki', 'pluginname' ), 'icon' => 'fa-kit fa-solid-book-open-lines-circle-plus', 'capability' => 'pluginname_create' ],
-				],
-			],
-			'settings' => [
+		return array(
+			'licences' => array(
+				'label' => __( 'Licences', 'pluginname' ),
+				'icon'  => 'fa-solid fa-file-signature',
+				'items' => array(
+					'pluginname-licences'           => array(
+						'label'      => __( 'Overview', 'pluginname' ),
+						'icon'       => 'fa-solid fa-key',
+						'capability' => 'pluginname_licence_view',
+					),
+					'pluginname-licence-types-add'  => array(
+						'label'      => __( 'Add Licence Type', 'pluginname' ),
+						'icon'       => 'fa-solid fa-square-plus',
+						'capability' => 'pluginname_licence_issue',
+					),
+					'pluginname-licence-types'      => array(
+						'label'      => __( 'Manage Licence Types', 'pluginname' ),
+						'icon'       => 'fa-solid fa-list',
+						'capability' => 'pluginname_licence_view',
+					),
+					'pluginname-licence-management' => array(
+						'label'      => __( 'Manage Licences', 'pluginname' ),
+						'icon'       => 'fa-solid fa-folder-open',
+						'capability' => 'pluginname_licence_view',
+					),
+					'pluginname-tools&tool=export'  => array(
+						'label'      => __( 'Export', 'pluginname' ),
+						'icon'       => 'fa-solid fa-file-export',
+						'capability' => 'pluginname_tools_export',
+					),
+					'pluginname-tools&tool=import'  => array(
+						'label'      => __( 'Import', 'pluginname' ),
+						'icon'       => 'fa-solid fa-file-import',
+						'capability' => 'pluginname_tools_import',
+					),
+				),
+			),
+			'settings' => array(
 				'label' => __( 'Settings', 'pluginname' ),
 				'icon'  => 'fa-solid fa-gear',
-				'items' => [
-					'pluginname-settings&tab=general'     => [ 'label' => __( 'General', 'pluginname' ), 'icon' => 'fa-solid fa-sliders', 'capability' => 'pluginname_settings_general_view' ],
-					'pluginname-settings&tab=layout'      => [ 'label' => __( 'Layout', 'pluginname' ), 'icon' => 'fa-solid fa-table-columns', 'capability' => 'pluginname_settings_layout_view' ],
-					'pluginname-settings&tab=plugins'     => [ 'label' => __( 'Plugins', 'pluginname' ), 'icon' => 'fa-solid fa-puzzle-piece', 'capability' => 'pluginname_settings_plugins_view' ],
-					'pluginname-settings&tab=third-party' => [ 'label' => __( '3rd Party', 'pluginname' ), 'icon' => 'fa-solid fa-plug', 'capability' => 'pluginname_settings_plugins_ext_view' ],
-					'pluginname-settings&tab=access'      => [ 'label' => __( 'Access', 'pluginname' ), 'icon' => 'fa-solid fa-user-shield', 'capability' => 'pluginname_settings_access_view' ],
-				],
-			],
-			'tools' => [
-				'label' => __( 'Tools', 'pluginname' ),
+				'items' => array(
+					'pluginname-settings&tab=general' => array(
+						'label'      => __( 'General', 'pluginname' ),
+						'icon'       => 'fa-solid fa-sliders',
+						'capability' => 'pluginname_settings_general_view',
+					),
+					'pluginname-settings&tab=access'  => array(
+						'label'      => __( 'Access', 'pluginname' ),
+						'icon'       => 'fa-solid fa-user-shield',
+						'capability' => 'pluginname_settings_access_view',
+					),
+					'pluginname-settings&tab=plugins' => array(
+						'label'      => __( 'Plugins', 'pluginname' ),
+						'icon'       => 'fa-solid fa-puzzle-piece',
+						'capability' => 'pluginname_settings_plugins_view',
+					),
+					'pluginname-settings&tab=third-party' => array(
+						'label'      => __( '3rd Party', 'pluginname' ),
+						'icon'       => 'fa-solid fa-plug',
+						'capability' => 'pluginname_settings_plugins_ext_view',
+					),
+				),
+			),
+			'tools'    => array(
+				'label' => __( 'Operations', 'pluginname' ),
 				'icon'  => 'fa-solid fa-toolbox',
-				'items' => [
-					'pluginname-tools&tool=debug'     => [ 'label' => __( 'Debug', 'pluginname' ), 'icon' => 'fa-solid fa-bug-slash', 'capability' => 'pluginname_tools_debug' ],
-					'pluginname-tools&tool=import'    => [ 'label' => __( 'Import', 'pluginname' ), 'icon' => 'fa-solid fa-file-import', 'capability' => 'pluginname_tools_import' ],
-					'pluginname-tools&tool=export'    => [ 'label' => __( 'Export', 'pluginname' ), 'icon' => 'fa-solid fa-file-export', 'capability' => 'pluginname_tools_export' ],
-					'pluginname-tools&tool=analytics' => [ 'label' => __( 'Analytics', 'pluginname' ), 'icon' => 'fa-solid fa-chart-line', 'capability' => 'pluginname_tools_analytics' ],
-				],
-			],
-		];
+				'items' => array(
+					'pluginname-tools&tool=debug'  => array(
+						'label'      => __( 'Debug', 'pluginname' ),
+						'icon'       => 'fa-solid fa-bug-slash',
+						'capability' => 'pluginname_tools_debug',
+					),
+					'pluginname-tools&tool=reset'  => array(
+						'label'      => __( 'Reset', 'pluginname' ),
+						'icon'       => 'fa-solid fa-rotate',
+						'capability' => 'pluginname_tools_reset',
+					),
+					'pluginname-tools&tool=import' => array(
+						'label'      => __( 'Import', 'pluginname' ),
+						'icon'       => 'fa-solid fa-file-import',
+						'capability' => 'pluginname_tools_import',
+					),
+					'pluginname-tools&tool=export' => array(
+						'label'      => __( 'Export', 'pluginname' ),
+						'icon'       => 'fa-solid fa-file-export',
+						'capability' => 'pluginname_tools_export',
+					),
+				),
+			),
+		);
 	}
-
+	/**
+	 * Register a WordPress menu item.
+	 *
+	 * @param array<string, mixed> $menu The menu definition.
+	 */
 	private static function register_wordpress_menu( array $menu ): void {
 		$callback   = $menu['callback'] ?? null;
 		$slug       = sanitize_key( (string) ( $menu['slug'] ?? '' ) );
@@ -186,9 +274,13 @@ final class FunctionsSidebar {
 		add_submenu_page( $parent, $name, $name, $capability, $slug, $callback, $menu['position'] ?? null );
 	}
 
-	/** @return array<int, array<string, mixed>> */
+	/**
+	 * Get all WordPress menus provided by active plugins.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
 	private static function plugin_wordpress_menus(): array {
-		$menus = [];
+		$menus = array();
 
 		foreach ( Plugins::get_instance()->get_registered_plugins() as $plugin ) {
 			if ( ! $plugin instanceof AdminMenuProviderInterface || ! $plugin->is_active() ) {
@@ -202,10 +294,10 @@ final class FunctionsSidebar {
 					}
 
 					$menus[] = self::normalize_wordpress_menu( $definition );
-					foreach ( $definition['children'] ?? [] as $child ) {
+					foreach ( $definition['children'] ?? array() as $child ) {
 						if ( is_array( $child ) ) {
 							$child['parent'] = $definition['menu_slug'] ?? '';
-							$menus[] = self::normalize_wordpress_menu( $child );
+							$menus[]         = self::normalize_wordpress_menu( $child );
 						}
 					}
 				}
@@ -217,9 +309,14 @@ final class FunctionsSidebar {
 		return array_values( array_filter( $menus, static fn ( $menu ): bool => is_array( $menu ) ) );
 	}
 
-	/** @param array<string, mixed> $definition @return array<string, mixed> */
+	/**
+	 * Normalize a WordPress menu definition into a standard format.
+	 *
+	 * @param array<string, mixed> $definition The raw menu definition.
+	 * @return array<string, mixed> The normalized menu definition.
+	 */
 	private static function normalize_wordpress_menu( array $definition ): array {
-		return [
+		return array(
 			'name'       => $definition['menu_title'] ?? $definition['page_title'] ?? '',
 			'slug'       => $definition['menu_slug'] ?? '',
 			'icon'       => $definition['icon'] ?? 'dashicons-admin-generic',
@@ -227,17 +324,26 @@ final class FunctionsSidebar {
 			'callback'   => $definition['callback'] ?? null,
 			'capability' => $definition['capability'] ?? 'manage_options',
 			'position'   => $definition['position'] ?? null,
-		];
+		);
 	}
-
+	/**
+	 * Normalize an admin parent slug.
+	 *
+	 * @param string $parent The raw parent slug.
+	 * @return string The normalized parent slug.
+	 */
 	private static function admin_parent_slug( string $parent ): string {
 		$parent = strtolower( sanitize_text_field( $parent ) );
 		return (string) preg_replace( '/[^a-z0-9._-]/', '', $parent );
 	}
 
-	/** @return array<int, array<string, mixed>> */
+	/**
+	 * Get all sidebar menus provided by active plugins.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
 	private static function plugin_sidebar_menus(): array {
-		$menus = [];
+		$menus = array();
 
 		foreach ( Plugins::get_instance()->get_registered_plugins() as $plugin ) {
 			if ( ! $plugin instanceof AdminSidebarProviderInterface || ! $plugin->is_active() ) {
@@ -251,16 +357,16 @@ final class FunctionsSidebar {
 					}
 
 					if ( 'group' === ( $definition['type'] ?? '' ) ) {
-						$menus[] = PASMHelper::define( $definition['label'] ?? '', $definition['slug'] ?? '', $definition['icon'] ?? '', '', $definition['capability'] ?? '' );
-						foreach ( $definition['items'] ?? [] as $child ) {
+						$menus[] = LPASMHelper::define( $definition['label'] ?? '', $definition['slug'] ?? '', $definition['icon'] ?? '', '', $definition['capability'] ?? '' );
+						foreach ( $definition['items'] ?? array() as $child ) {
 							if ( is_array( $child ) ) {
-								$menus[] = PASMHelper::define( $child['label'] ?? '', self::sidebar_slug( $child ), $child['icon'] ?? '', $definition['slug'] ?? '', $child['capability'] ?? '' );
+								$menus[] = LPASMHelper::define( $child['label'] ?? '', self::sidebar_slug( $child ), $child['icon'] ?? '', $definition['slug'] ?? '', $child['capability'] ?? '' );
 							}
 						}
 						continue;
 					}
 
-					$menus[] = PASMHelper::define( $definition['label'] ?? '', self::sidebar_slug( $definition ), $definition['icon'] ?? '', $definition['parent'] ?? '', $definition['capability'] ?? '' );
+					$menus[] = LPASMHelper::define( $definition['label'] ?? '', self::sidebar_slug( $definition ), $definition['icon'] ?? '', $definition['parent'] ?? '', $definition['capability'] ?? '' );
 				}
 			} catch ( \Throwable $e ) {
 				LoggerHelper::write_log( sprintf( 'PluginName plugin %s failed to provide sidebar menus: %s', $plugin->get_slug(), $e->getMessage() ) );
@@ -270,10 +376,15 @@ final class FunctionsSidebar {
 		return $menus;
 	}
 
-	/** @param array<string, mixed> $definition */
+	/**
+	 * Generate a sidebar slug from a menu definition.
+	 *
+	 * @param array<string, mixed> $definition The menu definition.
+	 * @return string The generated sidebar slug.
+	 */
 	private static function sidebar_slug( array $definition ): string {
 		$page  = (string) ( $definition['page'] ?? $definition['slug'] ?? '' );
-		$query = $definition['query'] ?? [];
+		$query = $definition['query'] ?? array();
 
 		if ( ! is_array( $query ) || empty( $query ) ) {
 			return $page;
@@ -282,18 +393,33 @@ final class FunctionsSidebar {
 		return $page . '&' . http_build_query( array_filter( $query, 'is_scalar' ), '', '&', PHP_QUERY_RFC3986 );
 	}
 
-	/** @param array<string, array<string, mixed>> $groups @param array<string, mixed> $menu */
+	/**
+	 * Add a sidebar group to the collection of groups.
+	 *
+	 * @param array<string, array<string, mixed>> $groups The collection of sidebar groups.
+	 * @param array<string, mixed> $menu The menu definition for the group.
+	 */
 	private static function add_sidebar_group( array &$groups, array $menu ): void {
 		$slug  = self::menu_slug( $menu );
 		$label = (string) ( $menu['name'] ?? '' );
 		$icon  = (string) ( $menu['icon'] ?? '' );
 
 		if ( '' !== $slug && '' !== $label && '' !== $icon ) {
-			$groups[ $slug ] = [ 'label' => $label, 'icon' => $icon, 'items' => [] ];
+			$groups[ $slug ] = array(
+				'label' => $label,
+				'icon'  => $icon,
+				'items' => array(),
+			);
 		}
 	}
 
-	/** @param array<string, array<string, mixed>> $groups @param array<string, mixed> $menu */
+	/**
+	 * Add a sidebar item to a specific group.
+	 *
+	 * @param array<string, array<string, mixed>> $groups The collection of sidebar groups.
+	 * @param string $parent The parent group slug.
+	 * @param array<string, mixed> $menu The menu definition for the item.
+	 */
 	private static function add_sidebar_item( array &$groups, string $parent, array $menu ): void {
 		$slug  = (string) ( $menu['slug'] ?? '' );
 		$label = (string) ( $menu['name'] ?? '' );
@@ -301,17 +427,34 @@ final class FunctionsSidebar {
 
 		$capability = sanitize_key( (string) ( $menu['capability'] ?? '' ) );
 		if ( isset( $groups[ $parent ] ) && '' !== $slug && '' !== $label && '' !== $icon && ( '' === $capability || current_user_can( $capability ) ) ) {
-			$groups[ $parent ]['items'][ $slug ] = [ 'label' => $label, 'icon' => $icon, 'capability' => $capability ];
+			$groups[ $parent ]['items'][ $slug ] = array(
+				'label'      => $label,
+				'icon'       => $icon,
+				'capability' => $capability,
+			);
 		}
 	}
 
-	/** @param array<string, mixed> $menu */
+	/**
+	 * Get the parent slug from a menu definition.
+	 *
+	 * @param array<string, mixed> $menu The menu definition.
+	 * @return string The parent slug.
+	 */
 	private static function parent_slug( array $menu ): string {
 		return sanitize_key( (string) ( $menu['parent'] ?? '' ) );
 	}
 
-	/** @param array<string, mixed> $menu */
+	/**
+	 * Get the menu slug from a menu definition.
+	 *
+	 * @param array<string, mixed> $menu The menu definition.
+	 * @return string The menu slug.
+	 */
 	private static function menu_slug( array $menu ): string {
 		return sanitize_key( (string) ( $menu['slug'] ?? '' ) );
 	}
 }
+
+
+

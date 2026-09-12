@@ -62,3 +62,6 @@ final class BooleanOperatorPlacementUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

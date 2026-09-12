@@ -98,3 +98,6 @@ $var = (boolean)/* comment */ $var2;
 
 $var = (  int )$spacesInsideParenthesis;
 $var = (	int		)$tabsInsideParenthesis;
+
+
+

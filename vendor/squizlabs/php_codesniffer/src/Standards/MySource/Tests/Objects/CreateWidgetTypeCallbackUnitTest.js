@@ -184,3 +184,5 @@ SampleWidgetType.prototype = {
     }
 
 };
+
+

@@ -69,3 +69,6 @@ final class CodeAnalyzerUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

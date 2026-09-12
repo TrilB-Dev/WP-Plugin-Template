@@ -73,3 +73,6 @@ class LowercaseDeclarationSniff implements Sniff
 
 
 }//end class
+
+
+

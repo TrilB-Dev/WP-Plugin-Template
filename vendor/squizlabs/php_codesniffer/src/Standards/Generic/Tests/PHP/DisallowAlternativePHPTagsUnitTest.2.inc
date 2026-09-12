@@ -4,3 +4,6 @@
 <%= $var . ' and some more text to make sure the snippet works'; %>
 <p>Some text <%= $var %> and some more text</p>
 </div>
+
+
+

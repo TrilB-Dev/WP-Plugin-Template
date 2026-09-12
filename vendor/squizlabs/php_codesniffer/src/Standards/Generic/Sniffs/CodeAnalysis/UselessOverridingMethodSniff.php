@@ -182,3 +182,6 @@ class UselessOverridingMethodSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -458,3 +458,6 @@ abstract class AbstractClass {
 interface MyInterface {
     public function sniffShouldIgnoreInterfaceMethods();
 }
+
+
+

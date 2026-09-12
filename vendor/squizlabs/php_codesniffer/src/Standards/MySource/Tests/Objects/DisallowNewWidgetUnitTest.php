@@ -51,3 +51,6 @@ final class DisallowNewWidgetUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

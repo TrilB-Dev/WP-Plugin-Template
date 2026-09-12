@@ -58,3 +58,6 @@ final class LowercasePHPFunctionsUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

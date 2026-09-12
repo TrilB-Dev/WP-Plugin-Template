@@ -144,3 +144,6 @@ class ColonSpacingSniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

@@ -65,3 +65,6 @@ final class DisallowInlineIfUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -196,3 +196,6 @@ if(!\false == $value || true !== $value){}
 
 if($value === \Null){}
 if(\Null == $value){}
+
+
+

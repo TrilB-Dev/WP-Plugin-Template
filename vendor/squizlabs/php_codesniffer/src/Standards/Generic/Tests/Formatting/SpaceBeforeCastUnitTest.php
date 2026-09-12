@@ -81,3 +81,6 @@ final class SpaceBeforeCastUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

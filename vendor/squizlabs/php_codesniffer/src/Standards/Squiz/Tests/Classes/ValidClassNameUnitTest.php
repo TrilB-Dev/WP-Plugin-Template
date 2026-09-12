@@ -81,3 +81,6 @@ final class ValidClassNameUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

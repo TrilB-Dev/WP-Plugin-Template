@@ -5,3 +5,6 @@
 class Foo {
     public(set) const BAR = 'bar';
 }
+
+
+

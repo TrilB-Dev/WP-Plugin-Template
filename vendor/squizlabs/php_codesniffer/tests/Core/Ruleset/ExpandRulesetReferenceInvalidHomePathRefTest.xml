@@ -6,3 +6,6 @@
     <rule ref="~/src/Standards/Squiz/Sniffs/Files/"/>
 
 </ruleset>
+
+
+

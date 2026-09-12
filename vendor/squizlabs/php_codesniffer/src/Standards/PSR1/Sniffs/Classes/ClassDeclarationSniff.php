@@ -73,3 +73,6 @@ class ClassDeclarationSniff implements Sniff
 
 
 }//end class
+
+
+

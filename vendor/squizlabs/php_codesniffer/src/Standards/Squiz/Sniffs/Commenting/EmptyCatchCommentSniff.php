@@ -53,3 +53,6 @@ class EmptyCatchCommentSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -89,3 +89,6 @@ final class SwitchDeclarationUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

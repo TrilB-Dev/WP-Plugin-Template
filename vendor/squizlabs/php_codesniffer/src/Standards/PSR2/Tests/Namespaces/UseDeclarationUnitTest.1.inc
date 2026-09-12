@@ -38,3 +38,6 @@ enum SomeEnum
 $x = $foo ? function ($foo) use /* comment */ ($bar): int {
     return 1;
 } : $bar;
+
+
+

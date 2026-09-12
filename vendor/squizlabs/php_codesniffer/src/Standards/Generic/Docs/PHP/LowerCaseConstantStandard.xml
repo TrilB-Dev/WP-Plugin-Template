@@ -21,3 +21,6 @@ if ($var === <em>FALSE</em> || $var === <em>NULL</em>) {
         </code>
     </code_comparison>
 </documentation>
+
+
+

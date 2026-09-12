@@ -169,3 +169,6 @@ class ScopeKeywordSpacingSniff implements Sniff
 
 
 }//end class
+
+
+

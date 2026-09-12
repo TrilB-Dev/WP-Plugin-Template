@@ -245,3 +245,6 @@ class FunctionCommentThrowTagSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -9,3 +9,6 @@ return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'PluginName\\PluginName' => $baseDir . '/src/PluginName.php',
 );
+
+
+

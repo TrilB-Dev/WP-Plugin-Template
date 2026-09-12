@@ -220,3 +220,6 @@ class CamelCapsFunctionNameSniff extends AbstractScopeSniff
 
 
 }//end class
+
+
+

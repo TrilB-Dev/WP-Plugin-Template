@@ -10,3 +10,6 @@ namespace Fixtures\StandardWithDocs\Sniffs\Unsupported;
 use Fixtures\StandardWithDocs\Sniffs\DummySniff;
 
 final class SuperfluousCodeElementSniff extends DummySniff {}
+
+
+

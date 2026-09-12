@@ -22,3 +22,6 @@ final class ValidImplementsViaAbstractSniff extends AbstractArraySniff
         // Do something.
     }
 }
+
+
+

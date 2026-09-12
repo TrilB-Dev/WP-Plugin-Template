@@ -31,3 +31,6 @@ if (something === true
  * @var string $foo
 >>>>>>> master
  */
+
+
+

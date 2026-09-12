@@ -89,3 +89,6 @@ class ForLoopShouldBeWhileLoopSniff implements Sniff
 
 
 }//end class
+
+
+

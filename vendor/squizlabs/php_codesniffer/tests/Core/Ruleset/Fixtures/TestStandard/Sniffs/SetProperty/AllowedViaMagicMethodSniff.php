@@ -38,3 +38,6 @@ class AllowedViaMagicMethodSniff implements Sniff
         // Do something.
     }
 }
+
+
+

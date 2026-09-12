@@ -63,3 +63,6 @@ msgstr ""
 #: src/Includes/Plugins/TinyMCE/Includes/Settings/Settings.php:97
 msgid "UI skins control the toolbar, menus, dialogs, and editor chrome."
 msgstr ""
+
+
+

@@ -106,3 +106,6 @@ class ReturnTypeDeclarationSniff implements Sniff
 
 
 }//end class
+
+
+

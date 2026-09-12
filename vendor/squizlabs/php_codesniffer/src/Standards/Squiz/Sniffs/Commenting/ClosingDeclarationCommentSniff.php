@@ -128,3 +128,6 @@ class ClosingDeclarationCommentSniff implements Sniff
 
 
 }//end class
+
+
+

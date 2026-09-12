@@ -162,3 +162,6 @@ class DisallowSelfActionsSniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

@@ -94,3 +94,6 @@ final class SpaceAfterNotUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

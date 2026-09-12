@@ -82,3 +82,6 @@ final class FunctionClosingBraceSpaceUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

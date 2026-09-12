@@ -60,3 +60,6 @@ $size = $class?->sizeof($array);
 function doSomething() {}
 
 $size = sizeof /*comment*/ ($array);
+
+
+

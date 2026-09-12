@@ -81,3 +81,6 @@ class MemberVarScopeSniff extends AbstractVariableSniff
 
 
 }//end class
+
+
+

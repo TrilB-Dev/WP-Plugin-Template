@@ -194,3 +194,6 @@ class DisallowMultipleAssignmentsSniff implements Sniff
 
 
 }//end class
+
+
+

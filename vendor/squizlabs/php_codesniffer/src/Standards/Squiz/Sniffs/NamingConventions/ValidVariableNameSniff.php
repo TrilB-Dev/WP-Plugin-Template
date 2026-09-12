@@ -188,3 +188,6 @@ class ValidVariableNameSniff extends AbstractVariableSniff
 
 
 }//end class
+
+
+

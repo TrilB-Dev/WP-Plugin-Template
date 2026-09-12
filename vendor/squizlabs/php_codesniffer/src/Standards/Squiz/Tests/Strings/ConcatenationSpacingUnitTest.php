@@ -69,3 +69,6 @@ final class ConcatenationSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -162,3 +162,6 @@ class ConcatenationSpacingSniff implements Sniff
 
 
 }//end class
+
+
+

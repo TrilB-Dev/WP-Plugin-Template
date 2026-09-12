@@ -62,3 +62,6 @@ final class DisallowObjectStringIndexUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

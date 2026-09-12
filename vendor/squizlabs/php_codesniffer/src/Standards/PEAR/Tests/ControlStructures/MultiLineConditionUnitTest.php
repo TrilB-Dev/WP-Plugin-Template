@@ -94,3 +94,6 @@ final class MultiLineConditionUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

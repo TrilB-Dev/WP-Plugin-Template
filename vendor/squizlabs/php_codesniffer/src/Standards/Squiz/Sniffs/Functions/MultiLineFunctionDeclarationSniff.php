@@ -260,3 +260,6 @@ class MultiLineFunctionDeclarationSniff extends PEARFunctionDeclarationSniff
 
 
 }//end class
+
+
+

@@ -68,3 +68,6 @@ final class ConstantVisibilityUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

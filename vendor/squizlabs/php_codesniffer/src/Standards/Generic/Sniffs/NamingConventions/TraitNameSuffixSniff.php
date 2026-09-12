@@ -53,3 +53,6 @@ class TraitNameSuffixSniff implements Sniff
 
 
 }//end class
+
+
+

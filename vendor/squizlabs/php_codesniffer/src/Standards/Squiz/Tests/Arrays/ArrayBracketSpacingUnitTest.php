@@ -60,3 +60,6 @@ final class ArrayBracketSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

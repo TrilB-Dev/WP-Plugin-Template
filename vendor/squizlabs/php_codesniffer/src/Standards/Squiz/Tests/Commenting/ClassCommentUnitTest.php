@@ -64,3 +64,6 @@ final class ClassCommentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

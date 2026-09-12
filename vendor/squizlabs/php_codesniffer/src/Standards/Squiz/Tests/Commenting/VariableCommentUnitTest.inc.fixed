@@ -493,3 +493,6 @@ abstract class PHP84AbstractProperties {
      */
     abstract Type $hasDocblock {get;}
 }
+
+
+

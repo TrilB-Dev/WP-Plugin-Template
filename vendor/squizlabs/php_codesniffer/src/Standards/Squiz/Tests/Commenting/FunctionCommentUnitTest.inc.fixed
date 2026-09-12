@@ -1194,3 +1194,6 @@ function doNotTruncateClassNamesContainingUnderscoresAtStartOfType() {
 function doNotTruncateClassNamesContainingUnderscoresInTheMiddelOfType() {
     return 0;
 }
+
+
+

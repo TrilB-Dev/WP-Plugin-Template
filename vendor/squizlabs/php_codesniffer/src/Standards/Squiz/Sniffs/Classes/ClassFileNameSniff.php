@@ -73,3 +73,6 @@ class ClassFileNameSniff implements Sniff
 
 
 }//end class
+
+
+

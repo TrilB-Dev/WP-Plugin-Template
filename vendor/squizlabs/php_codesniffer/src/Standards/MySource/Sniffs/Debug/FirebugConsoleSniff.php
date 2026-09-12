@@ -101,3 +101,6 @@ class FirebugConsoleSniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

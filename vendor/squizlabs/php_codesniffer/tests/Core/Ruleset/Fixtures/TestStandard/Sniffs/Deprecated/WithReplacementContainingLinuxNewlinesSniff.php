@@ -43,3 +43,6 @@ class WithReplacementContainingLinuxNewlinesSniff implements Sniff, DeprecatedSn
         // Do something.
     }
 }
+
+
+

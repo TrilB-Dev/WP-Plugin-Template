@@ -32,3 +32,6 @@ should also be detected.
 >>>>>>> ref/heads/other-branchname
 And now they are.
 EOD;
+
+
+

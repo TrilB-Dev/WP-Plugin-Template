@@ -32,3 +32,6 @@ $string = 'Multiline strings are allowed '
 // phpcs:set Generic.Strings.UnnecessaryStringConcat error false
 $throwWarning = 'My' . 'string';
 // phpcs:set Generic.Strings.UnnecessaryStringConcat error true
+
+
+

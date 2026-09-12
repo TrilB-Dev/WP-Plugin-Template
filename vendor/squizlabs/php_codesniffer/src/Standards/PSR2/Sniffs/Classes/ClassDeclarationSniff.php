@@ -538,3 +538,6 @@ class ClassDeclarationSniff extends PEARClassDeclarationSniff
 
 
 }//end class
+
+
+

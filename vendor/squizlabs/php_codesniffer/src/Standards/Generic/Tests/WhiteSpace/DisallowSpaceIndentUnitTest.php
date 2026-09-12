@@ -143,3 +143,6 @@ final class DisallowSpaceIndentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

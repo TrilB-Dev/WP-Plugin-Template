@@ -291,3 +291,6 @@ final class RegisterSniffsTest extends TestCase
 
 
 }//end class
+
+
+

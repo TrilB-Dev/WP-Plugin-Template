@@ -227,3 +227,6 @@ class BooleanOperatorPlacementSniff implements Sniff
 
 
 }//end class
+
+
+

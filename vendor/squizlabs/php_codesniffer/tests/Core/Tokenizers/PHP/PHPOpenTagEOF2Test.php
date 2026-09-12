@@ -52,3 +52,6 @@ final class PHPOpenTagEOF2Test extends AbstractTokenizerTestCase
 
 
 }//end class
+
+
+

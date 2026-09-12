@@ -23,3 +23,6 @@ class ValidSniff implements Sniff
         // Do something.
     }
 }
+
+
+

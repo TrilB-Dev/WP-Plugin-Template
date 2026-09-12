@@ -939,3 +939,6 @@ abstract class AbstractPatternSniff implements Sniff
 
 
 }//end class
+
+
+

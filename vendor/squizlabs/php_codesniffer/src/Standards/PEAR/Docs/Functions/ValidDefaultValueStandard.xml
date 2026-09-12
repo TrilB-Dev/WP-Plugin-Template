@@ -23,3 +23,6 @@ function connect(<em>$persistent = false</em>, $dsn)
         </code>
     </code_comparison>
 </documentation>
+
+
+

@@ -5,3 +5,6 @@
 // as the file name doesn't comply with the naming conventions for PHP symbol names.
 
 class ClassFileNameSpacesInFilenameUnitTest {}
+
+
+

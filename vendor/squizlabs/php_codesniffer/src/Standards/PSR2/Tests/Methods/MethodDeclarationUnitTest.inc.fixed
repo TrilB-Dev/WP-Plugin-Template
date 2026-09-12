@@ -73,3 +73,6 @@ enum MyEnum
     public static function myFunction() {}
     public function _() {}
 }
+
+
+

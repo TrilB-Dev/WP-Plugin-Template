@@ -68,3 +68,6 @@ class LowercasedFilenameSniff implements Sniff
 
 
 }//end class
+
+
+

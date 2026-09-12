@@ -143,3 +143,6 @@ class DNFTypes {
 interface PropertiesNotAllowed {
     public $notAllowed;
 }
+
+
+

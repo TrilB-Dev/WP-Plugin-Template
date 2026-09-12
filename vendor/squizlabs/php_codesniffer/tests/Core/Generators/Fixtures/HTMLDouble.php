@@ -68,3 +68,6 @@ class HTMLDouble extends HTML
         parent::printFooter();
     }
 }
+
+
+

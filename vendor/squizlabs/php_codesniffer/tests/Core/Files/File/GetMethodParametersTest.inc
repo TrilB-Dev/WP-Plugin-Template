@@ -350,3 +350,6 @@ function() use(
 /* testArrowFunctionLiveCoding */
 // Intentional parse error. This has to be the last test in the file.
 $fn = fn
+
+
+

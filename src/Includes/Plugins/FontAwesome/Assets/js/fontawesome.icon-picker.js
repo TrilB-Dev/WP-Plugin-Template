@@ -295,3 +295,5 @@
     window.PluginNameFAIconPicker = PluginNameFAIconPicker;
 
 })(jQuery);
+
+

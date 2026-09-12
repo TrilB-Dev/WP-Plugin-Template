@@ -173,3 +173,6 @@ final class GitMergeConflictUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -85,3 +85,6 @@ final class SemicolonSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

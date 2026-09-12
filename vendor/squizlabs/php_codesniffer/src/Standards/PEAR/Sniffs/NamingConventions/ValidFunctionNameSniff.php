@@ -282,3 +282,6 @@ class ValidFunctionNameSniff extends AbstractScopeSniff
 
 
 }//end class
+
+
+

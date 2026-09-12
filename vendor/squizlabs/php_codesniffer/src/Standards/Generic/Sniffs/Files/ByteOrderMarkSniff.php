@@ -80,3 +80,6 @@ class ByteOrderMarkSniff implements Sniff
 
 
 }//end class
+
+
+

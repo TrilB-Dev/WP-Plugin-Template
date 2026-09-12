@@ -199,3 +199,6 @@ class ObjectOperatorIndentSniff implements Sniff
 
 
 }//end class
+
+
+

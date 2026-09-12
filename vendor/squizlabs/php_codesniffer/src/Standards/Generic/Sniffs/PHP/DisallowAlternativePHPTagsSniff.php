@@ -251,3 +251,6 @@ class DisallowAlternativePHPTagsSniff implements Sniff
 
 
 }//end class
+
+
+

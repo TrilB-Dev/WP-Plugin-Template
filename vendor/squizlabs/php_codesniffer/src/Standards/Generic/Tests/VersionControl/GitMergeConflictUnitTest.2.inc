@@ -29,3 +29,6 @@ public function foo($bar){ }
 // New second comment line
 >>>>>>> master
 // Third comment line
+
+
+

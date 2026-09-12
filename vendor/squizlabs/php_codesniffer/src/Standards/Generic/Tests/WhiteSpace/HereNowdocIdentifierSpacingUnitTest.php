@@ -56,3 +56,6 @@ final class HereNowdocIdentifierSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

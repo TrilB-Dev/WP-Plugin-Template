@@ -83,3 +83,6 @@ switch (true) {
 
 /* testNotGotoDeclarationEnumWithType */
 enum Suit: string implements Colorful, CardGame {}
+
+
+

@@ -39,3 +39,6 @@ class EmptyRemovalVersionSniff implements Sniff, DeprecatedSniff
         // Do something.
     }
 }
+
+
+

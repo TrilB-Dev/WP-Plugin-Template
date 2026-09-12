@@ -86,3 +86,6 @@ class UnnecessaryFinalModifierSniff implements Sniff
 
 
 }//end class
+
+
+

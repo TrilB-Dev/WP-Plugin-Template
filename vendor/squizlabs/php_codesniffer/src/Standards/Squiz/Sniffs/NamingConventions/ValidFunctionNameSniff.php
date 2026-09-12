@@ -52,3 +52,6 @@ class ValidFunctionNameSniff extends PEARValidFunctionNameSniff
 
 
 }//end class
+
+
+

@@ -244,3 +244,6 @@ class AnonClassDeclarationSniff extends ClassDeclarationSniff
 
 
 }//end class
+
+
+

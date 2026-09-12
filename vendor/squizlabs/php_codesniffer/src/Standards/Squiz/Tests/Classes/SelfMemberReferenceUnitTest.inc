@@ -197,3 +197,6 @@ class SelfMemberReference
         $testResults[] = \TestMe\SelfMemberReference::test();
     }
 }
+
+
+

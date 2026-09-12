@@ -61,3 +61,6 @@ the administrator role.
 Plugins that provide translations should implement `I18nProviderInterface`, keep
 their text-domain loader in `Includes/I18n.php`, and store translation templates
 and language files in `Language/`.
+
+
+

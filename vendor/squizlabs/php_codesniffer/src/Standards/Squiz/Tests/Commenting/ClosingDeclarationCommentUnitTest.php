@@ -94,3 +94,6 @@ final class ClosingDeclarationCommentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

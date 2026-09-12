@@ -1,9 +1,9 @@
 {
   "name": "pluginname",
   "version": "1.0.0",
-  "description": "Wordpress Plugin",
+  "description": "A WordPress plugin built for managing licences and documentation.",
   "license": "ISC",
-  "author": "",
+  "author": "Mr TrilB <mrtrilb@trilb.dev>",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
@@ -17,10 +17,12 @@
   "dependencies": {
     "@crestapps/bootstrap-select": "^1.2.1",
     "@popperjs/core": "^2.11.8",
+    "@trilbdev/boostrap-select-country-data": "^1.0.4",
     "bootstrap": "^5.3.8",
     "tinymce": "^8.8.2"
   },
   "devDependencies": {
+    "@wordpress/env": "^11.14.0",
     "autoprefixer": "^10.5.4",
     "css-loader": "^7.1.4",
     "gettext-parser": "^9.1.1",

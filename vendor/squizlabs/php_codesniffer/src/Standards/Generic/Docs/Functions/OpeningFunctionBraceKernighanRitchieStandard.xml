@@ -24,3 +24,6 @@ function fooFunction($arg1, $arg2 = '')
         </code>
     </code_comparison>
 </documentation>
+
+
+

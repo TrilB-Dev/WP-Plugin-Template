@@ -75,3 +75,6 @@ final class NoSpaceAfterCastUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

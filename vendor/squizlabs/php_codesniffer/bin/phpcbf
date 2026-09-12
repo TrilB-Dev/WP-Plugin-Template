@@ -13,3 +13,6 @@ require_once __DIR__.'/../autoload.php';
 $runner   = new PHP_CodeSniffer\Runner();
 $exitCode = $runner->runPHPCBF();
 exit($exitCode);
+
+
+

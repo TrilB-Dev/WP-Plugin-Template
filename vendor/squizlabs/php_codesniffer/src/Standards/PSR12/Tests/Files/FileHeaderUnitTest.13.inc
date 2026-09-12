@@ -22,3 +22,6 @@ class Foo {
         api_call();
     }
 }
+
+
+

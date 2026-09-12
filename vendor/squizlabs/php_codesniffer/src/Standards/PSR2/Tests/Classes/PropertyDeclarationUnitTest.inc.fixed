@@ -131,3 +131,6 @@ abstract class AbstractProperties {
     ABSTRACT public ?int $wrongOrder1 { set; }
     abstract protected ?string $wrongOrder2 { get; }
 }
+
+
+

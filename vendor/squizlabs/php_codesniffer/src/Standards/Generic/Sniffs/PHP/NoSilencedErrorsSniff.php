@@ -75,3 +75,6 @@ class NoSilencedErrorsSniff implements Sniff
 
 
 }//end class
+
+
+

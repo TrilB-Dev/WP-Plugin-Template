@@ -76,3 +76,7 @@ Register page-specific assets through the shared `Assets` service or filters doc
 5. Implement only the provider interfaces needed.
 6. Use host helpers for sanitization, permissions, URLs, and responses.
 7. Test activation with PluginName active and inactive.
+
+
+
+

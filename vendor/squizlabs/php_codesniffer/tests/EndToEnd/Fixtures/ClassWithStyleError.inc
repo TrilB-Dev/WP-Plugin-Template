@@ -20,3 +20,6 @@ class ClassWithStyleError
         return 'bar';
     }
 }
+
+
+

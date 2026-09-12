@@ -241,3 +241,6 @@ enum Suit: string implements Colorful, CardGame {
 	// Private without underscore prefix.
     private function getMe() {}
 }
+
+
+

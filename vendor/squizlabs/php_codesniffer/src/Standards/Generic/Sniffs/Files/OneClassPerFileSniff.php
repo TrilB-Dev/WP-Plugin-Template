@@ -55,3 +55,6 @@ class OneClassPerFileSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -153,3 +153,6 @@ class DuplicateClassDefinitionSniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

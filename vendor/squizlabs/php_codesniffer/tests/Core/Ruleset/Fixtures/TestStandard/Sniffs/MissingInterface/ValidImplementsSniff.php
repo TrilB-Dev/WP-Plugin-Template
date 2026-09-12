@@ -23,3 +23,6 @@ final class ValidImplementsSniff implements Sniff
         // Do something.
     }
 }
+
+
+

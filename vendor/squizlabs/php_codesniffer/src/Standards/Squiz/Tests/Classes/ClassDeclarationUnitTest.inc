@@ -150,3 +150,6 @@ class TooMuchSpacingBelowClassButShouldNotBeFlaggedWhenNextThingIsFunctionWithDo
 #[AttributesShouldBeJumpedOver]
 #[ASecondAttributeShouldBeJumpedOverToo]#[AndAThirdAsWell]
 function ThisIsFineAndHasDocblockAndAttribute() {}
+
+
+

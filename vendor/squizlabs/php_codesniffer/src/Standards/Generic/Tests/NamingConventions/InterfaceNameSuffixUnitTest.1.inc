@@ -11,3 +11,6 @@ interface
     InterfaceAnotherInvalidName
     extends
     AnotherInterface, \Countable {} // Error.
+
+
+

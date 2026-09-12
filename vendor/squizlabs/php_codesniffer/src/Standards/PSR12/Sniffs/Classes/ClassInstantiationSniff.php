@@ -110,3 +110,6 @@ class ClassInstantiationSniff implements Sniff
 
 
 }//end class
+
+
+

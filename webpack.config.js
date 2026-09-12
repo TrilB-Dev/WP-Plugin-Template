@@ -1,6 +1,32 @@
 const path = require('path');
 const fs = require('fs');
+const { copyFileSync, mkdirSync, readFileSync, writeFileSync } = require('fs');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
+class CopyUnprocessedAssetPlugin {
+  constructor(patterns) {
+    this.patterns = patterns;
+  }
+
+  apply(compiler) {
+    compiler.hooks.afterEmit.tap('CopyUnprocessedAssetPlugin', () => {
+      this.patterns.forEach(({ from, to }) => {
+        const src = path.resolve(__dirname, from);
+        const dest = path.resolve(__dirname, to);
+
+        mkdirSync(path.dirname(dest), { recursive: true });
+
+        if (path.basename(dest) === 'bs-country-data.min.css') {
+          const css = readFileSync(src, 'utf8').replace(/url\(\s*['"]?\.\.\/images\//g, 'url(../../images/');
+          writeFileSync(dest, css);
+          return;
+        }
+
+        copyFileSync(src, dest);
+      });
+    });
+  }
+}
 
 const entries = {
   bootstrap: [
@@ -9,13 +35,13 @@ const entries = {
   ],
   'admin.ui': [
     './src/Assets/js/admin.ui.js',
+    './src/Assets/js/admin.settings.js',
+    './src/Assets/js/admin.plugins.js',
+    './src/Assets/js/admin.page.js',
+    './src/Assets/js/admin.dashboard.js',
     './src/Assets/scss/admin.ui.scss',
   ],
   'wpoverride': './src/Assets/scss/wpoverride.scss',
-  'bootstrap-select': [
-    './src/Assets/js/bootstrap-select.js',
-    './src/Assets/scss/bootstrap-select.scss',
-  ],
 };
 
 const fontAwesomeEntries = {
@@ -49,7 +75,13 @@ const shared = {
         test: /\.scss$/,
         use: [
           MiniCssExtractPlugin.loader,
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+              import: false,
+            },
+          },
           {
             loader: 'sass-loader',
             options: {
@@ -64,7 +96,16 @@ const shared = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: {
+              url: false,
+              import: false,
+            },
+          },
+        ],
       },
       {
         test: /\.js$/,
@@ -87,6 +128,24 @@ module.exports = [
     },
     plugins: [
       new MiniCssExtractPlugin({ filename: 'css/[name].css' }),
+      new CopyUnprocessedAssetPlugin([
+        {
+          from: 'node_modules/@crestapps/bootstrap-select/dist/css/bootstrap-select.min.css',
+          to: 'src/Assets/dist/css/bootstrap-select.min.css',
+        },
+        {
+          from: 'node_modules/@crestapps/bootstrap-select/dist/js/bootstrap-select.min.js',
+          to: 'src/Assets/dist/js/bootstrap-select.min.js',
+        },
+        {
+          from: 'node_modules/@trilbdev/boostrap-select-country-data/dist/js/bs-country-data.min.js',
+          to: 'src/Assets/dist/js/bs-country-data.min.js',
+        },
+        {
+          from: 'node_modules/@trilbdev/boostrap-select-country-data/dist/css/bs-country-data.min.css',
+          to: 'src/Assets/dist/css/bs-country-data.min.css',
+        },
+      ]),
     ],
   },
   {

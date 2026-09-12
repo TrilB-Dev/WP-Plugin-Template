@@ -22,3 +22,6 @@ class FinalProperties {
 abstract class AbstractProperties {
     abstract int $prop {set;}
 }
+
+
+

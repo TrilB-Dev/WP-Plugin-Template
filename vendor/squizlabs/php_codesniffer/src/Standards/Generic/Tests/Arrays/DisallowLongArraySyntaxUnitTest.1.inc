@@ -31,3 +31,6 @@ class Foo {
 }
 
 $obj->array( 1, 2, 3 );
+
+
+

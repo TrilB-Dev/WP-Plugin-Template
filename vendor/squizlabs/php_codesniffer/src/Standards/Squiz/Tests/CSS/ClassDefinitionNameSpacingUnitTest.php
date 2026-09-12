@@ -54,3 +54,6 @@ final class ClassDefinitionNameSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

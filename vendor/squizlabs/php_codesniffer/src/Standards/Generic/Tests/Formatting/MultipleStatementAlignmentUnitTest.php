@@ -168,3 +168,6 @@ final class MultipleStatementAlignmentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

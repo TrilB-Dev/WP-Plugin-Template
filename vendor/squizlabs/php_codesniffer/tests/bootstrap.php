@@ -97,3 +97,6 @@ function printPHPCodeSnifferTestOutput()
     vprintf($output, $data);
 
 }//end printPHPCodeSnifferTestOutput()
+
+
+

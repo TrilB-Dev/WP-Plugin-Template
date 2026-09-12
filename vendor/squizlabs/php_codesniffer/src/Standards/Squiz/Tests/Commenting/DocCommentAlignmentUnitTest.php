@@ -98,3 +98,6 @@ final class DocCommentAlignmentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -69,3 +69,6 @@ final class SelfMemberReferenceUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

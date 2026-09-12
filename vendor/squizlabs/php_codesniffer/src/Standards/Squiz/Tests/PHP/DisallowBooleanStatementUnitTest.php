@@ -56,3 +56,6 @@ final class DisallowBooleanStatementUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

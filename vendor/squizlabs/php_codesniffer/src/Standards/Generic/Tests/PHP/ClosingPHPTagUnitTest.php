@@ -62,3 +62,6 @@ final class ClosingPHPTagUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

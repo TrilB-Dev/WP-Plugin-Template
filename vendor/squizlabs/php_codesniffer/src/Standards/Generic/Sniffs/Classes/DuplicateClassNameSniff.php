@@ -124,3 +124,6 @@ class DuplicateClassNameSniff implements Sniff
 
 
 }//end class
+
+
+

@@ -56,3 +56,6 @@ final class DisallowSelfActionsUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

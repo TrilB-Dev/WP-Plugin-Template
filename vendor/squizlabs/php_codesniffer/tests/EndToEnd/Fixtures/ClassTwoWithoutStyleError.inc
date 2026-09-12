@@ -18,3 +18,6 @@ class ClassTwoWithoutStyleError
      */
     private $bar = 'baz';
 }
+
+
+

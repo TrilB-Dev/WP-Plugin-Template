@@ -12,3 +12,6 @@ if (variable === null) { }
 if (variable === NULL) { }
 if (variable === Null) { }
 variable = NULL;
+
+
+

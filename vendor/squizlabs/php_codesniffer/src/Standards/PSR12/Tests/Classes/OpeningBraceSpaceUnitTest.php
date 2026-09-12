@@ -58,3 +58,6 @@ final class OpeningBraceSpaceUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

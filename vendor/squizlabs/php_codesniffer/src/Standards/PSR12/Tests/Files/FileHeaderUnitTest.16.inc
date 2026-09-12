@@ -11,3 +11,6 @@ namespace Bar {
     use Baz;
 
 }
+
+
+

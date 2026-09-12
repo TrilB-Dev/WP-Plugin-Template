@@ -63,3 +63,6 @@ $var = array(
 );
 
 (bool) $a ? echo $b : echo $c;
+
+
+

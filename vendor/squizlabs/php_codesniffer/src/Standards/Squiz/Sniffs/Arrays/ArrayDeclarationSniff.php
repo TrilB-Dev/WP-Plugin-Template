@@ -960,3 +960,6 @@ class ArrayDeclarationSniff implements Sniff
 
 
 }//end class
+
+
+

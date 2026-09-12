@@ -74,3 +74,6 @@ $.extend(Datepicker.prototype, {
 	},
 	/* Action for selecting a new month/year. */
 });
+
+
+

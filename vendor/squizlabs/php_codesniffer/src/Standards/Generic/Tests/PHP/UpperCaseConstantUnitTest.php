@@ -79,3 +79,6 @@ final class UpperCaseConstantUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

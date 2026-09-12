@@ -49,19 +49,41 @@ function relative(filePath) {
   return path.relative(root, filePath).replaceAll('\\', '/');
 }
 
+function parseArgumentOverrides() {
+  const overrides = {};
+  const args = process.argv.slice(2);
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (!arg.startsWith('--')) continue;
+
+    const key = arg.slice(2).replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+    const next = args[index + 1];
+    const hasValue = next && !next.startsWith('--');
+    overrides[key] = hasValue ? next : '';
+
+    if (hasValue) {
+      index += 1;
+    }
+  }
+
+  return overrides;
+}
+
 async function collectAnswers() {
+  const overrides = parseArgumentOverrides();
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   try {
-    const pluginName = await ask(rl, 'Plugin Name', 'PluginName');
-    const pluginSlug = await ask(rl, 'Plugin Slug', 'plugin-name');
-    const constantPrefix = await ask(rl, 'Plugin Constant Prefix', 'PLUGINNAME');
-    const description = await ask(rl, 'Plugin Description', 'A WordPress plugin.');
-    const pluginUri = await ask(rl, 'Plugin URI', `https://trilb.dev/${pluginSlug}`);
-    const defaultLanguage = await ask(rl, 'Default Language', 'en_GB');
-    const authorUsername = await ask(rl, 'Author User Name', 'CaptainUnderpants123');
-    const authorFullName = await ask(rl, 'Author Full Name', 'Bob Marley');
-    const authorEmail = await ask(rl, 'Author Email Address', 'bob@trilb.dev');
-    const authorUri = await ask(rl, 'Author URI', 'https://trilb.dev');
+    const pluginName = overrides.name || await ask(rl, 'Plugin Name', 'PluginName');
+    const pluginSlug = overrides.slug || await ask(rl, 'Plugin Slug', 'plugin-name');
+    const constantPrefix = overrides.constant || await ask(rl, 'Plugin Constant Prefix', 'PLUGINNAME');
+    const description = overrides.description || await ask(rl, 'Plugin Description', 'A WordPress plugin.');
+    const pluginUri = overrides.pluginUri || await ask(rl, 'Plugin URI', `https://trilb.dev/${pluginSlug}`);
+    const defaultLanguage = overrides.language || await ask(rl, 'Default Language', 'en_GB');
+    const authorUsername = overrides.authorUser || await ask(rl, 'Author User Name', 'CaptainUnderpants123');
+    const authorFullName = overrides.authorFull || await ask(rl, 'Author Full Name', 'Bob Marley');
+    const authorEmail = overrides.authorEmail || await ask(rl, 'Author Email Address', 'bob@trilb.dev');
+    const authorUri = overrides.authorUri || await ask(rl, 'Author URI', 'https://trilb.dev');
 
     required(pluginName, 'Plugin Name', /^[A-Za-z_][A-Za-z0-9_]*$/, 'letters, digits, or underscores; no spaces');
     required(pluginSlug, 'Plugin Slug', /^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'lowercase letters, digits, or dashes');
@@ -74,6 +96,8 @@ async function collectAnswers() {
     required(authorEmail, 'Author Email Address', /^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'a valid email address');
     required(authorUri, 'Author URI', /^https?:\/\/[^\s]+$/, 'a valid URL');
 
+    const normalizedAuthorUsername = normalizeComposerAuthorUsername(authorUsername);
+
     return {
       pluginName,
       pluginSlug,
@@ -81,12 +105,12 @@ async function collectAnswers() {
       description,
       pluginUri,
       defaultLanguage,
-      authorUsername,
+      authorUsername: normalizedAuthorUsername,
       authorFullName,
       authorEmail,
       authorUri,
       bootstrapFilename: `${pluginSlug}.php`,
-      composerName: `${authorUsername}/${pluginSlug}`,
+      composerName: `${normalizedAuthorUsername}/${pluginSlug}`,
       packageName: pluginSlug,
       phpNamespace: pluginName,
     };
@@ -101,6 +125,32 @@ function buildReplacements(values) {
     ['PLUGINNAME', values.constantPrefix],
     ['pluginname', values.pluginSlug],
   ];
+}
+
+function normalizeComposerAuthorUsername(username) {
+  return String(username || '').trim().toLowerCase().replace(/[^a-z0-9_-]+/g, '');
+}
+
+function updateComposerMetadata(content, values) {
+  const composer = JSON.parse(content);
+  composer.name = values.composerName;
+  composer.description = values.description;
+  composer.authors = [
+    {
+      name: values.authorFullName,
+      email: values.authorEmail,
+      homepage: values.authorUri,
+    },
+  ];
+  return `${JSON.stringify(composer, null, 4)}\n`;
+}
+
+function updatePackageMetadata(content, values) {
+  const pkg = JSON.parse(content);
+  pkg.name = values.packageName;
+  pkg.description = values.description;
+  pkg.author = `${values.authorFullName} <${values.authorEmail}>`;
+  return `${JSON.stringify(pkg, null, 2)}\n`;
 }
 
 function updatePluginHeader(content, values) {
@@ -136,6 +186,14 @@ function planChanges(values) {
 
       if (oldRelative === 'pluginname.php' || oldRelative === values.bootstrapFilename) {
         newContent = updatePluginHeader(newContent, values);
+      }
+
+      if (oldRelative === 'composer.json') {
+        newContent = updateComposerMetadata(newContent, values);
+      }
+
+      if (oldRelative === 'package.json') {
+        newContent = updatePackageMetadata(newContent, values);
       }
 
       if (newContent !== oldContent) {
@@ -201,11 +259,12 @@ function applyChanges(changes) {
 
 async function main() {
   if (process.argv.includes('--help') || process.argv.includes('-h')) {
-    console.log('Usage: npm run rename [-- --dry-run]');
+    console.log('Usage: node Scripts/rename-plugin.js [--apply] [--dry-run] [--name "PluginName"] [--slug plugin-name] [--constant PLUGINNAME] [--description "A WordPress plugin."] [--plugin-uri "https://example.com"] [--language en_GB] [--author-user username] [--author-full "Full Name"] [--author-email "name@example.com"] [--author-uri "https://example.com"]');
     console.log('');
     console.log('Guides you through renaming this WordPress plugin template.');
     console.log('The default mode previews changes and asks you to type APPLY.');
     console.log('--dry-run  Preview changes without asking for confirmation or writing files.');
+    console.log('--apply    Apply the rename immediately without the confirmation prompt.');
     return;
   }
 
@@ -249,3 +308,6 @@ main().catch((error) => {
   console.error(`\nRename failed: ${error.message}`);
   process.exitCode = 1;
 });
+
+
+

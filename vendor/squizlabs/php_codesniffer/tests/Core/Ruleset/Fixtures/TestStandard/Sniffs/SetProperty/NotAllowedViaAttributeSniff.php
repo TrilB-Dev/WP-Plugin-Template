@@ -25,3 +25,6 @@ class NotAllowedViaAttributeSniff implements Sniff
         // Do something.
     }
 }
+
+
+

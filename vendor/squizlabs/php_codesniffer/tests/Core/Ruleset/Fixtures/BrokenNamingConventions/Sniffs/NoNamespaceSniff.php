@@ -20,3 +20,6 @@ final class NoNamespaceSniff implements Sniff
         // Do something.
     }
 }
+
+
+

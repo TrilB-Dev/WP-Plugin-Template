@@ -67,3 +67,6 @@ class HereNowdocIdentifierSpacingSniff implements Sniff
 
 
 }//end class
+
+
+

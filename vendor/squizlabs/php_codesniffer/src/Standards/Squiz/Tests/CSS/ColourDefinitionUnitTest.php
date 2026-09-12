@@ -55,3 +55,6 @@ final class ColourDefinitionUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -23,3 +23,6 @@ function test_phpcbf_out_of_memory_error_handling() {
   assert_contains "Either raise the \"memory_limit\" of PHP in the php.ini file or raise the memory limit at runtime" "$OUTPUT"
   assert_contains "using \"phpcbf -d memory_limit=512M\" (replace 512M with the desired memory limit)." "$OUTPUT"
 }
+
+
+

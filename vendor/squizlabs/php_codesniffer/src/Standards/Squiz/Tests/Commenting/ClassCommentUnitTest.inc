@@ -143,3 +143,6 @@ abstract readonly class AbstractReadonlyWithDocblock {}
 readonly class ReadonlyWrongStyle {}
 
 readonly final class ReadonlyFinalWithoutDocblock {}
+
+
+

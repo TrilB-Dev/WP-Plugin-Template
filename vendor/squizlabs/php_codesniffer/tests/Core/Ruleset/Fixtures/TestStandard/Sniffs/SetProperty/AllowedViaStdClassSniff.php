@@ -24,3 +24,6 @@ class AllowedViaStdClassSniff extends stdClass implements Sniff
         // Do something.
     }
 }
+
+
+

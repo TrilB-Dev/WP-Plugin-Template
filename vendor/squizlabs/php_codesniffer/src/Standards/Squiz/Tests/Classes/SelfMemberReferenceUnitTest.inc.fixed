@@ -185,3 +185,6 @@ class SelfMemberReference
         $testResults[] = self::test();
     }
 }
+
+
+

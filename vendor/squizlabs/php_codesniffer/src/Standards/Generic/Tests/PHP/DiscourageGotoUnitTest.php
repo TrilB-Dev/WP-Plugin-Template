@@ -56,3 +56,6 @@ final class DiscourageGotoUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

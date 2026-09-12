@@ -71,3 +71,7 @@ Check the package scripts and PHPUnit configuration before relying on a test com
 ## License
 
 PluginName is distributed under the license declared by the project and its individual dependencies. Confirm the applicable license before redistributing a packaged build.
+
+
+
+

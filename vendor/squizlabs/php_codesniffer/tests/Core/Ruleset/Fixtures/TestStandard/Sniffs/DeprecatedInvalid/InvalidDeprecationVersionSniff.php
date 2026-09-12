@@ -39,3 +39,6 @@ class InvalidDeprecationVersionSniff implements Sniff, DeprecatedSniff
         // Do something.
     }
 }
+
+
+

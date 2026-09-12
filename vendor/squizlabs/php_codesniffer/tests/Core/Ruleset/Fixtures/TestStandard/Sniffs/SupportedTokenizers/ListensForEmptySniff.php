@@ -25,3 +25,6 @@ class ListensForEmptySniff implements Sniff
         // Do something.
     }
 }
+
+
+

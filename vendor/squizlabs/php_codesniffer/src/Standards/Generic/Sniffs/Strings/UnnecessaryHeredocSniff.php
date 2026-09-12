@@ -143,3 +143,6 @@ class UnnecessaryHeredocSniff implements Sniff
 
 
 }//end class
+
+
+

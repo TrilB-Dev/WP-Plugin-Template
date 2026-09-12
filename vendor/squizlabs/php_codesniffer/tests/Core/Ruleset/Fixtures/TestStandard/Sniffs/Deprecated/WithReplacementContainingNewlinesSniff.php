@@ -43,3 +43,6 @@ class WithReplacementContainingNewlinesSniff implements Sniff, DeprecatedSniff
         // Do something.
     }
 }
+
+
+

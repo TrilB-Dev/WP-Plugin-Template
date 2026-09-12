@@ -5,3 +5,6 @@ function TestFirstFunctionInFileCorrectSpacing()
 {
     // Code
 }
+
+
+

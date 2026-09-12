@@ -4,3 +4,6 @@
 declare($something = $value);
 
 const STRICT_TYPES = 1;
+
+
+

@@ -98,3 +98,7 @@ Define narrowly scoped, documented hooks when another plugin needs to change a p
 An internal or external extension should implement `RestRouteProviderInterface` and register routes from its `register_rest_routes()` method. Keep route callbacks thin: validate request values, call a domain service, and return `Response::success()` or a `WP_Error`.
 
 Use schema definitions for request arguments where the plugin provides them. Validation helpers should return a consistent result containing validity, errors, and sanitized values, or return `WP_Error` directly when that matches the surrounding API.
+
+
+
+

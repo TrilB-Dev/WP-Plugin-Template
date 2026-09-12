@@ -165,3 +165,6 @@ class ObjectOperatorSpacingSniff implements Sniff
 
 
 }//end class
+
+
+

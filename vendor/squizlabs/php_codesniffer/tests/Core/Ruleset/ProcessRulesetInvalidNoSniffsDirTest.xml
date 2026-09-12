@@ -8,3 +8,6 @@
     <!-- Prevent a "no sniffs were registered" error. -->
     <rule ref="Generic.PHP.BacktickOperator"/>
 </ruleset>
+
+
+

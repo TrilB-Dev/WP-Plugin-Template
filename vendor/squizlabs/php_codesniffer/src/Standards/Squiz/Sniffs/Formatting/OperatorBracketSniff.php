@@ -398,3 +398,6 @@ class OperatorBracketSniff implements Sniff
 
 
 }//end class
+
+
+

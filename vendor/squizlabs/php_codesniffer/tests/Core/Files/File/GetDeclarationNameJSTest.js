@@ -21,3 +21,6 @@ class ClassName
 
 /* testFunctionUnicode */
 function π() {}
+
+
+

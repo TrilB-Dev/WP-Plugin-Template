@@ -301,3 +301,6 @@ class SideEffectsSniff implements Sniff
 
 
 }//end class
+
+
+

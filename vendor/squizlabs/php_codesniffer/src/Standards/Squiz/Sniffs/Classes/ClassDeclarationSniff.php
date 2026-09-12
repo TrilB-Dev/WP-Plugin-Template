@@ -222,3 +222,6 @@ class ClassDeclarationSniff extends PSR2ClassDeclarationSniff
 
 
 }//end class
+
+
+

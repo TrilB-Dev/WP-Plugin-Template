@@ -35,3 +35,6 @@ final class GetDeclarationNameParseError1Test extends AbstractMethodUnitTest
 
 
 }//end class
+
+
+

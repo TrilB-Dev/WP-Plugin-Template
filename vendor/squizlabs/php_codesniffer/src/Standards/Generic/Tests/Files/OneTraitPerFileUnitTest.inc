@@ -15,3 +15,6 @@ $trait = 'foo';
 echo $this->trait;
 echo Something::$trait;
 echo $trait;
+
+
+

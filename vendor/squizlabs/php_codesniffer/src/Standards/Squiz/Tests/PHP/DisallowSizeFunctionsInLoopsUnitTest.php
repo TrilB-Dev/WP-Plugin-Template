@@ -75,3 +75,6 @@ final class DisallowSizeFunctionsInLoopsUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

@@ -219,3 +219,6 @@ final class GitblameEscapesFilenameTest extends TestCase
 
 
 }//end class
+
+
+

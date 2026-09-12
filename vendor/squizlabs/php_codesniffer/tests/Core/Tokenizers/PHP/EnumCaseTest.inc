@@ -95,3 +95,6 @@ enum Foo: string {
     /* testKeywordAsEnumCaseNameShouldBeString8 */
     case EXIT = 'exit';
 }
+
+
+

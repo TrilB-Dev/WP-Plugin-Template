@@ -118,3 +118,6 @@ final class MemberVarSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

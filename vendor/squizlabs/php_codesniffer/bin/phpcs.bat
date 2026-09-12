@@ -8,3 +8,6 @@ REM @license   https://github.com/PHPCSStandards/PHP_CodeSniffer/blob/HEAD/licen
 set PHPBIN=php
 
 "%PHPBIN%" "%~dp0\phpcs" %*
+
+
+

@@ -1,89 +1,97 @@
 <?php
-
+/**
+ * PostType class for managing custom post types in the plugin.
+ *
+ * @package PluginName\Includes\Core
+ */
 namespace PluginName\Includes\Core;
 
 use PluginName\Includes\Settings\Settings;
 use PluginName\Includes\Functions\Helpers\PermalinkHelper;
 
 if ( ! defined( 'ABSPATH' ) ) {
-    exit;
+	exit;
 }
 
 final class PostType {
-    public const WIKI = 'pluginname';
-    public const PAGE = 'pluginname';
-    public const WIKI_CAPABILITY = 'pluginname_wiki';
-    public const WIKI_CAPABILITY_PLURAL = 'pluginname_wikis';
-    public const PAGE_CAPABILITY = 'pluginname_page';
-    public const PAGE_CAPABILITY_PLURAL = 'pluginname_pages';
 
-    public function register(): void {
-        register_post_type( self::WIKI, self::wiki_args() );
-        register_post_type( self::PAGE, self::page_args() );
-        add_filter( 'post_type_link', [ PermalinkHelper::class, 'filter_page_permalink' ], 10, 2 );
-        PermalinkHelper::rewrite_rule();
-    }
+	/**
+	 * PluginName page post type identifier.
+	 *
+	 * @var string
+	 */
+	public const PLUGINNAME = 'pluginname';
+	/**
+	 * Register the custom post types.
+	 * 
+	 * @since 1.0.0
+	 */
+	public function register(): void {
+		register_post_type( self::PLUGINNAME, self::page_args() );
+		add_filter( 'post_type_link', array( PermalinkHelper::class, 'filter_page_permalink' ), 10, 2 );
+		PermalinkHelper::rewrite_rule();
+	}
+	/**
+	 * Get the PluginName container post type identifier.
+	 *
+	 * @return string
+	 */
+	public static function get_pluginname_post_type_name(): string {
+		return self::PLUGINNAME;
+	}
+	/**
+	 * Get the public PluginName page post type identifier.
+	 *
+	 * @return string
+	 */
+	public static function get_post_type_name(): string {
+		return self::PLUGINNAME;
+	}
+	/**
+	 * Get the rewrite slug for the public PluginName page post type.
+	 *
+	 * @return string
+	 */
+	public static function page_rewrite_slug(): string {
+		return self::setting_slug( 'root_slug', 'pluginname' );
+	}
+	/**
+	 * Build the public PluginName page post type definition.
+	 *
+	 * @return array<string, mixed> Registration arguments.
+	 */
+	public static function page_args(): array {
+		return apply_filters(
+			'pluginname_page_post_type_args',
+			array(
+				'labels'          => array(
+					'name'          => __( 'PluginName Pages', 'pluginname' ),
+					'singular_name' => __( 'PluginName Page', 'pluginname' ),
+					'add_new_item'  => __( 'Add New PluginName Page', 'pluginname' ),
+					'edit_item'     => __( 'Edit PluginName Page', 'pluginname' ),
+				),
+				'public'          => true,
+				'show_ui'         => false,
+				'show_in_rest'    => true,
+				'has_archive'     => false,
+				'rewrite'         => array( 'slug' => self::page_rewrite_slug() ),
+				'supports'        => array( 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'revisions', 'page-attributes' ),
+				'capability_type' => array(  ),
+				'map_meta_cap'    => true,
+			),
+			self::PLUGINNAME
+		);
+	}
 
-    public static function get_post_type_name(): string {
-        return self::PAGE;
-    }
+	public static function get_post_type_names(): array {
+		return array( self::PLUGINNAME );
+	}
 
-    public static function page_rewrite_slug(): string {
-        return self::setting_slug( 'root_slug', 'wiki' );
-    }
-
-    /**
-     * Build the Wiki container post type definition.
-     *
-     * @return array<string, mixed> Registration arguments.
-     */
-    public static function wiki_args(): array {
-        return apply_filters( 'pluginname_wiki_post_type_args', [
-            'labels' => [
-                'name' => __( 'Wikis', 'pluginname' ),
-                'singular_name' => __( 'Wiki', 'pluginname' ),
-                'add_new_item' => __( 'Add New Wiki', 'pluginname' ),
-                'edit_item' => __( 'Edit Wiki', 'pluginname' ),
-            ],
-            'public' => false,
-            'show_ui' => false,
-            'show_in_rest' => true,
-            'supports' => [ 'title', 'editor', 'author', 'thumbnail', 'revisions' ],
-            'capability_type' => [ self::WIKI_CAPABILITY, self::WIKI_CAPABILITY_PLURAL ],
-            'map_meta_cap' => true,
-        ], self::WIKI );
-    }
-
-    /**
-     * Build the public Wiki page post type definition.
-     *
-     * @return array<string, mixed> Registration arguments.
-     */
-    public static function page_args(): array {
-        return apply_filters( 'pluginname_page_post_type_args', [
-            'labels' => [
-                'name' => __( 'Wiki Pages', 'pluginname' ),
-                'singular_name' => __( 'Wiki Page', 'pluginname' ),
-                'add_new_item' => __( 'Add New Wiki Page', 'pluginname' ),
-                'edit_item' => __( 'Edit Wiki Page', 'pluginname' ),
-            ],
-            'public' => true,
-            'show_ui' => false,
-            'show_in_rest' => true,
-            'has_archive' => false,
-            'rewrite' => [ 'slug' => self::page_rewrite_slug() ],
-            'supports' => [ 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'revisions', 'page-attributes' ],
-            'capability_type' => [ self::PAGE_CAPABILITY, self::PAGE_CAPABILITY_PLURAL ],
-            'map_meta_cap' => true,
-        ], self::PAGE );
-    }
-
-    public static function get_post_type_names(): array {
-        return [ self::WIKI, self::PAGE ];
-    }
-
-    private static function setting_slug( string $key, string $fallback ): string {
-        $value = sanitize_title( (string) Settings::get( $key, $fallback ) );
-        return $value !== '' ? $value : $fallback;
-    }
+	private static function setting_slug( string $key, string $fallback ): string {
+		$value = sanitize_title( (string) Settings::get( $key, $fallback ) );
+		return $value !== '' ? $value : $fallback;
+	}
 }
+
+
+

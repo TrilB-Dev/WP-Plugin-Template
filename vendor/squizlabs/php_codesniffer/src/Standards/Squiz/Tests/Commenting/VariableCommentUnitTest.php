@@ -86,3 +86,6 @@ final class VariableCommentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

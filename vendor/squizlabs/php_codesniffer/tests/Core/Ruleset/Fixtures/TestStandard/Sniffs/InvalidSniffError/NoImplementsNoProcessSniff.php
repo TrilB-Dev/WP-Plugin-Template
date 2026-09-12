@@ -15,3 +15,6 @@ final class NoImplementsNoProcessSniff
         return [T_OPEN_TAG];
     }
 }
+
+
+

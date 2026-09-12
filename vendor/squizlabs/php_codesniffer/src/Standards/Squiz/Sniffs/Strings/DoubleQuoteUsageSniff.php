@@ -142,3 +142,6 @@ class DoubleQuoteUsageSniff implements Sniff
 
 
 }//end class
+
+
+

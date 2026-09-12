@@ -109,3 +109,6 @@ final class GetIgnorePatternsTest extends TestCase
 
 
 }//end class
+
+
+

@@ -57,3 +57,6 @@ class DisallowBooleanStatementSniff implements Sniff
 
 
 }//end class
+
+
+

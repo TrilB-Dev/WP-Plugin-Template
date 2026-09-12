@@ -63,3 +63,6 @@ final class OpacityUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

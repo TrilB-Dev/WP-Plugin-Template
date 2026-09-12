@@ -96,3 +96,6 @@ class NoSpaceAfterCastSniff implements Sniff, DeprecatedSniff
 
 
 }//end class
+
+
+

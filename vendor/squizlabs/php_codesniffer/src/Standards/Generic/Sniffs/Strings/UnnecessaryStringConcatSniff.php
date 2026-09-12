@@ -127,3 +127,6 @@ class UnnecessaryStringConcatSniff implements Sniff
 
 
 }//end class
+
+
+

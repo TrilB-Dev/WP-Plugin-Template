@@ -110,3 +110,6 @@ final class LowerCaseConstantUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

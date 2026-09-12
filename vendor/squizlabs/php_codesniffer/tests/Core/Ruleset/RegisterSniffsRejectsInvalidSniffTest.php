@@ -78,3 +78,6 @@ final class RegisterSniffsRejectsInvalidSniffTest extends AbstractRulesetTestCas
 
 
 }//end class
+
+
+

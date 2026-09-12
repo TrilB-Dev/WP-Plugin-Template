@@ -102,3 +102,6 @@ final class ScopeKeywordSpacingUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

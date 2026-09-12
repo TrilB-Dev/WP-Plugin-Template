@@ -8,3 +8,6 @@ $baseDir = dirname($vendorDir);
 return array(
     'PluginName\\' => array($baseDir . '/src'),
 );
+
+
+

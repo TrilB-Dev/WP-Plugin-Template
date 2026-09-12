@@ -54,3 +54,6 @@ final class OneInterfacePerFileUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

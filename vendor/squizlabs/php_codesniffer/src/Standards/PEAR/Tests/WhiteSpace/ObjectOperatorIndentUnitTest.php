@@ -78,3 +78,6 @@ final class ObjectOperatorIndentUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

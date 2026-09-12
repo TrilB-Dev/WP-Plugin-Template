@@ -106,3 +106,6 @@ class RequireStrictTypesSniff implements Sniff
 
 
 }//end class
+
+
+

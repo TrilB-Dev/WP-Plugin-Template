@@ -220,3 +220,6 @@ function variableAssignmentAfterOpeningBrace() {
 abstract class MyClass {
     abstract public function abstractMethod();
 }
+
+
+

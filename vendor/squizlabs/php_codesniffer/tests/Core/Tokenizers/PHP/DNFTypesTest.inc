@@ -286,3 +286,6 @@ function InvalidSyntaxes(
     /* testDNFTypeParamIllegalNestedParens */
     A|(B&(D|W)|null) $nestedParensNotAllowed,
 ) {}
+
+
+

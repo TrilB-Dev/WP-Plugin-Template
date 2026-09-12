@@ -57,3 +57,6 @@ final class EmptyClassDefinitionUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

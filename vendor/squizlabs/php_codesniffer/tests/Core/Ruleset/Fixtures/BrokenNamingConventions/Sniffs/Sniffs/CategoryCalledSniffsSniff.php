@@ -22,3 +22,6 @@ final class CategoryCalledSniffsSniff implements Sniff
         // Do something.
     }
 }
+
+
+

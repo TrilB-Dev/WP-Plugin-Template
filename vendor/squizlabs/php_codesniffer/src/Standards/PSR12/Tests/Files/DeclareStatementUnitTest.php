@@ -82,3 +82,6 @@ final class DeclareStatementUnitTest extends AbstractSniffUnitTest
 
 
 }//end class
+
+
+

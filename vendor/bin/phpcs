@@ -117,3 +117,6 @@ if (PHP_VERSION_ID < 80000) {
 }
 
 return include __DIR__ . '/..'.'/squizlabs/php_codesniffer/bin/phpcs';
+
+
+

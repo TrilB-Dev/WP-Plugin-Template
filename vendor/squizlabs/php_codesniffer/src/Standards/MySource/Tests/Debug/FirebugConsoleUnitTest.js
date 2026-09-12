@@ -6,3 +6,5 @@ var console = {
     console: 'string';
 };
 function console() {}
+
+

@@ -49,3 +49,6 @@ class ElseIfDeclarationSniff implements Sniff
 
 
 }//end class
+
+
+

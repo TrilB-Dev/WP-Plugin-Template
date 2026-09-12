@@ -22,3 +22,6 @@ $c = new class extends Something{
     }
 
 };
+
+
+

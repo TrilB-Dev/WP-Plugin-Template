@@ -13,15 +13,12 @@
  * @subpackage PluginName/Includes
  */
 namespace PluginName;
+
 use PluginName\Admin\Admin;
 use PluginName\Assets\Assets;
 use PluginName\Includes\Includes;
 use PluginName\Includes\Core\WP\I18n;
 use PluginName\Includes\Functions\Helpers\LoaderHelper;
-use PluginName\Includes\Functions\Admin\FunctionsExport;
-use PluginName\Includes\Functions\Admin\FunctionsImport;
-use PluginName\Includes\Functions\Admin\FunctionsPlugins;
-use PluginName\Includes\Functions\Admin\FunctionsSettings;
 use PluginName\API\Routes;
 use PluginName\Includes\Analytics\Analytics;
 use PluginName\Includes\Plugins\Plugins;
@@ -121,30 +118,6 @@ class PluginName {
 	 * @access protected
 	 */
 	protected Plugins $plugins;
-	/**
-	 * The instance of the FunctionsExport class that handles the plugin's export functionality.
-	 *
-	 * @var FunctionsExport
-	 * @since 1.0.0
-	 * @access protected
-	 */
-	protected FunctionsExport $export_functions;
-	/**
-	 * The instance of the FunctionsImport class that handles the plugin's import functionality.
-	 *
-	 * @var FunctionsImport
-	 * @since 1.0.0
-	 * @access protected
-	 */
-	protected FunctionsImport $import_functions;
-	/**
-	 * The instance of the FunctionsSettings class that handles the plugin's settings functionality.
-	 *
-	 * @var FunctionsSettings
-	 * @since 1.0.0
-	 * @access protected
-	 */
-	protected FunctionsSettings $settings_functions;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -158,12 +131,11 @@ class PluginName {
 	public function __construct( string $pluginname_file = PLUGINNAME_FILE, string $pluginname_name = PLUGINNAME_NAME, string $version = PLUGINNAME_VERSION ) {
 		$this->pluginname_file = $pluginname_file;
 		$this->pluginname_name = sanitize_key( $pluginname_name );
-		$this->version = $version;
+		$this->version           = $version;
 
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_core_hooks();
-
 	}
 
 	/**
@@ -184,7 +156,6 @@ class PluginName {
 	 */
 	private function load_dependencies() {
 		$this->loader = new LoaderHelper();
-
 	}
 
 	/**
@@ -201,7 +172,6 @@ class PluginName {
 		$plugin_i18n = new I18n( $this->pluginname_name, null, $this->pluginname_file );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
-
 	}
 
 	/**
@@ -213,24 +183,20 @@ class PluginName {
 	 */
 	private function define_core_hooks() {
 		$this->includes = Includes::get_instance();
-		$this->assets = new Assets();
+		$this->assets   = new Assets();
 		$this->assets->register();
-		$this->admin = new Admin( $this->assets );
-		$this->frontend = new Frontend();
-		$this->plugins = Plugins::get_instance();
-		$this->export_functions = new FunctionsExport();
-		$this->import_functions = new FunctionsImport();
-		$this->settings_functions = new FunctionsSettings( new FunctionsPlugins() );
+		$this->admin              = new Admin( $this->assets );
+		$this->frontend           = new Frontend();
+		$this->plugins            = Plugins::get_instance();
 
 		$this->loader->add_action( 'init', $this->includes, 'init' );
 		$this->loader->add_action( 'init', $this->plugins, 'init', -10 );
 		$this->loader->add_action( 'admin_menu', $this->admin, 'register_admin_menu' );
-		$this->loader->add_action( 'admin_init', $this->settings_functions, 'register_settings' );
-		$this->loader->add_action( 'admin_post_wikipress_export', $this->export_functions, 'export_data' );
-		$this->loader->add_action( 'admin_post_wikipress_import', $this->import_functions, 'import_data' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $this->assets, 'enqueue_admin' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->assets, 'enqueue_frontend' );
-		$this->loader->add_action( 'wp_head', Analytics::class, 'track_view' );
+		if ( class_exists( Analytics::class ) && method_exists( Analytics::class, 'track_view' ) ) {
+			$this->loader->add_action( 'wp_head', Analytics::class, 'track_view' );
+		}
 		$this->loader->add_filter( 'the_content', $this->frontend, 'filter_content' );
 		$this->loader->add_filter( 'body_class', $this->frontend, 'body_classes' );
 		$this->loader->add_action( 'rest_api_init', Routes::class, 'register_routes' );
@@ -340,5 +306,7 @@ class PluginName {
 	public function get_version() {
 		return $this->version;
 	}
-
 }
+
+
+
