@@ -42,11 +42,11 @@ define( 'PLUGINNAME_ASSETS_URL', PLUGINNAME_URL . 'src/Assets' );
 define( 'PLUGINNAME_ADMIN', PLUGINNAME_DIR . 'src/Admin' );
 define( 'PLUGINNAME_ADMIN_URL', PLUGINNAME_URL . 'src/Admin' );
 define( 'PLUGINNAME_LANGUAGES', PLUGINNAME_DIR . 'src/languages' );
-define( 'PLUGINNAME_INCLUDES', PLUGINNAME_DIR . 'src/includes' );
+define( 'PLUGINNAME_INCLUDES', PLUGINNAME_DIR . 'src/Includes' );
 define( 'PLUGINNAME_CORE', PLUGINNAME_INCLUDES . '/Core' );
 define( 'PLUGINNAME_SETTINGS', PLUGINNAME_INCLUDES . '/Settings' );
 define( 'PLUGINNAME_PLUGINS', PLUGINNAME_INCLUDES . '/Plugins' );
-define( 'PLUGINNAME_PLUGINS_URL', PLUGINNAME_URL . 'src/includes/Plugins' );
+define( 'PLUGINNAME_PLUGINS_URL', PLUGINNAME_URL . 'src/Includes/Plugins' );
 
 $pluginname_autoloader = PLUGINNAME_DIR . 'vendor/autoload.php';
 if ( is_readable( $pluginname_autoloader ) ) {
@@ -55,7 +55,7 @@ if ( is_readable( $pluginname_autoloader ) ) {
 
 /**
  * The code that runs during plugin activation.
- * This action is documented in includes/class-pluginname-activator.php
+ * This action is documented in Includes/class-pluginname-activator.php
  */
 function activate_pluginname() {
 	\PluginName\Includes\Core\WP\Activator::activate();
@@ -64,7 +64,7 @@ function activate_pluginname() {
 register_activation_hook( __FILE__, 'activate_pluginname' );
 /**
  * The code that runs during plugin deactivation.
- * This action is documented in includes/class-pluginname-deactivator.php
+ * This action is documented in Includes/class-pluginname-deactivator.php
  */
 function deactivate_pluginname() {
 	\PluginName\Includes\Core\WP\Deactivator::deactivate();

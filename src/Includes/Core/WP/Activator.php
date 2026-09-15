@@ -15,8 +15,6 @@ use PluginName\Includes\Core\Capabilities;
 use PluginName\Includes\Plugins\Plugins;
 use PluginName\Includes\Settings\SettingsManager;
 use PluginName\Includes\Settings\Settings;
-use PluginName\Includes\Licence\LicenceRepository;
-use PluginName\Includes\Licence\KeyManager;
 use PluginName\Includes\Core\PostType;
 use PluginName\Includes\Core\Taxonomy;
 

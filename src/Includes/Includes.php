@@ -44,7 +44,7 @@ final class Includes {
 	 */
 	private function __construct() {
 		$this->core = new Core();
-		LoggerHelper::write_log( 'PluginName core includes initialized.' );
+		LoggerHelper::write_log( 'PluginName core Includes initialized.' );
 	}
 	/**
 	 * Get the singleton instance of the Includes class.
