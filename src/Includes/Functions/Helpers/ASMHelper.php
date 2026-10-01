@@ -12,11 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class ASMHelper {
+class ASMHelper {
 	/**
-	 * Filter name for the plugin sidebar menus.
-	 * 
-	 * @since 1.0.0
+	 * The filter hook for modifying the admin sidebar menus.
+	 *
+	 * @var string
 	 */
 	public const FILTER = 'pluginname_admin_sidebar_menus';
 
@@ -28,14 +28,18 @@ final class ASMHelper {
 	 * @param string $icon Font Awesome icon classes.
 	 * @param string $parent Existing group slug, or empty for a new group.
 	 * @return array<string, mixed>
+	 * @since 1.0.0
 	 */
 	public static function define( string $name, string $slug, string $icon, string $parent = '', string $capability = '' ): array {
+		$clean_slug = self::sanitize_slug( $slug );
+		$clean_name = trim( (string) $name );
+
 		return array(
-			'parent'     => sanitize_key( $parent ),
-			'name'       => $name,
-			'slug'       => self::sanitize_slug( $slug ),
+			'parent'     => sanitize_key( (string) $parent ),
+			'name'       => $clean_name,
+			'slug'       => $clean_slug,
 			'icon'       => sanitize_text_field( $icon ),
-			'capability' => sanitize_key( $capability ),
+			'capability' => sanitize_key( (string) $capability ),
 		);
 	}
 
@@ -44,16 +48,17 @@ final class ASMHelper {
 	 *
 	 * @param array<int, array<string, mixed>> $menus Menu definitions.
 	 * @return array<int, array<string, mixed>>
+	 * @since 1.0.0
 	 */
 	public static function filter( array $menus ): array {
 		$filtered = apply_filters( self::FILTER, $menus );
 		return is_array( $filtered ) ? array_values( array_filter( $filtered, 'is_array' ) ) : $menus;
 	}
 	/**
-	 * Get the URL for a sidebar menu page.
+	 * Retrieve the URL for a sidebar menu item based on its slug.
 	 *
-	 * @param string $slug The slug of the sidebar menu page.
-	 * @return string The URL of the sidebar menu page.
+	 * @param string $slug The menu slug.
+	 * @return string The URL for the menu item.
 	 * @since 1.0.0
 	 */
 	public static function get_url( string $slug ): string {
@@ -62,16 +67,23 @@ final class ASMHelper {
 	/**
 	 * Sanitize a sidebar menu slug.
 	 *
-	 * @param string $slug The slug to sanitize.
+	 * @param string $slug The menu slug.
 	 * @return string The sanitized slug.
 	 * @since 1.0.0
 	 */
 	private static function sanitize_slug( string $slug ): string {
+		$slug = trim( (string) $slug );
+		if ( '' === $slug || preg_match( '/^\d+$/', $slug ) ) {
+			return '';
+		}
+
 		$parts = explode( '&', $slug, 2 );
 		$page  = sanitize_key( $parts[0] );
+		if ( '' === $page || preg_match( '/^\d+$/', $page ) ) {
+			return '';
+		}
+
 		return $page . ( isset( $parts[1] ) && '' !== $parts[1] ? '&' . sanitize_text_field( $parts[1] ) : '' );
 	}
 }
-
-
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * ResetManager class for PluginName plugin.
+ * Reset class for PluginName plugin.
  *
  * @package PluginName
  * @subpackage Admin\Manager\Tools
@@ -9,7 +9,7 @@
 
 namespace PluginName\Admin\Manager\Tools;
 
-use PluginName\Admin\Manager\Manager;
+use PluginName\Assets\Assets;
 use PluginName\Includes\Functions\Helpers\AjaxHelper;
 use PluginName\Includes\Functions\Helpers\AlertHelper;
 use PluginName\Includes\Functions\Helpers\FormFieldHelper;
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class ResetManager extends Manager {
+final class Reset extends ToolsManager {
 	/**
 	 * Register hooks owned by the plugin reset tool.
 	 *
@@ -34,6 +34,7 @@ final class ResetManager extends Manager {
 	 * @param LoaderHelper|null $loader WordPress hook loader.
 	 */
 	public function __construct( ?LoaderHelper $loader = null ) {
+		parent::__construct( false );
 		( $loader ?? new LoaderHelper() )->register_component(
 			$this,
 			array(
@@ -52,6 +53,10 @@ final class ResetManager extends Manager {
 	 * @since 1.0.0
 	 * @return void
 	 */
+	public function register_assets( Assets $assets ): void {
+		$this->register_page_assets( $assets, array( 'pluginname-tools' ), 'tools' );
+	}
+
 	public function render_page_content(): void {
 		if ( '1' === RequestHelper::get_text( 'reset_complete' ) ) {
 			AlertHelper::render_admin_notice( __( 'The selected PluginName data was reset successfully.', 'pluginname' ), 'success' );
@@ -68,7 +73,15 @@ final class ResetManager extends Manager {
 					<?php echo FormFieldHelper::input( 'action', 'pluginname_reset', array( 'type' => 'hidden' ) ); ?>
 					<?php wp_nonce_field( 'pluginname_reset', 'pluginname_reset_nonce' ); ?>
 					<?php echo FormFieldHelper::label( 'pluginname-reset-scope', __( 'Reset scope', 'pluginname' ) ); ?>
-					<?php echo FormFieldHelper::select( 'scope', $this->scope_options(), 'core', array( 'id' => 'pluginname-reset-scope' ) ); ?>
+					<?php echo FormFieldHelper::bootstrap_select(
+						'scope',
+						array(
+							'data' => $this->scope_options(),
+							'selected' => 'core',
+							'id' => 'pluginname-reset-scope',
+							'live_search' => true,
+						)
+					); ?>
 					<fieldset class="mt-4" id="pluginname-reset-plugins" data-pluginname-reset-plugins hidden>
 						<legend><?php esc_html_e( 'Plugin data', 'pluginname' ); ?></legend>
 						<?php
@@ -126,22 +139,21 @@ final class ResetManager extends Manager {
 		$this->redirect( $success );
 	}
 	/**
-	 * Redirects the user after a reset attempt.
-	 *
-	 * @param bool $success Whether the reset was successful.
+	 * Redirect to the reset page with a success or failure message.
 	 *
 	 * @since 1.0.0
+	 * @param bool $success Whether the reset was successful.
+	 * @return void
 	 */
 	private function redirect( bool $success ): void {
 		wp_safe_redirect( admin_url( 'admin.php?page=pluginname-tools&tool=reset&' . ( $success ? 'reset_complete=1' : 'reset_failed=1' ) ) );
 		exit;
 	}
 	/**
-	 * Returns the available reset scope options.
-	 *
-	 * @return array The available reset scope options.
+	 * Get the available scope options for the reset action.
 	 *
 	 * @since 1.0.0
+	 * @return array The available scope options.
 	 */
 	private function scope_options(): array {
 		return array(
@@ -150,13 +162,11 @@ final class ResetManager extends Manager {
 			'plugins' => __( 'Selected plugins', 'pluginname' ),
 		);
 	}
-
 	/**
-	 * Returns the available plugin options for reset.
-	 *
-	 * @return array The available plugin options.
+	 * Get the available plugin options for the reset action.
 	 *
 	 * @since 1.0.0
+	 * @return array The available plugin options.
 	 */
 	private function plugin_options(): array {
 		$options = array();
@@ -176,14 +186,12 @@ final class ResetManager extends Manager {
 		return $options;
 	}
 	/**
-	 * Returns the reset groups for a given scope and selected plugins.
-	 *
-	 * @param string $scope The reset scope.
-	 * @param array $plugins The selected plugins.
-	 *
-	 * @return array The reset groups.
+	 * Get the groups for the specified scope and plugins.
 	 *
 	 * @since 1.0.0
+	 * @param string $scope   The scope of the reset action.
+	 * @param array  $plugins The selected plugins.
+	 * @return array The groups for the specified scope and plugins.
 	 */
 	private function groups_for_scope( string $scope, array $plugins ): array {
 		if ( 'core' === $scope ) {
@@ -206,6 +214,5 @@ final class ResetManager extends Manager {
 		return array_values( array_unique( $groups ) );
 	}
 }
-
 
 

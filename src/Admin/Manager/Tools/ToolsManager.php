@@ -7,17 +7,19 @@
 namespace PluginName\Admin\Manager\Tools;
 
 use PluginName\Admin\Manager\Manager;
-use PluginName\Admin\Manager\Tools\DebugManager;
-use PluginName\Admin\Manager\Tools\ResetManager;
-use PluginName\Admin\Manager\Tools\ImportManager;
-use PluginName\Admin\Manager\Tools\ExportManager;
+use PluginName\Admin\Manager\Tools\Debug;
+use PluginName\Admin\Manager\Tools\Reset;
+use PluginName\Admin\Manager\Tools\Import;
+use PluginName\Admin\Manager\Tools\Export;
+use PluginName\Admin\Manager\Tools\General;
 use PluginName\Assets\Assets;
 use PluginName\Includes\Functions\Helpers\RequestHelper;
 use PluginName\Includes\Functions\Helpers\SanitizationHelper;
 use PluginName\Includes\Functions\Helpers\PermissionHelper;
+use PluginName\Includes\Functions\Admin\FunctionsTools;
 
 
-final class ToolsManager extends Manager {
+class ToolsManager extends Manager {
 	/**
 	 * The Page variable.
 	 *
@@ -25,35 +27,49 @@ final class ToolsManager extends Manager {
 	 * @access protected
 	 * @var string $page The page variable.
 	 */
-	protected $page;
+	protected string $page;
 	/**
 	 * DebugManager instance for managing the debug tool.
 	 *
 	 * @since 1.0.0
-	 * @var DebugManager $debug_manager The debug manager instance.
+	 * @var Debug $debug_manager The debug manager instance.
 	 */
-	private DebugManager $debug_manager;
+	private Debug $debug_manager;
 	/**
 	 * ResetManager instance for managing the plugin reset tool.
 	 *
 	 * @since 1.0.0
-	 * @var ResetManager $reset_manager The reset manager instance.
+	 * @var Reset $reset_manager The reset manager instance.
 	 */
-	private ResetManager $reset_manager;
+	private Reset $reset_manager;
 	/**
-	 * ImportManager instance for managing the import tool.
+	 * Import instance for managing the import tool.
 	 *
 	 * @since 1.0.0
-	 * @var ImportManager $import_manager The import manager instance.
+	 * @var Import $import_manager The import manager instance.
 	 */
-	private ImportManager $import_manager;
+	private Import $import_manager;
 	/**
-	 * ExportManager instance for managing the export tool.
+	 * Export instance for managing the export tool.
 	 *
 	 * @since 1.0.0
-	 * @var ExportManager $export_manager The export manager instance.
+	 * @var Export $export_manager The export manager instance.
 	 */
-	private ExportManager $export_manager;
+	private Export $export_manager;
+	/**
+	 * General instance for managing the general tools.
+	 *
+	 * @since 1.0.0
+	 * @var General $general_tools_manager The general tools manager instance.
+	 */
+	private General $general_tools_manager;
+	/**
+	 * FunctionsTools instance for managing the tools functions.
+	 *
+	 * @since 1.0.0
+	 * @var FunctionsTools $functions_tools The functions tools instance.
+	 */
+	private FunctionsTools $functions_tools;
 
 	/**
 	 * `Constructor` method for the `ToolsManager` class.
@@ -61,37 +77,54 @@ final class ToolsManager extends Manager {
 	 * @since 1.0.0
 	 * @return void
 	 */
-	public function __construct() {
+	public function __construct( bool $initialize_tools = true ) {
 		/**
 		 * Set the page variable to 'tools'.
 		 *
 		 * @since 1.0.0
 		 */
 		$this->page = 'tools';
+
+		if ( ! $initialize_tools ) {
+			return;
+		}
+
 		/**
 		 * Initialize the Debug Manager page.
 		 *
 		 * @since 1.0.0
 		 */
-		$this->debug_manager = new DebugManager();
+		$this->debug_manager = new Debug();
 		/**
 		 * Initialize the Plugin Reset page.
 		 *
 		 * @since 1.0.0
 		 */
-		$this->reset_manager = new ResetManager();
+		$this->reset_manager = new Reset();
 		/**
 		 * Initialize the Import Manager page.
 		 *
 		 * @since 1.0.0
 		 */
-		$this->import_manager = new ImportManager();
+		$this->import_manager = new Import();
 		/**
 		 * Initialize the Export Manager page.
 		 *
 		 * @since 1.0.0
 		 */
-		$this->export_manager = new ExportManager();
+		$this->export_manager = new Export();
+		/**
+		 * Initialize the General Tools Manager page.
+		 *
+		 * @since 1.0.0
+		 */
+		$this->general_tools_manager = new General();
+		/**
+		 * Initialize the FunctionsTools instance.
+		 *
+		 * @since 1.0.0
+		 */
+		$this->functions_tools = new FunctionsTools();
 	}
 	/**
 	 * Renders the tools page.
@@ -101,7 +134,7 @@ final class ToolsManager extends Manager {
 	 */
 	public function render(): void {
 		$tool = RequestHelper::get_key( 'tool', 'debug' );
-		if ( ! in_array( $tool, array( 'debug', 'reset', 'import', 'export' ), true ) ) {
+		if ( ! in_array( $tool, array( 'debug', 'reset', 'import', 'export', 'general' ), true ) ) {
 			$tool = 'debug';
 		}
 		$capabilities = array(
@@ -109,6 +142,7 @@ final class ToolsManager extends Manager {
 			'reset'  => 'pluginname_tools_reset',
 			'import' => 'pluginname_tools_import',
 			'export' => 'pluginname_tools_export',
+			'general' => 'pluginname_tools_general',
 		);
 		if ( ! PermissionHelper::can( $capabilities[ $tool ] ) ) {
 			wp_die( esc_html__( 'You are not authorized to access this PluginName tool.', 'pluginname' ) );
@@ -120,6 +154,8 @@ final class ToolsManager extends Manager {
 			$this->debug_manager->render_page_content();
 		} elseif ( 'import' === $tool ) {
 			$this->import_manager->render();
+		} elseif ( 'general' === $tool ) {
+			$this->general_tools_manager->render_page_content();
 		} else {
 			$this->export_manager->render_page_content();
 		}
@@ -133,7 +169,10 @@ final class ToolsManager extends Manager {
 	 * @return void
 	 */
 	public function register_assets( Assets $assets ): void {
-		$this->register_page_assets( $assets, array( 'pluginname-tools' ), 'debug' );
+		$this->register_page_assets( $assets, array( 'pluginname-tools' ), 'tools' );
+		if ( isset( $this->reset_manager ) ) {
+			$this->reset_manager->register_assets( $assets );
+		}
 	}
 	/**
 	 * Returns the title for the given tool.
@@ -148,9 +187,9 @@ final class ToolsManager extends Manager {
 			'reset'  => __( 'Reset', 'pluginname' ),
 			'import' => __( 'Import', 'pluginname' ),
 			'export' => __( 'Export', 'pluginname' ),
+			'general' => __( 'General', 'pluginname' ),
 		)[ $tool ];
 	}
 }
-
 
 

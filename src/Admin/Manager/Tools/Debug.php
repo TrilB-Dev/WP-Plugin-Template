@@ -1,6 +1,6 @@
 <?php
 /**
- * DebugManager class for PluginName plugin.
+ * Debug class for PluginName plugin.
  *
  * @package PluginName
  * @subpackage Admin\Manager\Tools
@@ -8,7 +8,6 @@
  */
 namespace PluginName\Admin\Manager\Tools;
 
-use PluginName\Admin\Manager\Manager;
 use PluginName\Includes\Functions\Helpers\FormFieldHelper;
 use PluginName\Includes\MSGraph\GraphService;
 
@@ -16,13 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class DebugManager extends Manager {
+final class Debug extends ToolsManager {
 	/**
-	 * Constructor for the DebugManager class.
+	 * Constructor for the Debug class.
 	 *
 	 * @since 1.0.0
 	 */
 	public function __construct() {
+		parent::__construct( false );
 	}
 	/**
 	 * Render the debug settings page content.
@@ -37,7 +37,6 @@ final class DebugManager extends Manager {
 			}
 
 			try {
-				$graph                  = GraphService::get_instance();
 				$diagnostics_service    = $graph->get_diagnostics();
 				$curl_diagnostics       = $diagnostics_service->test_direct_curl_connection();
 				$http_graph_diagnostics = $diagnostics_service->test_http_graph_connection();
@@ -147,10 +146,13 @@ final class DebugManager extends Manager {
 	/**
 	 * Render debug-related settings fields.
 	 *
+	 * Intentionally accepts an optional values array to stay compatible with the
+	 * parent ToolsManager contract while the debug tool renders its own page.
+	 *
 	 * @param array<string, mixed> $values Current settings.
 	 * @return void
 	 */
-	public function render( array $values ): void {
+	public function render( array $values = array() ): void {
 		$field_id = 'pluginname-debug-logging';
 		$field    = array(
 			'description'  => __( 'Write diagnostic information to the WordPress debug log.', 'pluginname' ),
@@ -196,6 +198,5 @@ final class DebugManager extends Manager {
 		<?php
 	}
 }
-
 
 

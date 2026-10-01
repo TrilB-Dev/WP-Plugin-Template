@@ -1,6 +1,6 @@
 <?php
 /**
- * ExportManager class for PluginName plugin.
+ * Export class for PluginName plugin.
  *
  * @package PluginName
  * @subpackage Admin\Manager\Tools
@@ -8,7 +8,6 @@
  */
 namespace PluginName\Admin\Manager\Tools;
 
-use PluginName\Admin\Manager\Manager;
 use PluginName\Includes\Functions\Helpers\FormFieldHelper;
 use PluginName\Includes\Functions\Helpers\UrlHelper;
 
@@ -16,9 +15,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class ExportManager extends Manager {
+final class Export extends ToolsManager {
 	/**
-	 * Render the JSON export form below the tools settings form.
+	 * Constructor for the Export class.
+	 *
+	 * @return void
+	 */
+	public function __construct() {
+		parent::__construct( false );
+	}
+	/**
+	 * Render the export form.
 	 *
 	 * @return void
 	 */
@@ -42,9 +49,9 @@ final class ExportManager extends Manager {
 		<?php
 	}
 	/**
-	 * Render the export manager row in the tools table.
+	 * Render the export page content.
 	 *
-	 * @since 1.0.0
+	 * @return void
 	 */
 	public function render(): void {
 		?>
@@ -83,6 +90,5 @@ final class ExportManager extends Manager {
 		<?php
 	}
 }
-
 
 

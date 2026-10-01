@@ -188,3 +188,5 @@ final class RequestHelper {
 		return function_exists( 'wp_unslash' ) ? wp_unslash( $value ) : $value;
 	}
 }
+
+

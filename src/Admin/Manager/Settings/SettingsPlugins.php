@@ -84,11 +84,14 @@ final class SettingsPlugins {
 							)
 						); ?>
 						<?php if ( 'select' === $type ) : ?>
-							<?php echo FormFieldHelper::select(
+							<?php echo FormFieldHelper::bootstrap_select(
 								$name,
-								(array) ( $field['options'] ?? array() ),
-								$value,
-								array( 'id' => 'pluginname-' . $key )
+								array(
+									'data' => (array) ( $field['options'] ?? array() ),
+									'selected' => $value,
+									'id' => 'pluginname-' . $key,
+									'live_search' => true,
+								)
 							); ?>
 						<?php elseif ( 'text' === $type ) : ?>
 							<?php echo FormFieldHelper::input(
@@ -292,42 +295,40 @@ final class SettingsPlugins {
 	}
 
 	/**
-	 * Render a plugin icon from its declared icon variant.
-	 *
-	 * @param PluginInterface $plugin The plugin instance.
-	 */
-	private function render_plugin_icon( PluginInterface $plugin ): void {
-		$icon = $plugin->get_icon();
+     * Render a plugin icon from its declared icon variant.
+     *
+     * @param PluginInterface $plugin The plugin instance.
+     */
+    private function render_plugin_icon( PluginInterface $plugin ): void {
+        $icon = $plugin->get_icon();
 
-		if ( is_array( $icon ) && ! empty( $icon[0] ) ) {
-			$split_icon_classes = preg_split( '/\s+/', trim( $icon[0] ) );
-			$icon_classes       = array_filter(
-				array_map( 'sanitize_html_class', is_array( $split_icon_classes ) ? $split_icon_classes : array() )
-			);
-			$icon_class         = implode( ' ', $icon_classes );
-			if ( '' === $icon_class ) {
-				$icon_class = 'dashicons dashicons-admin-plugins';
-			}
-			$color = isset( $icon[1] ) ? sanitize_hex_color( $icon[1] ) : '';
-			$style = $color ? 'color: ' . esc_attr( $color ) . ';' : '';
+        if ( is_array( $icon ) && ! empty( $icon[0] ) ) {
+            $icon_classes = array_filter(
+                array_map( 'sanitize_html_class', preg_split( '/\s+/', trim( $icon[0] ) ) ?: [] )
+            );
+            $icon_class = implode( ' ', $icon_classes );
+            if ( '' === $icon_class ) {
+                $icon_class = 'dashicons dashicons-admin-plugins';
+            }
+            $color = isset( $icon[1] ) ? sanitize_hex_color( $icon[1] ) : '';
+            $style = $color ? 'color: ' . esc_attr( $color ) . ';' : '';
 
-			printf(
-				'<i class="pluginname-plugin-icon %1$s" style="%2$s" aria-hidden="true"></i>',
-				esc_attr( $icon_class ),
-				esc_attr( $style )
-			);
-			return;
-		}
+            printf(
+                '<i class="pluginname-plugin-icon %1$s" style="%2$s" aria-hidden="true"></i>',
+                esc_attr( $icon_class ),
+                esc_attr( $style )
+            );
+            return;
+        }
 
-		if ( is_string( $icon ) && '' !== $icon ) {
-			printf( '<img src="%1$s" class="pluginname-plugin-icon" alt="" aria-hidden="true" />', esc_url( $icon ) );
-			return;
-		}
-		?>
+        if ( is_string( $icon ) && '' !== $icon ) {
+            printf( '<img src="%1$s" class="pluginname-plugin-icon" alt="" aria-hidden="true" />', esc_url( $icon ) );
+            return;
+        }?>
 
-		<span class="pluginname-plugin-icon dashicons dashicons-admin-plugins" aria-hidden="true"></span>';
-		<?php
-	}
+        <span class="pluginname-plugin-icon dashicons dashicons-admin-plugins" aria-hidden="true"></span>';
+    <?php
+    }
 	/**
 	 * Render a card for a third-party plugin.
 	 *
@@ -689,6 +690,9 @@ final class SettingsPlugins {
 		<?php
 	}
 }
+
+
+
 
 
 

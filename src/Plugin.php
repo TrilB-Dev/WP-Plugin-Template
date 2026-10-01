@@ -1,28 +1,4 @@
 <?php
-
-/**
- * The file that defines the core PluginName class
- *
- * A class definition that includes attributes and functions used across both the
- * public-facing side of the site and the admin area.
- *
- * @link       https://https://trilb.dev/MrTrilB
- * @since      1.0.0
- *
- * @package    PluginName
- * @subpackage PluginName/Includes
- */
-namespace PluginName;
-
-use PluginName\Admin\Admin;
-use PluginName\Assets\Assets;
-use PluginName\Includes\Includes;
-use PluginName\Includes\Core\WP\I18n;
-use PluginName\Includes\Functions\Helpers\LoaderHelper;
-use PluginName\API\Routes;
-use PluginName\Includes\Analytics\Analytics;
-use PluginName\Includes\Plugins\Plugins;
-use PluginName\Public\Frontend;
 /**
  * The core plugin class.
  *
@@ -37,7 +13,16 @@ use PluginName\Public\Frontend;
  * @subpackage PluginName/src
  * @author     MrTrilB <mrtrilb@trilb.dev>
  */
-class PluginName {
+namespace PluginName;
+use PluginName\Admin\Admin;
+use PluginName\Assets\Assets;
+use PluginName\Includes\Includes;
+use PluginName\Includes\Core\WP\I18n;
+use PluginName\Includes\Functions\Helpers\LoaderHelper;
+use PluginName\Includes\Plugins\Plugins;
+use PluginName\Public\Frontend;
+
+class Plugin {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -45,7 +30,7 @@ class PluginName {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      Loader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      LoaderHelper    $loader    Maintains and registers all hooks for the plugin.
 	 */
 	protected LoaderHelper $loader;
 
@@ -54,26 +39,17 @@ class PluginName {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $pluginname_file    The file path to the main plugin file.
+	 * @var      string    $plugin_file    The file path to the main plugin file.
 	 */
-	protected string $pluginname_file;
+	protected string $plugin_file;
 	/**
 	 * The unique identifier of this plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $pluginname_name    The string used to uniquely identify this plugin.
+	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
 	 */
-	protected $pluginname_name;
-
-	/**
-	 * The current version of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
-	 */
-	protected $version;
+	protected string $plugin_name;
 	/**
 	 * The instance of the Includes class that handles the plugin's includes.
 	 *
@@ -118,6 +94,14 @@ class PluginName {
 	 * @access protected
 	 */
 	protected Plugins $plugins;
+	/**
+	 * The current version of the plugin.
+	 *
+	 * @since    1.0.0
+	 * @access   protected
+	 * @var      string    $version    The current version of the plugin.
+	 */
+	protected string $version;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -128,14 +112,57 @@ class PluginName {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct( string $pluginname_file = PLUGINNAME_FILE, string $pluginname_name = PLUGINNAME_NAME, string $version = PLUGINNAME_VERSION ) {
-		$this->pluginname_file = $pluginname_file;
-		$this->pluginname_name = sanitize_key( $pluginname_name );
-		$this->version           = $version;
-
+	public function __construct( string $plugin_file = PLUGINNAME_FILE, string $plugin_name = PLUGINNAME_NAME, string $version = PLUGINNAME_VERSION ) {
+		/**
+		 * The file path to the main plugin file.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      string    $plugin_file    The file path to the main plugin file.
+		 */
+		$this->plugin_file = $plugin_file;
+		/**
+		 * The unique identifier of this plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+		 */
+		$this->plugin_name = sanitize_key( $plugin_name );
+		/**
+		 * The current version of the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      string    $version    The current version of the plugin.
+		 */
+		$this->version = $version;
+		/**
+		 * The loader that's responsible for maintaining and registering all hooks that power
+		 * the plugin.
+		 *
+		 * @since    1.0.0
+		 * @access   protected
+		 * @var      LoaderHelper    $loader    Maintains and registers all hooks for the plugin.
+		 */
 		$this->load_dependencies();
+		/**
+		 * The instance of the Includes class that handles the plugin's includes.
+		 *
+		 * @var Includes
+		 * @since 1.0.0
+		 * @access protected
+		 */
 		$this->set_locale();
+		/**
+		 * The instance of the Assets class that handles the plugin's assets.
+		 *
+		 * @var Assets
+		 * @since 1.0.0
+		 * @access protected
+		 */
 		$this->define_core_hooks();
+
 	}
 
 	/**
@@ -155,7 +182,9 @@ class PluginName {
 	 * @access   private
 	 */
 	private function load_dependencies() {
+
 		$this->loader = new LoaderHelper();
+
 	}
 
 	/**
@@ -169,9 +198,10 @@ class PluginName {
 	 */
 	private function set_locale() {
 
-		$plugin_i18n = new I18n( $this->pluginname_name, null, $this->pluginname_file );
+		$plugin_i18n = new I18n( $this->plugin_name, null, $this->plugin_file );
 
 		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+
 	}
 
 	/**
@@ -182,24 +212,61 @@ class PluginName {
 	 * @access   private
 	 */
 	private function define_core_hooks() {
+		/**
+		 * The instance of the Includes class that handles the plugin's includes.
+		 *
+		 * @var Includes
+		 * @since 1.0.0
+		 * @access protected
+		 */
 		$this->includes = Includes::get_instance();
-		$this->assets   = new Assets();
+		/**
+		 * The instance of the Assets class that handles the plugin's assets.
+		 *
+		 * @var Assets
+		 * @since 1.0.0
+		 * @access protected
+		 */
+		$this->assets = new Assets();
+		/**
+		 * The instance of the Admin class that handles the plugin's admin functionality.
+		 *
+		 * @var Admin
+		 * @since 1.0.0
+		 * @access protected
+		 */
 		$this->assets->register();
-		$this->admin              = new Admin( $this->assets );
-		$this->frontend           = new Frontend();
-		$this->plugins            = Plugins::get_instance();
-
+		/**
+		 * The instance of the Frontend class that handles the plugin's frontend functionality.
+		 *
+		 * @var Frontend
+		 * @since 1.0.0
+		 * @access protected
+		 */
+		$this->admin = new Admin( $this->assets );
+		/**
+		 * The instance of the Frontend class that handles the plugin's frontend functionality.
+		 *
+		 * @var Frontend
+		 * @since 1.0.0
+		 * @access protected
+		 */
+		$this->frontend = new Frontend();
+		/**
+		 * The PluginName plugin registry and discovery service.
+		 *
+		 * @var Plugins
+		 * @since 1.0.0
+		 * @access protected
+		 */
+		$this->plugins = Plugins::get_instance();
 		$this->loader->add_action( 'init', $this->includes, 'init' );
 		$this->loader->add_action( 'init', $this->plugins, 'init', -10 );
 		$this->loader->add_action( 'admin_menu', $this->admin, 'register_admin_menu' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $this->assets, 'enqueue_admin' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->assets, 'enqueue_frontend' );
-		if ( class_exists( Analytics::class ) && method_exists( Analytics::class, 'track_view' ) ) {
-			$this->loader->add_action( 'wp_head', Analytics::class, 'track_view' );
-		}
 		$this->loader->add_filter( 'the_content', $this->frontend, 'filter_content' );
 		$this->loader->add_filter( 'body_class', $this->frontend, 'body_classes' );
-		$this->loader->add_action( 'rest_api_init', Routes::class, 'register_routes' );
 	}
 
 	/**
@@ -219,7 +286,7 @@ class PluginName {
 	 * @return    string    The name of the plugin.
 	 */
 	public function get_plugin_name() {
-		return $this->pluginname_name;
+		return $this->plugin_name;
 	}
 	/**
 	 * Retrieve the version number of the plugin.
@@ -228,7 +295,7 @@ class PluginName {
 	 * @return    string    The version number of the plugin.
 	 */
 	public function get_plugin_file(): string {
-		return $this->pluginname_file;
+		return $this->plugin_file;
 	}
 	/**
 	 * Retrieve the version number of the plugin.
@@ -306,7 +373,7 @@ class PluginName {
 	public function get_version() {
 		return $this->version;
 	}
-}
 
+}
 
 

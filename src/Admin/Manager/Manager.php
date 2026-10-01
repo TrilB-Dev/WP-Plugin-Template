@@ -19,6 +19,51 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 abstract class Manager {
 	/**
+	 * The current manager section key.
+	 *
+	 * @var string
+	 */
+	protected string $page = '';
+
+	/**
+	 * Get the manager section key.
+	 *
+	 * @return string
+	 */
+	public function get_page(): string {
+		return $this->page;
+	}
+
+	/**
+	 * Register page assets for this manager.
+	 *
+	 * Subclasses should override this with their own asset registration.
+	 *
+	 * @param Assets $assets Asset registry.
+	 * @return void
+	 */
+	public function register_assets( Assets $assets ): void {
+		// Intentionally left empty; section managers override this when needed.
+	}
+
+	/**
+	 * Normalize a manager route alias to a canonical key.
+	 *
+	 * @param string $value Raw group or tab value.
+	 * @param array<string, string> $aliases Supported aliases.
+	 * @param string $fallback Default value.
+	 * @return string
+	 */
+	protected function normalize_route( string $value, array $aliases, string $fallback = '' ): string {
+		$key = sanitize_key( $value );
+		if ( '' === $key ) {
+			return $fallback;
+		}
+
+		return $aliases[ $key ] ?? $fallback;
+	}
+
+	/**
 	 * Register one asset bundle for a group of admin pages.
 	 *
 	 * @param Assets             $assets Asset registry.
@@ -40,19 +85,20 @@ abstract class Manager {
 	 */
 	protected function assets( string $bundle ): array {
 		$bundle_name = $this->resolve_bundle_name( $bundle );
+		$style_name  = $this->resolve_style_bundle_name( $bundle );
 
 		return array(
 			'styles'  => array(
 				array(
 					'handle' => 'pluginname-admin-' . $bundle,
-					'src'    => PLUGINNAME_URL . 'src/Assets/dist/css/' . $bundle_name . '.css',
+					'src'    => PLUGINNAME_ASSETS_URL . '/dist/css/' . $style_name . '.css',
 					'deps'   => array( 'pluginname-bootstrap', 'pluginname-admin-ui' ),
 				),
 			),
 			'scripts' => array(
 				array(
 					'handle'    => 'pluginname-admin-' . $bundle,
-					'src'       => PLUGINNAME_URL . 'src/Assets/dist/js/' . $bundle_name . '.js',
+					'src'       => PLUGINNAME_ASSETS_URL . '/dist/js/' . $bundle_name . '.js',
 					'deps'      => array( 'pluginname-bootstrap', 'pluginname-admin-ui' ),
 					'in_footer' => true,
 				),
@@ -67,14 +113,41 @@ abstract class Manager {
 	 * @return string Compiled bundle file name.
 	 */
 	protected function resolve_bundle_name( string $bundle ): string {
+		if ( '' === trim( $bundle ) ) {
+			return 'admin.ui';
+		}
+
+		if ( false !== strpos( $bundle, '.' ) ) {
+			return $bundle;
+		}
+
 		$mapping = array(
-			'dashboard' => 'dashboard.admin',
-			'debug'     => 'debug.admin',
-			'settings'  => 'admin.settings',
-			'plugins'   => 'plugins.admin',
+			'dashboard' 		=> 'admin.dashboard',
+			'reports'     		=> 'admin.page',
+			'settings'  		=> 'admin.settings',
+			'tools'     		=> 'admin.tools',
+			'plugins'   		=> 'admin.plugins',
+			'user-management'   => 'admin.user-management',
+			'ui'        		=> 'admin.ui',
 		);
 
-		return $mapping[ $bundle ] ?? ( $bundle . '.admin' );
+		return $mapping[ $bundle ] ?? ( 'admin.' . $bundle );
+	}
+
+	/**
+	 * Map the logical bundle to the shared compiled CSS file.
+	 *
+	 * All admin entry styles are emitted into the shared admin.ui.css bundle.
+	 *
+	 * @param string $bundle Logical bundle name.
+	 * @return string Compiled stylesheet bundle file name.
+	 */
+	protected function resolve_style_bundle_name( string $bundle ): string {
+		if ( '' === trim( $bundle ) ) {
+			return 'admin.ui';
+		}
+
+		return 'admin.ui';
 	}
 
 	/**
@@ -125,6 +198,5 @@ abstract class Manager {
 		);
 	}
 }
-
 
 

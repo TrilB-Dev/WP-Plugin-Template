@@ -7,6 +7,7 @@
  */
 namespace PluginName\Includes\Functions\Helpers;
 
+use PluginName\Includes\Analytics\Analytics;
 use PluginName\Includes\Settings\Settings;
 
 class LoggerHelper {
@@ -29,8 +30,11 @@ class LoggerHelper {
 			return;
 		}
 
+		$message = is_array( $log ) || is_object( $log ) ? print_r( $log, true ) : (string) $log;
+		Analytics::log_event( 'debug', $message, is_array( $log ) || is_object( $log ) ? (array) $log : array( 'message' => $message ) );
+
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log,WordPress.PHP.DevelopmentFunctions.error_log_print_r
-		error_log( is_array( $log ) || is_object( $log ) ? print_r( $log, true ) : (string) $log );
+		error_log( $message );
 	}
 	/**
 	 * Writes a log message to the browser console if WP_DEBUG is enabled or if plugin logging is enabled.
@@ -54,6 +58,9 @@ class LoggerHelper {
 		echo '<script>console.log(' . wp_json_encode( $log ) . ');</script>';
 	}
 }
+
+
+
 
 
 

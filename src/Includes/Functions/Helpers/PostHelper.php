@@ -8,8 +8,6 @@
  */
 
 namespace PluginName\Includes\Functions\Helpers;
-
-use PluginName\Includes\Core\PostType;
 use PluginName\Includes\Functions\Helpers\QueryHelper;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -94,28 +92,6 @@ final class PostHelper {
 	}
 
 	/**
-	 * Check if a post is a wiki post.
-	 *
-	 * @param int|\WP_Post|null $post The post ID, WP_Post instance, or null for the current post.
-	 * @return bool True if the post is a wiki post, false otherwise.
-	 * @since 1.0.0
-	 */
-	public static function is_wiki( $post ): bool {
-		return self::is_type( $post, PostType::WIKI );
-	}
-
-	/**
-	 * Check if a post is a wiki page.
-	 *
-	 * @param int|\WP_Post|null $post The post ID, WP_Post instance, or null for the current post.
-	 * @return bool True if the post is a wiki page, false otherwise.
-	 * @since 1.0.0
-	 */
-	public static function is_wiki_page( $post ): bool {
-		return self::is_type( $post, PostType::PAGE );
-	}
-
-	/**
 	 * Get the permalink of a post.
 	 *
 	 * @param int|\WP_Post|null $post The post ID, WP_Post instance, or null for the current post.
@@ -127,6 +103,9 @@ final class PostHelper {
 		return $post_id > 0 ? (string) get_permalink( $post_id ) : '';
 	}
 }
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * ImportManager class for PluginName plugin.
+ * Import class for PluginName plugin.
  *
  * @package PluginName
  * @subpackage Admin\Manager\Tools
@@ -8,7 +8,6 @@
  */
 namespace PluginName\Admin\Manager\Tools;
 
-use PluginName\Admin\Manager\Manager;
 use PluginName\Includes\Functions\Helpers\FormFieldHelper;
 use PluginName\Includes\Functions\Helpers\UrlHelper;
 
@@ -16,9 +15,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-final class ImportManager extends Manager {
+final class Import extends ToolsManager {
 	/**
 	 * Render the JSON import form below the tools settings form.
+	 *
+	 * @return void
+	 */
+	public function __construct() {
+		parent::__construct( false );
+	}
+	/**
+	 * Render the import form.
 	 *
 	 * @return void
 	 */
@@ -73,6 +80,5 @@ final class ImportManager extends Manager {
 		<?php
 	}
 }
-
 
 

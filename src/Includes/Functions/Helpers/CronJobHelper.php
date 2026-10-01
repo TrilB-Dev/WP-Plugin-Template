@@ -78,3 +78,5 @@ final class CronJobHelper {
 		return CronJobs::normalize_scope( $scope );
 	}
 }
+
+

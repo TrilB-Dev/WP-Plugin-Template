@@ -75,7 +75,7 @@ register_deactivation_hook( __FILE__, 'deactivate_pluginname' );
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require_once PLUGINNAME_DIR . 'src/PluginName.php';
+require_once PLUGINNAME_DIR . 'src/Plugin.php';
 
 /**
  * Begins execution of the plugin.
@@ -88,7 +88,7 @@ require_once PLUGINNAME_DIR . 'src/PluginName.php';
  */
 function run_pluginname() {
 
-	$plugin = new \PluginName\PluginName( PLUGINNAME_FILE, PLUGINNAME_NAME, PLUGINNAME_VERSION );
+	$plugin = new \PluginName\Plugin( PLUGINNAME_FILE, PLUGINNAME_NAME, PLUGINNAME_VERSION );
 	$plugin->run();
 
 }

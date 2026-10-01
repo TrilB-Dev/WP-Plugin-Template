@@ -10,15 +10,19 @@ namespace PluginName\Admin;
 
 use PluginName\Includes\Settings\Settings;
 use PluginName\Includes\Functions\Admin\FunctionsPlugins;
+use PluginName\Includes\Functions\Admin\FunctionsSidebar;
 use PluginName\Includes\Functions\Helpers\AjaxHelper;
 use PluginName\Includes\Core\Capabilities;
 use PluginName\Includes\Functions\Helpers\LoaderHelper;
+use PluginName\Includes\Functions\Helpers\LoggerHelper;
 use PluginName\Includes\Functions\Helpers\RequestHelper;
 use PluginName\Includes\Functions\Helpers\SanitizationHelper;
-use PluginName\Includes\Functions\Admin\FunctionsSidebar;
 use PluginName\Assets\Assets;
+use PluginName\Admin\Manager\Manager;
 use PluginName\Admin\Manager\Tools\ToolsManager;
 use PluginName\Admin\Manager\Dashboard\DashboardManager;
+use PluginName\Admin\Manager\Reports\ReportsManager;
+use PluginName\Admin\Manager\Users\UserManager;
 use PluginName\Admin\Manager\Settings\SettingsManager;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -39,11 +43,29 @@ final class Admin {
 	 */
 	private SettingsManager $settings_manager;
 	/**
+	 * ReportsManager instance for managing customer reports and account data.
+	 *
+	 * @var ReportsManager
+	 */
+	private ReportsManager $reports_manager;
+	/**
+	 * LicencesManager instance for managing licence-type and issued licence pages.
+	 *
+	 * @var UserManager
+	 */
+	private UserManager $user_manager;
+	/**
 	 * ToolsManager instance for managing tools-related admin pages.
 	 *
 	 * @var ToolsManager
 	 */
 	private ToolsManager $tools_manager;
+	/**
+	 * Registry of the admin managers.
+	 *
+	 * @var array<string, Manager>
+	 */
+	private array $managers;
 	/**
 	 * LoaderHelper instance for managing action and filter hooks.
 	 *
@@ -70,73 +92,57 @@ final class Admin {
 	 * @param Assets $assets The Assets instance for managing admin assets.
 	 */
 	public function __construct( Assets $assets ) {
+		$this->managers = array(
+			'dashboard' => new DashboardManager(),
+			'settings'  => new SettingsManager(),
+			'reports'   => new ReportsManager(),
+			'user'      => new UserManager(),
+			'tools'     => new ToolsManager(),
+		);
 		/**
-		 * Initialize the admin managers and register their assets.
-		 * 
-		 * @since 1.0.0
+		 * Initialize the individual manager instances from the registry.
 		 */
-		$this->dashboard_manager = new DashboardManager();
+		$this->dashboard_manager = $this->managers['dashboard'];
 		/**
-		 * Initialize the settings manager.
-		 *
-		 * @since 1.0.0
+		 * Initialize the settings manager instance from the registry.
 		 */
-		$this->settings_manager = new SettingsManager();
+		$this->settings_manager  = $this->managers['settings'];
 		/**
-		 * Initialize the tools manager.
-		 *
-		 * @since 1.0.0
+		 * Initialize the reports manager instance from the registry.
 		 */
-		$this->tools_manager = new ToolsManager();
+		$this->reports_manager   = $this->managers['reports'];
+		/**
+		 * Initialize the user manager instance from the registry.
+		 */
+		$this->user_manager      = $this->managers['user'];
+		/**
+		 * Initialize the tools manager instance from the registry.
+		 */
+		$this->tools_manager     = $this->managers['tools'];
 		/**
 		 * Initialize the plugin functions manager.
-		 *
-		 * @since 1.0.0
 		 */
 		$this->plugin_functions = new FunctionsPlugins();
 		/**
 		 * Initialize the loader helper.
-		 *
-		 * @since 1.0.0
 		 */
 		$this->loader = new LoaderHelper();
 		/**
 		 * Initialize the assets manager.
-		 *
-		 * @since 1.0.0
 		 */
 		$this->assets = $assets;
 		/**
 		 * Register assets for the admin managers.
-		 *
-		 * @since 1.0.0
 		 */
-		$this->dashboard_manager->register_assets( $assets );
-		/**
-		 * Register assets for the settings manager.
-		 *
-		 * @since 1.0.0
-		 */
-		$this->settings_manager->register_assets( $assets );
-		/**
-		 * Register assets for the tools manager.
-		 *
-		 * @since 1.0.0
-		 */
-		$this->tools_manager->register_assets( $assets );
+		foreach ( $this->managers as $manager ) {
+			$manager->register_assets( $assets );
+		}
 		/**
 		 * Register assets for the plugin functions manager.
-		 *
-		 * @since 1.0.0
 		 */
 		$this->loader->register_component(
 			$this,
 			array(
-				array(
-					'type'     => 'action',
-					'hook'     => 'wp_ajax_pluginname_load_settings_tab',
-					'callback' => 'load_settings_tab',
-				),
 				array(
 					'type'     => 'action',
 					'hook'     => 'wp_ajax_pluginname_dismiss_onboarding',
@@ -166,7 +172,17 @@ final class Admin {
 	 * @since 1.0.0
 	 */
 	public function register_admin_menu(): void {
-		FunctionsSidebar::register_admin_menu( $this );
+		LoggerHelper::write_log( 'PluginName admin menu registration started.' );
+
+		try {
+			FunctionsSidebar::register_admin_menu( $this );
+			LoggerHelper::write_log( 'PluginName admin menu registration complete.' );
+		} catch ( \Throwable $e ) {
+			LoggerHelper::write_log( 'PluginName admin menu registration failed: ' . $e->getMessage() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				wp_die( esc_html( $e->getMessage() ), __( 'PluginName admin menu error', 'pluginname' ), array( 'back_link' => true ) );
+			}
+		}
 	}
 	/**
 	 * Render the dashboard page.
@@ -175,7 +191,59 @@ final class Admin {
 	 * It delegates the rendering to the DashboardManager instance.
 	 */
 	public function render_dashboard(): void {
-		$this->dashboard_manager->render();
+		$group = RequestHelper::get_key( 'group', '' );
+		$tab   = RequestHelper::get_key( 'tab', '' );
+		$this->route_manager( $group, $tab );
+	}
+
+	/**
+	 * Dispatch the admin request to the correct manager.
+	 *
+	 * @param string $group Requested group slug.
+	 * @param string $tab Requested tab slug.
+	 * @return void
+	 */
+	public function route_manager( string $group, string $tab = '' ): void {
+		$group = sanitize_key( $group );
+		$normalized_group = array(
+			'pluginname'     => 'dashboard',
+			'dashboard'       => 'dashboard',
+			'user-management' => 'users',
+			'settings'        => 'settings',
+			'tools'           => 'tools',
+			'reports'         => 'reports',
+		)[ $group ] ?? 'dashboard';
+
+		LoggerHelper::write_log( sprintf( 'PluginName dashboard render triggered. Group=%s Tab=%s', $group, $tab ) );
+
+		try {
+			switch ( $normalized_group ) {
+				case 'users':
+					LoggerHelper::write_log( 'PluginName dashboard routed to users page.' );
+					$this->render_users();
+					return;
+				case 'reports':
+					LoggerHelper::write_log( 'PluginName dashboard routed to reports page.' );
+					$this->render_reports();
+					return;
+				case 'settings':
+					LoggerHelper::write_log( 'PluginName dashboard routed to settings page.' );
+					$this->render_settings();
+					return;
+				case 'tools':
+					LoggerHelper::write_log( 'PluginName dashboard routed to tools page.' );
+					$this->render_tools();
+					return;
+				default:
+					LoggerHelper::write_log( 'PluginName dashboard default render path selected.' );
+					$this->dashboard_manager->render();
+			}
+		} catch ( \Throwable $e ) {
+			LoggerHelper::write_log( 'PluginName dashboard render failed: ' . $e->getMessage() );
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				wp_die( esc_html( $e->getMessage() ), __( 'PluginName dashboard error', 'pluginname' ), array( 'back_link' => true ) );
+			}
+		}
 	}
 	/**
 	 * Dismiss the onboarding modal.
@@ -194,13 +262,37 @@ final class Admin {
 		AjaxHelper::success( array( 'dismissed' => true ) );
 	}
 	/**
+	 * Render PluginName users page.
+	 *
+	 * This method is responsible for rendering the users page of the PluginName plugin.
+	 * It delegates the rendering to the CustomerManager instance.
+	 */
+	public function render_users(): void {
+		LoggerHelper::write_log( 'PluginName users render started.' );
+		$this->user_manager->render();
+		LoggerHelper::write_log( 'PluginName users render complete.' );
+	}
+	/**
+	 * Render PluginName reports page.
+	 *
+	 * This method is responsible for rendering the reports page of the PluginName plugin.
+	 * It delegates the rendering to the ReportsManager instance.
+	 */
+	public function render_reports(): void {
+		LoggerHelper::write_log( 'PluginName reports render started.' );
+		$this->reports_manager->render();
+		LoggerHelper::write_log( 'PluginName reports render complete.' );
+	}
+	/**
 	 * Render the settings page.
 	 *
 	 * This method is responsible for rendering the settings page of the PluginName plugin.
 	 * It delegates the rendering to the SettingsManager instance.
 	 */
 	public function render_settings(): void {
+		LoggerHelper::write_log( 'PluginName settings page render started.' );
 		$this->settings_manager->render();
+		LoggerHelper::write_log( 'PluginName settings page render complete.' );
 	}
 	/**
 	 * Render the tools page.
@@ -208,7 +300,9 @@ final class Admin {
 	 * @return void
 	 */
 	public function render_tools(): void {
+		LoggerHelper::write_log( 'PluginName tools page render started.' );
 		$this->tools_manager->render();
+		LoggerHelper::write_log( 'PluginName tools page render complete.' );
 	}
 	/**
 	 * Render the analytics page.
@@ -216,31 +310,6 @@ final class Admin {
 	 * This method is responsible for rendering the analytics page of the PluginName plugin.
 	 * It delegates the rendering to the AnalyticsManager instance.
 	 */
-	public function load_settings_tab(): void {
-		$tab             = RequestHelper::get_key( 'tab', 'general' );
-		$view_capability = array(
-			'general'     => 'pluginname_settings_general_view',
-			'layout'      => 'pluginname_settings_layout_view',
-			'access'      => 'pluginname_settings_access_view',
-			'plugins'     => 'pluginname_settings_plugins_view',
-			'third-party' => 'pluginname_settings_plugins_ext_view',
-		)[ $tab ] ?? 'pluginname_settings_general_view';
-		if ( ! AjaxHelper::authorized( 'pluginname_settings_tabs', $view_capability ) ) {
-			AjaxHelper::unauthorized( __( 'You are not authorized to load PluginName settings.', 'pluginname' ) );
-		}
-
-		$layout_section = RequestHelper::get_key( 'layout_section', 'general' );
-		ob_start();
-		$this->settings_manager->render_tab_content( $tab, $layout_section );
-		$html = (string) ob_get_clean();
-		AjaxHelper::success(
-			array(
-				'html'           => $html,
-				'tab'            => $tab,
-				'layout_section' => $layout_section,
-			)
-		);
-	}
 	/**
 	 * Get the capability for a given key, with a fallback.
 	 *
@@ -261,6 +330,5 @@ final class Admin {
 		return $fallback;
 	}
 }
-
 
 

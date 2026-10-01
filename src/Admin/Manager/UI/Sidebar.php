@@ -17,11 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-/**
- * Renders the sidebar from the centralized FunctionsSidebar menu model.
- * 
- * @since 1.0.0
- */
 final class Sidebar {
 	/**
 	 * Render the admin sidebar.
@@ -35,7 +30,9 @@ final class Sidebar {
 		<aside class="col-12 col-lg-auto pluginname-sidebar-column">
 			<div class="pluginname-sidebar position-sticky" style="top: 32px;">
 				<div class="d-flex align-items-center justify-content-between mb-3 px-2">
-					<span class="small text-uppercase fw-semibold text-secondary"><?php esc_html_e( 'Navigate', 'pluginname' ); ?></span>
+					<span class="small text-uppercase fw-semibold text-secondary">
+						<?php esc_html_e( 'Navigate', 'pluginname' ); ?>
+					</span>
 					<span class="badge rounded-pill text-bg-light">WP</span>
 				</div>
 				<nav aria-label="<?php esc_attr_e( 'PluginName admin navigation', 'pluginname' ); ?>">
@@ -64,8 +61,9 @@ final class Sidebar {
 									<div class="nav flex-column pluginname-sidebar-group-items">
 										<?php foreach ( $group['items'] as $slug => $item ) : ?>
 											<?php
-											$page   = self::item_page( $slug );
-											$query  = self::item_query( $slug );
+										$link   = self::item_link( $slug, $item );
+										$page   = self::item_page( $link );
+										$query  = self::item_query( $link );
 											$active = self::item_is_active( $page, $query, $current );
 											?>
 											<a class="nav-link <?php echo $active ? 'active' : ''; ?>" <?php echo $active ? 'aria-current="page"' : ''; ?> href="<?php echo esc_url( self::item_url( $page, $query ) ); ?>"><?php echo self::render_icon_markup( (string) ( $item['icon'] ?? '' ), true ); ?><?php echo esc_html( $item['label'] ); ?></a>
@@ -81,9 +79,11 @@ final class Sidebar {
 		<?php
 	}
 	/**
-	 * Renders the sidebar for the admin interface.
+	 * Render the icon markup for a sidebar item.
 	 *
-	 * @since 1.0.0
+	 * @param string $icon The icon class or URL.
+	 * @param bool $with_spacing Whether to add spacing to the icon.
+	 * @return string The HTML markup for the icon.
 	 */
 	private static function render_icon_markup( string $icon, bool $with_spacing = false ): string {
 		$icon = trim( $icon );
@@ -107,26 +107,25 @@ final class Sidebar {
 	}
 
 	/**
-	 * Determines if a sidebar group should be expanded based on the current page.
+	 * Determine if a sidebar group should be expanded.
 	 *
-	 * @param string $key The key of the sidebar group.
-	 * @param array<string, mixed> $group The sidebar group configuration.
-	 * @param string $current The current admin page.
-	 *
+	 * @param string $key The group key.
+	 * @param array<string, mixed> $group The group configuration.
+	 * @param string $current The current page slug.
 	 * @return bool True if the group should be expanded, false otherwise.
-	 *
-	 * @since 1.0.0
 	 */
 	private static function group_is_expanded( string $key, array $group, string $current ): bool {
+		$current_group = RequestHelper::get_key( 'group', '' );
 		if ( 'settings' === $key ) {
-			return 'pluginname-settings' === $current;
+			return 'settings' === $current_group;
 		}
 		if ( 'tools' === $key ) {
-			return 'pluginname-tools' === $current;
+			return 'tools' === $current_group;
 		}
 
 		foreach ( $group['items'] as $slug => $item ) {
-			if ( self::item_is_active( self::item_page( $slug ), self::item_query( $slug ), $current ) ) {
+			$link = self::item_link( $slug, $item );
+			if ( self::item_is_active( self::item_page( $link ), self::item_query( $link ), $current ) ) {
 				return true;
 			}
 		}
@@ -134,26 +133,41 @@ final class Sidebar {
 		return false;
 	}
 	/**
-	 * Extracts the page part from a sidebar item slug.
+	 * Extract the page part from a sidebar item slug.
 	 *
 	 * @param string $slug The sidebar item slug.
-	 *
 	 * @return string The page part of the slug.
-	 *
-	 * @since 1.0.0
 	 */
 	private static function item_page( string $slug ): string {
-		return strtok( $slug, '&' );
+		$page = trim( (string) strtok( $slug, '&' ) );
+		if ( '' === $page || preg_match( '/^\d+$/', $page ) ) {
+			return 'pluginname';
+		}
+
+		return $page;
 	}
 
 	/**
-	 * Item Query
+	 * Resolve the exact sidebar link for an item, preferring a raw link field.
 	 *
-	 * Extracts the query part from a sidebar item slug.
+	 * @param string $slug The item key.
+	 * @param array<string, mixed> $item The item definition.
+	 * @return string The exact link target.
+	 */
+	private static function item_link( string $slug, array $item ): string {
+		$link = trim( (string) ( $item['link'] ?? '' ) );
+		if ( '' !== $link ) {
+			return $link;
+		}
+
+		return trim( (string) $slug );
+	}
+
+	/**
+	 * Extract the query part from a sidebar item slug.
 	 *
 	 * @param string $slug The sidebar item slug.
-	 * @return array The query parameters as an associative array.
-	 * @since 1.0.0
+	 * @return array<string, string> The query parameters as an associative array.
 	 */
 	private static function item_query( string $slug ): array {
 		$query = array();
@@ -162,16 +176,17 @@ final class Sidebar {
 	}
 
 	/**
-	 * Constructs the URL for a sidebar item based on its page and query parameters.
+	 * Generate the URL for a sidebar item.
 	 *
 	 * @param string $page The page part of the sidebar item.
-	 * @param array<string, string> $query The query parameters as an associative array.
-	 *
-	 * @return string The constructed URL.
-	 *
-	 * @since 1.0.0
+	 * @param array<string, string> $query The query parameters for the sidebar item.
+	 * @return string The generated URL.
 	 */
 	private static function item_url( string $page, array $query ): string {
+		$page = trim( $page );
+		if ( '' === $page || preg_match( '/^\d+$/', $page ) ) {
+			$page = 'pluginname';
+		}
 		$query_string = empty( $query ) ? '' : '?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
 		if ( in_array( $page, array( 'edit.php', 'post-new.php' ), true ) ) {
 			return admin_url( $page . $query_string );
@@ -181,15 +196,12 @@ final class Sidebar {
 	}
 
 	/**
-	 * Checks if a sidebar item is active based on its page, query parameters, and the current admin page.
+	 * Determine if a sidebar item is active.
 	 *
 	 * @param string $page The page part of the sidebar item.
-	 * @param array<string, string> $query The query parameters as an associative array.
-	 * @param string $current The current admin page.
-	 *
-	 * @return bool True if the item is active, false otherwise.
-	 *
-	 * @since 1.0.0
+	 * @param array<string, string> $query The query parameters for the sidebar item.
+	 * @param string $current The current page slug.
+	 * @return bool True if the sidebar item is active, false otherwise.
 	 */
 	private static function item_is_active( string $page, array $query, string $current ): bool {
 		if ( $page !== $current ) {
@@ -197,6 +209,20 @@ final class Sidebar {
 		}
 
 		foreach ( $query as $key => $value ) {
+			if ( 'group' === $key ) {
+				if ( (string) RequestHelper::value( $_GET, 'group', '' ) !== (string) $value ) {
+					return false;
+				}
+				continue;
+			}
+
+			if ( 'tab' === $key ) {
+				if ( (string) RequestHelper::value( $_GET, 'tab', '' ) !== (string) $value ) {
+					return false;
+				}
+				continue;
+			}
+
 			if ( (string) RequestHelper::value( $_GET, $key, '' ) !== (string) $value ) {
 				return false;
 			}
@@ -205,6 +231,5 @@ final class Sidebar {
 		return true;
 	}
 }
-
 
 
