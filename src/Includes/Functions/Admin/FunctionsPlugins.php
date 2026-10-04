@@ -13,6 +13,7 @@ use PluginName\Includes\Functions\Helpers\AlertHelper;
 use PluginName\Includes\Plugins\PluginInterface;
 use PluginName\Includes\Plugins\Plugins;
 use PluginName\Includes\Plugins\SettingsPageProviderInterface;
+use PluginName\Includes\Settings\Settings;
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -53,20 +54,46 @@ final class FunctionsPlugins {
      * @return void
      */
     public function save_plugin_settings(): void {
-        $slug = sanitize_key( wp_unslash( $_POST['slug'] ?? '' ) );
+        $slug = sanitize_key( wp_unslash( $_POST['slug'] ?? $_POST['plugin_slug'] ?? '' ) );
+        if ( '' === $slug ) {
+            $message = __( 'The PluginName plugin slug is missing.', 'pluginname' );
+            AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 400 );
+        }
+
         $plugin = Plugins::get_instance()->get_registered_plugins()[ $slug ] ?? null;
         if ( ! $plugin instanceof PluginInterface || ! $plugin instanceof SettingsPageProviderInterface ) {
             $message = __( 'The requested PluginName plugin settings were not found.', 'pluginname' );
             AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 404 );
         }
+
         $capability = $this->is_internal_plugin( $plugin ) ? 'pluginname_settings_plugins_int_edit' : 'pluginname_settings_plugins_ext_edit';
-        if ( ! AjaxHelper::authorized( 'pluginname_plugin_settings', $capability ) ) {
+        $nonce_actions = array( 'pluginname_save_plugin_settings', 'pluginname_plugin_settings' );
+        $has_valid_nonce = false;
+        foreach ( $nonce_actions as $action ) {
+            if ( AjaxHelper::authorized( $action, $capability ) ) {
+                $has_valid_nonce = true;
+                break;
+            }
+        }
+
+        if ( ! $has_valid_nonce ) {
             $message = __( 'You are not authorized to save PluginName plugin settings.', 'pluginname' );
             AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 403 );
         }
 
-        $input = isset( $_POST['settings'] ) && is_array( $_POST['settings'] ) ? wp_unslash( $_POST['settings'] ) : [];
+        $input = $_POST['settings'] ?? $_POST['plugin_settings'] ?? [];
+        if ( is_string( $input ) ) {
+            $decoded = json_decode( wp_unslash( $input ), true );
+            $input = is_array( $decoded ) ? $decoded : [];
+        }
+        $input = is_array( $input ) ? wp_unslash( $input ) : [];
         $settings = $plugin->sanitize_settings( $input );
+
+        $page = $plugin->get_settings_page();
+        $group = sanitize_key( $page['slug'] ?? $slug );
+        if ( '' !== $group ) {
+            Settings::set_group( $group, $settings );
+        }
 
         AjaxHelper::success(
             [
@@ -105,5 +132,3 @@ final class FunctionsPlugins {
         return $pages;
     }
 }
-
-

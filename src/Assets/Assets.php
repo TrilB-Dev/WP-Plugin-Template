@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 
-final class Assets {
+class Assets {
 	/**
 	 * Array to hold registered assets for different pages.
 	 *
@@ -80,36 +80,49 @@ final class Assets {
 			'styles'  => array(
 				array(
 					'handle' => 'pluginname-wp-override',
-					'src'    => PLUGINNAME_URL . 'src/Assets/dist/css/wpoverride.css',
+					'src'    => PLUGINNAME_ASSETS_URL . '/dist/css/wpoverride.css',
 					'deps'   => array( 'forms' ),
 				),
 				array(
 					'handle'  => 'pluginname-bootstrap',
-					'src'     => PLUGINNAME_URL . 'src/Assets/dist/css/bootstrap.css',
+					'src'     => PLUGINNAME_ASSETS_URL . '/dist/css/bootstrap.css',
 					'version' => '5.3.8',
 					'deps'    => array( 'pluginname-wp-override' ),
 				),
 				array(
 					'handle'  => 'pluginname-bootstrap-select',
-					'src'     => PLUGINNAME_URL . 'src/Assets/dist/css/bootstrap-select.css',
+					'src'     => PLUGINNAME_ASSETS_URL . '/dist/css/bootstrap-select.min.css',
 					'version' => '1.2.2',
 					'deps'    => array( 'pluginname-bootstrap' ),
+				),
+				array(
+					'handle'  => 'pluginname-bs-country-data',
+					'src'     => PLUGINNAME_ASSETS_URL . '/dist/css/bs-country-data.min.css',
+					'version' => '1.0.4',
+					'deps'    => array( 'pluginname-bootstrap-select' ),
 				),
 			),
 			'scripts' => array(
 				array(
 					'handle'    => 'pluginname-bootstrap',
-					'src'       => PLUGINNAME_URL . 'src/Assets/dist/js/bootstrap.js',
+					'src'       => PLUGINNAME_ASSETS_URL . '/dist/js/bootstrap.js',
 					'version'   => '5.3.8',
 					'in_footer' => true,
 				),
 				array(
 					'handle'    => 'pluginname-bootstrap-select',
-					'src'       => PLUGINNAME_URL . 'src/Assets/dist/js/bootstrap-select.js',
+					'src'       => PLUGINNAME_ASSETS_URL . '/dist/js/bootstrap-select.min.js',
 					'version'   => '1.2.2',
 					'deps'      => array( 'pluginname-bootstrap' ),
 					'in_footer' => true,
 				),
+				array(
+					'handle'	=> 'pluginname-bs-country-data',
+					'src'       => PLUGINNAME_ASSETS_URL . '/dist/js/bs-country-data.min.js',
+					'version'   => '1.0.4',
+					'deps'      => array( 'pluginname-bootstrap-select' ),
+					'in_footer' => true,
+				)
 			),
 		);
 
@@ -135,7 +148,7 @@ final class Assets {
 					array(
 						array(
 							'handle' => 'pluginname-public',
-							'src'    => PLUGINNAME_URL . 'src/Assets/dist/css/public.css',
+							'src'    => PLUGINNAME_ASSETS_URL . '/dist/css/public.css',
 						),
 					)
 				),
@@ -144,7 +157,7 @@ final class Assets {
 					array(
 						array(
 							'handle'    => 'pluginname-public',
-							'src'       => PLUGINNAME_URL . 'src/Assets/dist/js/public.js',
+							'src'       => PLUGINNAME_ASSETS_URL . '/dist/js/public.js',
 							'in_footer' => true,
 						),
 					)
@@ -174,7 +187,7 @@ final class Assets {
 					array(
 						array(
 							'handle'  => 'pluginname-admin-ui',
-							'src'     => PLUGINNAME_URL . 'src/Assets/dist/css/admin.ui.css',
+							'src'     => PLUGINNAME_ASSETS_URL . '/dist/css/admin.ui.css',
 							'version' => '1.0.0',
 							'deps'    => array( 'pluginname-bootstrap' ),
 						),
@@ -186,7 +199,7 @@ final class Assets {
 					array(
 						array(
 							'handle'    => 'pluginname-admin-ui',
-							'src'       => PLUGINNAME_URL . 'src/Assets/dist/js/admin.ui.js',
+							'src'       => PLUGINNAME_ASSETS_URL . '/dist/js/admin.ui.js',
 							'deps'      => array( 'pluginname-bootstrap' ),
 							'in_footer' => true,
 						),
@@ -203,7 +216,7 @@ final class Assets {
 	 * @param array  $assets The assets to enqueue.
 	 * @return void
 	 */
-	private function enqueue_registered( string $context, array $assets ): void {
+	protected function enqueue_registered( string $context, array $assets ): void {
 		$assets = apply_filters( 'pluginname_' . $context . '_assets', $assets, $context );
 		$this->enqueue_bundle( $assets );
 	}
@@ -213,12 +226,12 @@ final class Assets {
 	 * @param array $assets The assets to enqueue.
 	 * @return void
 	 */
-	private function enqueue_bundle( array $assets ): void {
+	protected function enqueue_bundle( array $assets ): void {
 		if ( isset( $assets['styles'] ) && is_string( $assets['styles'] ) ) {
 			$assets['styles'] = array(
 				array(
 					'handle' => 'pluginname-admin-' . $assets['styles'],
-					'src'    => PLUGINNAME_URL . 'src/Assets/dist/css/admin.' . $assets['styles'] . '.css',
+					'src'    => PLUGINNAME_ASSETS_URL . '/dist/css/admin.' . $assets['styles'] . '.css',
 				),
 			);
 		}
@@ -226,7 +239,7 @@ final class Assets {
 			$assets['scripts'] = array(
 				array(
 					'handle' => 'pluginname-admin-' . $assets['scripts'],
-					'src'    => PLUGINNAME_URL . 'src/Assets/dist/js/admin.' . $assets['scripts'] . '.js',
+					'src'    => PLUGINNAME_ASSETS_URL . '/dist/js/admin.' . $assets['scripts'] . '.js',
 					'deps'   => array( 'pluginname-bootstrap' ),
 				),
 			);
@@ -259,7 +272,7 @@ final class Assets {
 				'ajaxUrl'             => admin_url( 'admin-ajax.php' ),
 				'nonce'               => wp_create_nonce( 'pluginname_settings_tabs' ),
 				'pluginNonce'         => wp_create_nonce( 'pluginname_plugin_toggle' ),
-				'pluginSettingsNonce' => wp_create_nonce( 'pluginname_plugin_settings' ),
+				'pluginSettingsNonce' => wp_create_nonce( 'pluginname_save_plugin_settings' ),
 			);
 			foreach ( array( 'pluginname-admin-settings', 'pluginname-admin-plugins' ) as $handle ) {
 				if ( wp_script_is( $handle, 'enqueued' ) ) {
@@ -267,13 +280,13 @@ final class Assets {
 				}
 			}
 		}
-		if ( 'pluginname-manage' === $current_page && wp_script_is( 'pluginname-admin-wiki', 'enqueued' ) ) {
+		if ( 'pluginname-manage' === $current_page && wp_script_is( 'pluginname-admin', 'enqueued' ) ) {
 			LoaderHelper::localize_script(
-				'pluginname-admin-wiki',
-				'pluginnameWikiManager',
+				'pluginname-admin',
+				'pluginnameManager',
 				array(
 					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-					'nonce'   => wp_create_nonce( 'pluginname_manage_wiki' ),
+					'nonce'   => wp_create_nonce( 'pluginname_manage' ),
 				)
 			);
 		}
@@ -289,6 +302,5 @@ final class Assets {
 		return ImageHelper::get_image_url( 'core', $file );
 	}
 }
-
 
 

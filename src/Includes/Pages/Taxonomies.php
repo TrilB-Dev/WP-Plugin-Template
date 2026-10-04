@@ -22,33 +22,8 @@ final class Taxonomies {
 	 * @since 1.0.0
 	 */
 	public static function register(): void {
-		self::type_taxonomy();
-		self::group_taxonomy();
+		self::category_taxonomy();
 		self::tag_taxonomy();
-	}
-
-	/**
-	 * Register the mod type taxonomy.
-	 *
-	 * @return bool
-	 * @since 1.0.0
-	 */
-	public static function type_taxonomy(): bool {
-		return Taxonomy::create(
-			'mod_type',
-			array(
-				'label'             => __( 'Mod Types', 'pluginname' ),
-				'description'       => __( 'Types used to classify mods.', 'pluginname' ),
-				'object_type'       => array( 'pluginname_mod' ),
-				'hierarchical'      => true,
-				'public'            => true,
-				'show_ui'           => true,
-				'show_in_menu'      => true,
-				'show_admin_column' => true,
-				'show_in_rest'      => true,
-				'rewrite'           => array( 'slug' => 'mod-type' ),
-			)
-		);
 	}
 
 	/**
@@ -57,20 +32,24 @@ final class Taxonomies {
 	 * @return bool
 	 * @since 1.0.0
 	 */
-	public static function group_taxonomy(): bool {
+	public static function category_taxonomy(): bool {
+		if ( taxonomy_exists( 'pluginname_category' ) ) {
+			return false;
+		}
+
 		return Taxonomy::create(
-			'mod_group',
+			'pluginname_category',
 			array(
-				'label'             => __( 'Mod Groups', 'pluginname' ),
-				'description'       => __( 'Groups used to organize mods.', 'pluginname' ),
-				'object_type'       => array( 'pluginname_mod' ),
+				'label'             => __( 'Categories', 'pluginname' ),
+				'description'       => __( 'Categories used to organize mods.', 'pluginname' ),
+				'post_type'       	=> array( 'pluginname_posttype' ),
 				'hierarchical'      => true,
 				'public'            => true,
 				'show_ui'           => true,
-				'show_in_menu'      => true,
+				'show_in_menu'      => false,
 				'show_admin_column' => true,
 				'show_in_rest'      => true,
-				'rewrite'           => array( 'slug' => 'mod-group' ),
+				'rewrite'           => array( 'slug' => 'category' ),
 			)
 		);
 	}
@@ -82,22 +61,24 @@ final class Taxonomies {
 	 * @since 1.0.0
 	 */
 	public static function tag_taxonomy(): bool {
+		if ( taxonomy_exists( 'pluginname_tag' ) ) {
+			return false;
+		}
+
 		return Taxonomy::create(
-			'mod_tag',
+			'pluginname_tag',
 			array(
-				'label'             => __( 'Mod Tags', 'pluginname' ),
+				'label'             => __( 'Tags', 'pluginname' ),
 				'description'       => __( 'Tags used to describe mods.', 'pluginname' ),
-				'object_type'       => array( 'pluginname_mod' ),
+				'post_type'       => array( 'pluginname_posttype' ),
 				'hierarchical'      => false,
 				'public'            => true,
 				'show_ui'           => true,
-				'show_in_menu'      => true,
+				'show_in_menu'      => false,
 				'show_admin_column' => true,
 				'show_in_rest'      => true,
-				'rewrite'           => array( 'slug' => 'mod-tag' ),
+				'rewrite'           => array( 'slug' => 'tag' ),
 			)
 		);
 	}
 }
-
-

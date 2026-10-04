@@ -22,7 +22,7 @@ final class PostTypes {
 	 * @since 1.0.0
 	 */
 	public static function register(): void {
-		self::mods_posttype();
+		self::postname_posttype();
 	}
 
 	/**
@@ -31,14 +31,14 @@ final class PostTypes {
 	 * @return bool
 	 * @since 1.0.0
 	 */
-	public static function mods_posttype(): bool {
+	public static function postname_posttype(): bool {
 		return PostType::create(
-			'pluginname_mods',
+			'pluginname_posttype',
 			array(
 				'label'           => __( 'Mods', 'pluginname' ),
 				'description'     => __( 'Mod entries managed by PluginName.', 'pluginname' ),
 				'supports'        => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions' ),
-				'taxonomies'      => array( 'pluginname_mod_group', 'pluginname_mod_tag' ),
+				'taxonomies'      => array( 'pluginname_category', 'pluginname_tag' ),
 				'public'          => true,
 				'show_ui'         => true,
 				'show_in_menu'    => true,

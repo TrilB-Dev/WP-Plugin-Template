@@ -7,13 +7,13 @@
  */
 
 /* Icon Picker Container */
-.pluginname-fa-picker-container {
+.PluginName-fa-picker-container {
     position: relative;
     display: inline-block;
 }
 
 /* Picker Button */
-.pluginname-fa-picker-button {
+.PluginName-fa-picker-button {
     display: flex !important;
     align-items: center;
     gap: 8px;
@@ -21,7 +21,7 @@
     min-height: 36px;
 }
 
-.pluginname-fa-picker-preview {
+.PluginName-fa-picker-preview {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,18 +29,18 @@
     height: 24px;
 }
 
-.pluginname-fa-picker-preview:empty::before {
+.PluginName-fa-picker-preview:empty::before {
     content: '📦';
     font-size: 16px;
     opacity: 0.5;
 }
 
-.pluginname-fa-picker-text {
+.PluginName-fa-picker-text {
     font-size: 14px;
 }
 
 /* Modal Overlay */
-.pluginname-fa-picker-modal {
+.PluginName-fa-picker-modal {
     position: fixed;
     top: 0;
     left: 0;
@@ -52,7 +52,7 @@
     justify-content: center;
 }
 
-.pluginname-fa-picker-overlay {
+.PluginName-fa-picker-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -62,7 +62,7 @@
 }
 
 /* Modal Dialog */
-.pluginname-fa-picker-dialog {
+.PluginName-fa-picker-dialog {
     position: relative;
     background: #fff;
     border-radius: 8px;
@@ -75,7 +75,7 @@
 }
 
 /* Modal Header */
-.pluginname-fa-picker-header {
+.PluginName-fa-picker-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -83,14 +83,14 @@
     border-bottom: 1px solid #e1e1e1;
 }
 
-.pluginname-fa-picker-header h3 {
+.PluginName-fa-picker-header h3 {
     margin: 0;
     font-size: 18px;
     font-weight: 600;
     color: #1d2327;
 }
 
-.pluginname-fa-picker-close {
+.PluginName-fa-picker-close {
     background: none;
     border: none;
     font-size: 24px;
@@ -106,20 +106,20 @@
     transition: all 0.2s ease;
 }
 
-.pluginname-fa-picker-close:hover {
+.PluginName-fa-picker-close:hover {
     background: #f0f0f1;
     color: #1d2327;
 }
 
 /* Search Section */
-.pluginname-fa-picker-search {
+.PluginName-fa-picker-search {
     display: flex;
     gap: 12px;
     padding: 20px 24px;
     border-bottom: 1px solid #e1e1e1;
 }
 
-.pluginname-fa-picker-search-input {
+.PluginName-fa-picker-search-input {
     flex: 1;
     padding: 8px 12px;
     border: 1px solid #8c8f94;
@@ -127,14 +127,14 @@
     font-size: 14px;
 }
 
-.pluginname-fa-picker-search-input:focus {
+.PluginName-fa-picker-search-input:focus {
     outline: none;
     border-color: #007cba;
     box-shadow: 0 0 0 1px #007cba;
 }
 
-.pluginname-fa-picker-pack-filter,
-.pluginname-fa-picker-style-filter {
+.PluginName-fa-picker-pack-filter,
+.PluginName-fa-picker-style-filter {
     padding: 8px 12px;
     border: 1px solid #8c8f94;
     border-radius: 4px;
@@ -142,15 +142,15 @@
     width: 90px !important;
 }
 
-.pluginname-fa-picker-pack-filter:focus,
-.pluginname-fa-picker-style-filter:focus {
+.PluginName-fa-picker-pack-filter:focus,
+.PluginName-fa-picker-style-filter:focus {
     outline: none;
     border-color: #007cba;
     box-shadow: 0 0 0 1px #007cba;
 }
 
 /* Results Area */
-.pluginname-fa-picker-results {
+.PluginName-fa-picker-results {
     flex: 1;
     overflow-y: auto;
     padding: 20px 24px;
@@ -158,9 +158,9 @@
     max-height: 400px;
 }
 
-.pluginname-fa-picker-loading,
-.pluginname-fa-picker-error,
-.pluginname-fa-picker-no-results {
+.PluginName-fa-picker-loading,
+.PluginName-fa-picker-error,
+.PluginName-fa-picker-no-results {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -170,14 +170,14 @@
 }
 
 /* Icon Grid */
-.pluginname-fa-picker-grid {
+.PluginName-fa-picker-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 12px;
 }
 
 /* Icon Items */
-.pluginname-fa-picker-icon-item {
+.PluginName-fa-picker-icon-item {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -189,30 +189,30 @@
     background: #f8f9fa;
 }
 
-.pluginname-fa-picker-icon-item:hover {
+.PluginName-fa-picker-icon-item:hover {
     background: #fff;
     border-color: #007cba;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.pluginname-fa-picker-icon-item.selected {
+.PluginName-fa-picker-icon-item.selected {
     background: #fff;
     border-color: #007cba;
     box-shadow: 0 0 0 2px rgba(0, 124, 186, 0.2);
 }
 
-.pluginname-fa-picker-icon-item i {
+.PluginName-fa-picker-icon-item i {
     font-size: 24px;
     margin-bottom: 8px;
     color: #1d2327;
 }
 
-.pluginname-fa-picker-icon-item.selected i {
+.PluginName-fa-picker-icon-item.selected i {
     color: #007cba;
 }
 
-.pluginname-fa-picker-icon-label {
+.PluginName-fa-picker-icon-label {
     font-size: 11px;
     text-align: center;
     color: #646970;
@@ -222,7 +222,7 @@
 }
 
 /* Pagination */
-.pluginname-fa-picker-pagination {
+.PluginName-fa-picker-pagination {
     display: flex;
     justify-content: center;
     margin-top: 20px;
@@ -230,7 +230,7 @@
     border-top: 1px solid #e1e1e1;
 }
 
-.pluginname-fa-picker-load-more {
+.PluginName-fa-picker-load-more {
     background: #007cba !important;
     color: #fff !important;
     border: none !important;
@@ -241,12 +241,12 @@
     transition: background-color 0.2s ease !important;
 }
 
-.pluginname-fa-picker-load-more:hover {
+.PluginName-fa-picker-load-more:hover {
     background: #005a87 !important;
 }
 
 /* Modal Footer */
-.pluginname-fa-picker-footer {
+.PluginName-fa-picker-footer {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
@@ -255,7 +255,7 @@
     background: #f8f9fa;
 }
 
-.pluginname-fa-picker-footer .button {
+.PluginName-fa-picker-footer .button {
     padding: 8px 16px !important;
     border-radius: 4px !important;
     font-size: 14px !important;
@@ -263,48 +263,48 @@
 
 /* Responsive Design */
 @media (max-width: 782px) {
-    .pluginname-fa-picker-dialog {
+    .PluginName-fa-picker-dialog {
         width: 95vw;
         max-height: 95vh;
     }
 
-    .pluginname-fa-picker-search {
+    .PluginName-fa-picker-search {
         flex-direction: column;
         gap: 8px;
     }
 
-    .pluginname-fa-picker-pack-filter,
-    .pluginname-fa-picker-style-filter {
+    .PluginName-fa-picker-pack-filter,
+    .PluginName-fa-picker-style-filter {
         min-width: auto;
         width: 100%;
     }
 
-    .pluginname-fa-picker-grid {
+    .PluginName-fa-picker-grid {
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
         gap: 8px;
     }
 
-    .pluginname-fa-picker-icon-item {
+    .PluginName-fa-picker-icon-item {
         padding: 8px 4px;
     }
 
-    .pluginname-fa-picker-icon-item i {
+    .PluginName-fa-picker-icon-item i {
         font-size: 20px;
         margin-bottom: 4px;
     }
 
-    .pluginname-fa-picker-icon-label {
+    .PluginName-fa-picker-icon-label {
         font-size: 10px;
     }
 }
 
 /* Loading Animation */
-@keyframes pluginname-fa-spin {
+@keyframes PluginName-fa-spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
 
-.pluginname-fa-picker-loading::before {
+.PluginName-fa-picker-loading::before {
     content: '';
     display: inline-block;
     width: 20px;
@@ -312,27 +312,25 @@
     border: 2px solid #f3f4f5;
     border-top: 2px solid #007cba;
     border-radius: 50%;
-    animation: pluginname-fa-spin 1s linear infinite;
+    animation: PluginName-fa-spin 1s linear infinite;
     margin-right: 8px;
 }
 
 /* Accessibility */
-.pluginname-fa-picker-icon-item:focus {
+.PluginName-fa-picker-icon-item:focus {
     outline: 2px solid #007cba;
     outline-offset: 2px;
 }
 
-.pluginname-fa-picker-close:focus,
-.pluginname-fa-picker-search-input:focus,
-.pluginname-fa-picker-pack-filter:focus,
-.pluginname-fa-picker-style-filter:focus {
+.PluginName-fa-picker-close:focus,
+.PluginName-fa-picker-search-input:focus,
+.PluginName-fa-picker-pack-filter:focus,
+.PluginName-fa-picker-style-filter:focus {
     outline: 2px solid #007cba;
     outline-offset: 2px;
 }
 
 /* WordPress Admin Integration */
-.pluginname-fa-picker-container .button {
+.PluginName-fa-picker-container .button {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
-
-
