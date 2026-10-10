@@ -5,7 +5,7 @@ namespace PluginName\Includes;
 use PluginName\Includes\Core\Capabilities;
 use PluginName\Includes\Core\WP\WPLoader;
 use PluginName\Includes\Functions\Helpers\LoggerHelper;
-use PluginName\Includes\ModManagement\ModManagement;
+use PluginName\Includes\TemplateManagement\TemplateManagement;
 use PluginName\Includes\Pages\CronJobs;
 use PluginName\Includes\Pages\PostTypes;
 use PluginName\Includes\Pages\Shortcodes;
@@ -74,7 +74,7 @@ final class Includes {
          * 
          * @since 1.0.0
          */
-        ModManagement::register();
+        TemplateManagement::register();
         /**
          * Post types registration.
          * 

@@ -18,6 +18,7 @@ final class Settings {
     public function register(): void {
         BaseSettings::register_group( 'fontawesome', [
             'fontawesome_type' => 'cdn',
+            'fontawesome_cdn_technology' => 'webfont',
             'fontawesome_kit_id' => '',
             'fontawesome_enable_icon_picker' => true,
         ] );
@@ -50,6 +51,16 @@ final class Settings {
     public static function get_kit_id(): string {
         return BaseSettings::get_string( 'fontawesome_kit_id', '' );
     }
+
+    /**
+     * Retrieves the selected Font Awesome CDN technology.
+     *
+     * @return string The CDN technology.
+     */
+    public static function get_cdn_technology(): string {
+        $technology = BaseSettings::get_key( 'fontawesome_cdn_technology', 'webfont' );
+        return in_array( $technology, [ 'webfont', 'svg' ], true ) ? $technology : 'webfont';
+    }
     /**
      * Retrieves the settings page configuration for the Font Awesome plugin.
      *
@@ -59,8 +70,8 @@ final class Settings {
     public function get_settings_page(): array {
         return [
             'slug' => 'fontawesome',
-            'label' => __( 'Font Awesome', 'pluginname' ),
-            'title' => __( 'Font Awesome integration', 'pluginname' ),
+            'label' => __( 'FontAwesome', 'pluginname' ),
+            'title' => __( 'FontAwesome integration', 'pluginname' ),
             'layout' => 'table',
             'fields' => [
                 [
@@ -70,11 +81,33 @@ final class Settings {
                     'tooltip' => __( 'Choose between using the CDN or a Kit for FontAwesome.', 'pluginname' ),
                     'tooltip_type' => 'info',
                     'type' => 'select',
+                    'class' => 'w-100',
                     'options' => [
                         'cdn' => __( 'CDN', 'pluginname' ),
                         'kit' => __( 'Kit', 'pluginname' ),
                     ],
                     'default' => 'cdn',
+                ],
+                [
+                    'key' => 'fontawesome_cdn_technology',
+                    'label' => __( 'FontAwesome CDN Technology', 'pluginname' ),
+                    'description' => __( 'Select the technology used for the Font Awesome CDN.', 'pluginname' ),
+                    'tooltip' => __( 'Choose between different CDN technologies for loading Font Awesome.', 'pluginname' ),
+                    'tooltip_type' => 'info',
+                    'type' => 'select',
+                    'class' => 'w-100',
+                    'options' => [
+                        'svg' => __( 'SVG', 'pluginname' ),
+                        'webfont' => __( 'Web Font', 'pluginname' ),
+                    ],
+                    'default' => 'webfont',
+                    'visible_when' => [
+                        'fontawesome_type' => 'cdn',
+                    ],
+                    'required' => [
+                        'fontawesome_type' => 'cdn',
+                    ],
+
                 ],
                 [
                     'key' => 'fontawesome_kit_id',
@@ -83,6 +116,7 @@ final class Settings {
                     'tooltip' => __( 'The FontAwesome Kit ID is required when using the Kit type.', 'pluginname' ),
                     'tooltip_type' => 'info',
                     'type' => 'text',
+                    'class' => 'w-100',
                     'default' => '',
                     'visible_when' => [
                         'fontawesome_type' => 'kit',

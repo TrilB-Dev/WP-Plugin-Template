@@ -70,9 +70,6 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @return string
      */
     public function get_version(): string {
-        if ( self::is_wordpress_fontawesome_active() && function_exists( 'FortAwesome\fa' ) && class_exists( '\FortAwesome\FontAwesome' ) ) {
-            return \FortAwesome\fa()->version();
-        }
 
         return '1.0.0';
     }
@@ -92,7 +89,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @return string
      */
     public function get_author_uri(): string {
-        return 'https://trilb.dev';
+        return 'https://trilb.dev/';
     }
 
     /**
@@ -101,7 +98,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @return string
      */
     public function get_description(): string {
-        return __( 'Provides Font Awesome enqueueing in Admin, Frontend, Login Page, icon picking, and styling APIs for PluginName.', 'pluginname' );
+        return __( 'Provides FontAwesome CDN & Kit enqueueing in Admin, Frontend & Login Page, also adds an enhanced icon picker, and styling APIs for PluginName.', 'pluginname' );
     }
 
     /**
@@ -131,10 +128,31 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
         return true;
     }
 
+        /**
+     * Private constructor to prevent direct instantiation.
+     *
+     * @since 1.0.0
+     */
+    private function __construct() {
+    }
+    /**
+     * Initialize the FontAwesome plugin.
+     *
+     * @return void
+     * @since 1.0.0
+     */
+    public function init(): void {
+
+        FontAwesomeAPI::configure();
+        $this->icon_picker = IconPicker::get_instance();
+        Includes::get_instance()->init();
+    }
+
     /**
      * Register plugin settings.
      *
      * @return void
+     * @since 1.0.0
      */
     public function register_settings(): void {
         Includes::get_instance()->settings()->register();
@@ -144,6 +162,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the settings page config.
      *
      * @return array
+     * @since 1.0.0
      */
     public function get_settings_page(): array {
         return Includes::get_instance()->settings()->get_settings_page();
@@ -154,6 +173,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      *
      * @param mixed $input
      * @return array
+     * @since 1.0.0
      */
     public function sanitize_settings( $input ): array {
         return Includes::get_instance()->settings()->sanitize( $input );
@@ -163,6 +183,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Register plugin assets.
      *
      * @return void
+     * @since 1.0.0
      */
     public function register_assets(): void {
         ( new Assets() )->register();
@@ -172,44 +193,17 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Load the text domain.
      *
      * @return void
+     * @since 1.0.0
      */
     public function load_textdomain(): void {
         I18n::load_textdomain();
     }
 
     /**
-     * Check whether Font Awesome is available.
-     *
-     * @return bool
-     */
-    public function is_available(): bool {
-        return self::is_wordpress_fontawesome_active() || ( function_exists( 'FortAwesome\fa' ) && class_exists( '\FortAwesome\FontAwesome' ) );
-    }
-
-    /**
-     * Determine whether a FontAwesome instance is already present.
-     *
-     * WordPress FontAwesome wins first. PluginName does not load the bundled
-     * composer copy when the official plugin is active.
-     *
-     * @return bool
-     */
-    public static function is_wordpress_fontawesome_active(): bool {
-        if ( function_exists( 'FortAwesome\fa' ) || class_exists( '\FortAwesome\FontAwesome' ) || class_exists( '\FortAwesome\FontAwesome_Loader' ) ) {
-            return true;
-        }
-
-        if ( defined( 'FONTAWESOME_PLUGIN_FILE' ) && function_exists( 'is_plugin_active' ) ) {
-            return is_plugin_active( FONTAWESOME_PLUGIN_FILE );
-        }
-
-        return false;
-    }
-
-    /**
      * Get the IconPicker instance.
      *
      * @return IconPicker|null
+     * @since 1.0.0
      */
     public function get_icon_picker(): ?IconPicker {
         return $this->icon_picker;
@@ -219,53 +213,10 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the singleton instance.
      *
      * @return self
+     * @since 1.0.0
      */
     public static function get_instance(): self {
         return self::$instance ??= new self();
-    }
-
-    /**
-     * PluginName does not initialize the bundled vendor copy.
-     *
-     * @return void
-     */
-    public static function ensure_vendor_initialized(): void {
-        return;
-    }
-
-    /**
-     * Private constructor to prevent direct instantiation.
-     */
-    private function __construct() {
-        Activator::register( static function (): void {
-            // Intentionally empty: PluginName reuses the active WordPress
-            // Font Awesome plugin and never loads the bundled vendor copy.
-        } );
-    }
-
-    /**
-     * No bundled vendor fallback is allowed.
-     *
-     * @return void
-     */
-    private function load_vendor(): void {
-        return;
-    }
-
-    /**
-     * Initialize the FontAwesome plugin.
-     *
-     * @return void
-     */
-    public function init(): void {
-        self::ensure_vendor_initialized();
-        FontAwesomeAPI::configure();
-
-        if ( $this->is_available() ) {
-            $this->icon_picker = IconPicker::get_instance();
-        }
-
-        Includes::get_instance()->init();
     }
 }
 

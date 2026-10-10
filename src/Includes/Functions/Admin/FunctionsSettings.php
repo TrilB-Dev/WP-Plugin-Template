@@ -54,7 +54,11 @@ final class FunctionsSettings {
         }
 
         $tab = sanitize_key( wp_unslash( $_POST['pluginname_tab'] ?? $_POST['tab'] ?? 'general' ) );
-        $allowed_tabs = [ 'general', 'layout', 'access' ];
+        $allowed_tabs = [ 
+            'general',
+            'layout',
+            'access'
+        ];
         if ( ! in_array( $tab, $allowed_tabs, true ) ) {
             $tab = 'general';
         }
@@ -97,8 +101,27 @@ final class FunctionsSettings {
         }
         $input = is_array( $input ) ? $input : [];
         $rewrite_changed = false;
-        foreach ( [ 'root_name', 'root_description', 'archive_title', 'archive_description', 'root_slug', 'category_slug', 'tag_slug', 'permalink', 'enable_schema' ] as $key ) {
-            $value = in_array( $key, [ 'root_slug', 'category_slug', 'tag_slug' ], true ) ? sanitize_title( $input[ $key ] ?? '' ) : ( 'permalink' === $key ? PermalinkHelper::sanitize_pattern( $input[ $key ] ?? '' ) : ( 'enable_schema' === $key ? ! empty( $input[ $key ] ) : sanitize_textarea_field( $input[ $key ] ?? '' ) ) );
+        foreach ( 
+            [ 
+                'root_name',
+                'root_description',
+                'archive_title',
+                'archive_description',
+                'root_slug',
+                'category_slug',
+                'tag_slug',
+                'permalink',
+                'enable_schema'
+            ] as $key ) {
+            $value = in_array( 
+                $key, 
+                [ 
+                    'root_slug',
+                    'category_slug',
+                    'tag_slug'
+                ], 
+                true 
+            ) ? sanitize_title( $input[ $key ] ?? '' ) : ( 'permalink' === $key ? PermalinkHelper::sanitize_pattern( $input[ $key ] ?? '' ) : ( 'enable_schema' === $key ? ! empty( $input[ $key ] ) : sanitize_textarea_field( $input[ $key ] ?? '' ) ) );
             $rewrite_changed = $rewrite_changed || $value !== (string) Settings::get( $key, '' );
             $input[ $key ] = $value;
             Settings::set( $key, $input[ $key ] );
@@ -117,13 +140,69 @@ final class FunctionsSettings {
         $section = sanitize_key( $input['layout_section'] ?? 'general' );
         unset( $input['layout_section'] );
         $section_keys = [
-            'general' => [ 'show_search', 'show_breadcrumbs', 'show_sidebar' ],
-            'search' => [ 'show_search', 'search_placeholder', 'search_button_text', 'search_scope', 'search_no_results_message', 'search_results_count', 'search_min_chars', 'search_live_results' ],
-            'sidebar' => [ 'show_sidebar', 'sidebar_position', 'sidebar_width', 'sidebar_sticky', 'sidebar_show_categories', 'sidebar_show_category_count', 'sidebar_expand_categories', 'sidebar_show_page_count' ],
-            'page' => [ 'page_show_title', 'show_breadcrumbs', 'page_show_toc', 'page_toc_position', 'toc_min_level', 'toc_max_level', 'show_last_updated', 'show_author', 'show_reading_time', 'reading_time_wpm', 'show_feedback', 'page_show_navigation', 'show_related_pages', 'related_pages_count' ],
+            'general' => [ 
+                'show_search', 
+                'show_breadcrumbs', 
+                'show_sidebar' 
+            ],
+            'search' => [ 
+                'show_search', 
+                'search_placeholder', 
+                'search_button_text', 
+                'search_scope', 
+                'search_no_results_message', 
+                'search_results_count', 
+                'search_min_chars', 
+                'search_live_results' 
+            ],
+            'sidebar' => [ 
+                'show_sidebar', 
+                'sidebar_position', 
+                'sidebar_width', 
+                'sidebar_sticky', 
+                'sidebar_show_categories', 
+                'sidebar_show_category_count', 
+                'sidebar_expand_categories', 
+                'sidebar_show_page_count' 
+            ],
+            'page' => [ 
+                'page_show_title', 
+                'show_breadcrumbs', 
+                'page_show_toc', 
+                'page_toc_position', 
+                'toc_min_level', 
+                'toc_max_level', 
+                'show_last_updated', 
+                'show_author', 
+                'show_reading_time', 
+                'reading_time_wpm', 
+                'show_feedback', 
+                'page_show_navigation', 
+                'show_related_pages', 
+                'related_pages_count' 
+            ],
         ];
         $active_keys = $section_keys[ $section ] ?? array_merge( ...array_values( $section_keys ) );
-        foreach ( [ 'show_search', 'show_toc', 'show_breadcrumbs', 'show_last_updated', 'show_author', 'show_reading_time', 'show_feedback', 'show_related_pages', 'search_live_results', 'show_sidebar', 'sidebar_sticky', 'sidebar_show_categories', 'sidebar_show_category_count', 'sidebar_expand_categories', 'sidebar_show_page_count', 'page_show_title', 'page_show_toc', 'page_show_navigation' ] as $key ) {
+        foreach ( [ 
+            'show_search', 
+            'show_toc', 
+            'show_breadcrumbs', 
+            'show_last_updated', 
+            'show_author', 
+            'show_reading_time', 
+            'show_feedback', 
+            'show_related_pages', 
+            'search_live_results', 
+            'show_sidebar', 
+            'sidebar_sticky', 
+            'sidebar_show_categories', 
+            'sidebar_show_category_count', 
+            'sidebar_expand_categories', 
+            'sidebar_show_page_count', 
+            'page_show_title', 
+            'page_show_toc', 
+            'page_show_navigation' 
+        ] as $key ) {
             if ( ! in_array( $key, $active_keys, true ) ) {
                 continue;
             }
@@ -131,7 +210,11 @@ final class FunctionsSettings {
             $input[ $key ] = $value;
             Settings::set( $key, $value );
         }
-        foreach ( [ 'search_placeholder', 'search_button_text', 'search_no_results_message' ] as $key ) {
+        foreach ( [ 
+            'search_placeholder', 
+            'search_button_text', 
+            'search_no_results_message' 
+        ] as $key ) {
             if ( ! in_array( $key, $active_keys, true ) ) {
                 continue;
             }
@@ -165,10 +248,31 @@ final class FunctionsSettings {
             return (array) Settings::get_group( Settings::ACCESS, [] );
         }
         $input = is_array( $input ) ? $input : [];
-        $allowed = [ 'manage_options', 'edit_posts', 'publish_posts' ];
-        foreach ( [ 'create_mods', 'write_pages', 'view_analytics', 'manage_plugins' ] as $key ) {
-            $values = is_array( $input[ $key ] ?? null ) ? $input[ $key ] : [ $input[ $key ] ?? 'manage_options' ];
-            $values = array_values( array_unique( array_intersect( $allowed, array_map( 'sanitize_key', $values ) ) ) );
+        $allowed = [ 
+            'manage_options',
+            'edit_posts',
+            'publish_posts'
+        ];
+        foreach ( [ 
+            'create_mods', 
+            'write_pages', 
+            'view_analytics', 
+            'manage_plugins' 
+        ] as $key ) {
+            $values = is_array( 
+                $input[ $key ] ?? null 
+            ) ? $input[ $key ] : [ $input[ $key ] ?? 'manage_options' ];
+            $values = array_values( 
+                array_unique( 
+                    array_intersect( 
+                        $allowed, 
+                        array_map( 
+                            'sanitize_key', 
+                            $values 
+                        ) 
+                    ) 
+                ) 
+            );
             $input[ $key ] = empty( $values ) ? [ 'manage_options' ] : $values;
             Settings::set( $key, $input[ $key ] );
         }
@@ -177,11 +281,13 @@ final class FunctionsSettings {
 
     public function sanitize_tools( $input ): array {
         $input = is_array( $input ) ? $input : [];
-        foreach ( [ 'debug_logging', 'console_logging' ] as $key ) {
+        foreach ( [ 
+            'debug_logging',
+            'console_logging'
+        ] as $key ) {
             $input[ $key ] = ! empty( $input[ $key ] );
             Settings::set( $key, $input[ $key ] );
         }
         return $input;
     }
 }
-

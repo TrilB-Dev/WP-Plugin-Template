@@ -70,5 +70,3 @@ final class Header {
 		<?php
 	}
 }
-
-

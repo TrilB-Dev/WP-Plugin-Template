@@ -50,26 +50,64 @@ final class Assets extends RootAssets {
 
         $type = FontAwesomeSettings::get_type();
         $kit_id = trim( FontAwesomeSettings::get_kit_id() );
+        $cdn_technology = FontAwesomeSettings::get_cdn_technology();
 
         if ( 'kit' === $type && '' !== $kit_id ) {
             $assets['scripts'][] = array(
                 'handle' => 'pluginname-fontawesome-kit',
                 'src' => 'https://kit.fontawesome.com/' . rawurlencode( $kit_id ) . '.js',
                 'deps' => array( 'pluginname-bootstrap' ),
-                'in_footer' => true,
+                'in_footer' => false
             );
-        } else {
+        } elseif ( 'cdn' === $type && 'webfont' === $cdn_technology ) {
+            /**$assets['styles'][] = array(
+                'handle' => 'pluginname-fontawesome-cdn-style',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/fontawesome.min.css'
+            );*/
             $assets['styles'][] = array(
                 'handle' => 'pluginname-fontawesome-cdn-style',
-                'src' => 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/css/fontawesome.min.css',
-                'deps' => array( 'pluginname-bootstrap' ),
-                'version' => '7.0.0',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/fontawesome.min.css',
+            );
+            $assets['styles'][] = array(
+                'handle' => 'pluginname-fontawesome-cdn-style-solid',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/solid.min.css',
+                'deps' => array( 'pluginname-fontawesome-cdn-style' ),
+            );
+            $assets['styles'][] = array(
+                'handle' => 'pluginname-fontawesome-cdn-style-brands',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/brands.min.css',
+                'deps' => array( 'pluginname-fontawesome-cdn-style' ),
+            );
+        } elseif ( 'cdn' === $type && 'svg' === $cdn_technology ) {
+            $assets['scripts'][] = array(
+                'handle' => 'pluginname-fontawesome-cdn-svg',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/js/fontawesome.min.js',
+                'in_footer' => true
             );
             $assets['scripts'][] = array(
-                'handle' => 'pluginname-fontawesome-cdn-script',
-                'src' => 'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7/js/fontawesome.min.js',
+                'handle' => 'pluginname-fontawesome-cdn-svg-inline',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/js/solid.min.js',
+                'deps' => array( 'pluginname-fontawesome-cdn-svg' ),
+                'in_footer' => true
+            );
+            $assets['scripts'][] = array(
+                'handle' => 'pluginname-fontawesome-cdn-svg-brands',
+                'src' => 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/js/brands.min.js',
+                'deps' => array( 'pluginname-fontawesome-cdn-svg' ),
+                'in_footer' => true
+            );
+        }
+
+        $current_page = isset( $_GET['page'] ) ? sanitize_text_field( wp_unslash( $_GET['page'] ) ) : '';
+        $current_group = isset( $_GET['group'] ) ? sanitize_text_field( wp_unslash( $_GET['group'] ) ) : '';
+        $current_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : '';
+
+        if ( 'pluginname' === $current_page && 'settings' === $current_group && 'plugins' === $current_tab ) {
+            $assets['scripts'][] = array(
+                'handle' => 'pluginname-fontawesome-plugin-settings',
+                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/js/admin.plugins.fontawesome.js',
                 'deps' => array( 'pluginname-bootstrap' ),
-                'version' => '7.0.0',
+                'version' => PLUGINNAME_VERSION,
                 'in_footer' => true,
             );
         }
@@ -77,13 +115,13 @@ final class Assets extends RootAssets {
         if ( FontAwesomeSettings::enable_icon_picker() ) {
             $assets['styles'][] = array(
                 'handle' => 'pluginname-fontawesome-icon-picker',
-                'src' => PLUGINNAME_URL . 'src/Includes/Plugins/FontAwesome/Assets/dist/css/icon-picker.css',
+                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/css/fontawesome.icon-picker.css',
                 'deps' => array( 'pluginname-bootstrap' ),
                 'version' => PLUGINNAME_VERSION,
             );
             $assets['scripts'][] = array(
                 'handle' => 'pluginname-fontawesome-icon-picker',
-                'src' => PLUGINNAME_URL . 'src/Includes/Plugins/FontAwesome/Assets/dist/js/icon-picker.js',
+                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/js/fontawesome.icon-picker.js',
                 'deps' => array( 'jquery' ),
                 'version' => PLUGINNAME_VERSION,
                 'in_footer' => true,

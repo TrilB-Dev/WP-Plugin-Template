@@ -231,5 +231,3 @@ final class Sidebar {
 		return true;
 	}
 }
-
-

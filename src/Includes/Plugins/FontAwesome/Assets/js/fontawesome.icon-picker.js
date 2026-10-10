@@ -6,7 +6,7 @@
  * @since 1.0.0
  */
 
-(function($) {
+(($) => {
     'use strict';
 
     /**
@@ -35,13 +35,13 @@
             });
 
             // Close picker modal
-            $(document).on('click', '.pluginname-fa-picker-close, .pluginname-fa-picker-overlay, .pluginname-fa-picker-cancel', function(e) {
+            $(document).on('click', '.pluginname-fa-picker-close, .pluginname-fa-picker-overlay, .pluginname-fa-picker-cancel', (e) => {
                 e.preventDefault();
                 self.closePicker();
             });
 
             // Search icons
-            $(document).on('input', '.pluginname-fa-picker-search-input', function() {
+            $(document).on('input', '.pluginname-fa-picker-search-input', () => {
                 self.searchIcons();
             });
 
@@ -64,7 +64,7 @@
             });
 
             // Filter by style
-            $(document).on('change', '.pluginname-fa-picker-style-filter', function() {
+            $(document).on('change', '.pluginname-fa-picker-style-filter', () => {
                 self.searchIcons();
             });
 
@@ -75,12 +75,12 @@
             });
 
             // Confirm selection
-            $(document).on('click', '.pluginname-fa-picker-select', function() {
+            $(document).on('click', '.pluginname-fa-picker-select', () => {
                 self.confirmSelection();
             });
 
             // Load more icons (pagination)
-            $(document).on('click', '.pluginname-fa-picker-load-more', function() {
+            $(document).on('click', '.pluginname-fa-picker-load-more', () => {
                 self.loadMoreIcons();
             });
         },
@@ -156,14 +156,14 @@
                     page: this.currentPage,
                     per_page: 50
                 },
-                success: function(response) {
+                success: (response) => {
                     if (response.success) {
                         self.displayIcons(response.data, pack, style);
                     } else {
                         $results.html('<div class="pluginname-fa-picker-error">' + response.data + '</div>');
                     }
                 },
-                error: function() {
+                error: () => {
                     $results.html('<div class="pluginname-fa-picker-error">' + pluginname_fa_picker.strings.no_icons_found + '</div>');
                 }
             });
@@ -188,7 +188,7 @@
 
             var html = '<div class="pluginname-fa-picker-grid">';
 
-            data.icons.forEach(function(icon) {
+            data.icons.forEach((icon) => {
                 var iconClass = data.prefix + ' fa-' + icon.name;
 
                 html += '<div class="pluginname-fa-picker-icon-item" data-icon-name="' + icon.name + '" data-icon-pack="' + pack + '" data-icon-style="' + style + '" data-icon-prefix="' + data.prefix + '">';
@@ -287,7 +287,7 @@
     };
 
     // Initialize when document is ready
-    $(document).ready(function() {
+    $(document).ready(() => {
         PluginNameFAIconPicker.init();
     });
 

@@ -456,4 +456,3 @@ final class Taxonomy {
 		return $singular ? trim( $label ) : trim( $label );
 	}
 }
-

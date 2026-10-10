@@ -237,9 +237,8 @@ class Plugin {
 		 */
 		$this->assets->register();
 		/**
-		 * The instance of the Frontend class that handles the plugin's frontend functionality.
+		 * Register the admin assets and functionality.
 		 *
-		 * @var Frontend
 		 * @since 1.0.0
 		 * @access protected
 		 */

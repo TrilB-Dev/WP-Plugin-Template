@@ -2,7 +2,9 @@
 /**
  * SettingsManager class.
  *
- * @package PluginName\Includes\Settings
+ * @package PluginName
+ * @subpackage Includes\Settings
+ * @since 1.0.0
  */
 
 namespace PluginName\Includes\Settings;
@@ -14,16 +16,35 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 final class SettingsManager {
-    /** @var array<string, array<string, mixed>> */
+    /**
+     * Registered setting groups.
+     *
+     * @var array<string, array<string, mixed>>
+     * @since 1.0.0
+     */
     private static array $registered_groups = [];
-
-    /** @var array<string, string> */
+    /**
+     * Registered setting keys.
+     *
+     * @var array<string, string>
+     * @since 1.0.0
+     */
     private static array $registered_keys = [];
-
+    /**
+     * Get the name of the settings table.
+     *
+     * @return string
+     * @since 1.0.0
+     */
     public static function table_name(): string {
         return Database::table_name( 'settings' );
     }
-
+    /**
+     * Install the settings table and initialize default settings.
+     *
+     * @return void
+     * @since 1.0.0
+     */
     public static function install(): void {
         Database::install();
 
@@ -38,7 +59,13 @@ final class SettingsManager {
             self::delete_legacy_group( $group );
         }
     }
-
+    /**
+     * Get a setting by its key.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
     public static function get( string $key, $default = null ) {
         foreach ( self::get_all() as $settings ) {
             if ( is_array( $settings ) && array_key_exists( $key, $settings ) ) {
@@ -47,14 +74,25 @@ final class SettingsManager {
         }
         return self::registered_default( $key, $default );
     }
-
+    /**
+     * Set a setting by its key.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return boolean
+     */
     public static function set( string $key, $value ): bool {
         $group = self::group_for_key( $key );
         $settings = self::get_group( $group ) ?? [];
         $settings[ $key ] = $value;
         return self::set_group( $group, $settings );
     }
-
+    /**
+     * Delete a setting by its key.
+     *
+     * @param string $key
+     * @return boolean
+     */
     public static function delete( string $key ): bool {
         $group = self::group_for_key( $key );
         $settings = self::get_group( $group );
@@ -64,7 +102,13 @@ final class SettingsManager {
         unset( $settings[ $key ] );
         return self::set_group( $group, $settings );
     }
-
+    /**
+     * Check if a setting exists.
+     *
+     * @param string $key
+     * @return bool
+     * @since 1.0.0
+     */
     public static function has( string $key ): bool {
         foreach ( self::get_all() as $settings ) {
             if ( is_array( $settings ) && array_key_exists( $key, $settings ) ) {
@@ -74,7 +118,12 @@ final class SettingsManager {
 
         return false;
     }
-
+    /**
+     * Get all settings, including stored and default values.
+     *
+     * @return array
+     * @since 1.0.0
+     */
     public static function get_all(): array {
         global $wpdb;
         $rows = $wpdb->get_results( 'SELECT setting_group, setting_value FROM ' . self::table_name(), ARRAY_A );
@@ -94,7 +143,12 @@ final class SettingsManager {
 
         return $settings;
     }
-
+    /**
+     * Get the default settings.
+     *
+     * @return array
+     * @since 1.0.0
+     */
     public static function defaults(): array {
         return [
             'general' => [
@@ -149,6 +203,12 @@ final class SettingsManager {
         ];
     }
 
+    /**
+     * Get the default settings.
+     *
+     * @return array
+     * @since 1.0.0
+     */
     public static function get_group( string $group ): ?array {
         global $wpdb;
         $group = self::normalize_group( $group );
@@ -162,7 +222,14 @@ final class SettingsManager {
         $defaults = self::registered_defaults()[ $group ] ?? [];
         return array_merge( $defaults, $settings );
     }
-
+    /**
+     * Set the settings for a specific group.
+     *
+     * @param string $group
+     * @param array $settings
+     * @return bool
+     * @since 1.0.0
+     */
     public static function set_group( string $group, array $settings ): bool {
         global $wpdb;
         return false !== $wpdb->replace( self::table_name(), [
@@ -172,7 +239,14 @@ final class SettingsManager {
             'updated_at' => current_time( 'mysql' ),
         ], [ '%s', '%s', '%s', '%s' ] );
     }
-
+    /**
+     * Register a settings group with default values.
+     *
+     * @param string $group
+     * @param array $defaults
+     * @return bool
+     * @since 1.0.0
+     */
     public static function register_group( string $group, array $defaults = [] ): bool {
         $group = self::normalize_group( $group );
         if ( '' === $group ) {
@@ -188,7 +262,15 @@ final class SettingsManager {
         }
         return true;
     }
-
+    /**
+     * Register a single setting key with a default value.
+     *
+     * @param string $key
+     * @param string $group
+     * @param mixed $default
+     * @return bool
+     * @since 1.0.0
+     */
     public static function register_key( string $key, string $group, $default = null ): bool {
         $key = sanitize_key( $key );
         if ( '' === $key || ! self::register_group( $group ) ) {
@@ -200,27 +282,35 @@ final class SettingsManager {
         self::$registered_groups[ $group ][ $key ] = $default;
         return true;
     }
-
+    /**
+     * Get the storage group name for a logical group.
+     *
+     * @param string $group
+     * @return string
+     * @since 1.0.0
+     */
     private static function storage_group( string $group ): string {
         $group = self::normalize_group( $group );
         return str_starts_with( $group, 'pluginname_' ) ? $group : 'pluginname_' . $group;
     }
 
+    /**
+     * Get the logical group name from a storage group name.
+     *
+     * @param string $group
+     * @return string
+     * @since 1.0.0
+     */
     private static function logical_group( string $group ): string {
         return str_starts_with( $group, 'pluginname_' ) ? substr( $group, 10 ) : $group;
     }
-
-    private static function get_legacy_group( string $group ): ?array {
-        global $wpdb;
-        $value = $wpdb->get_var( $wpdb->prepare( 'SELECT setting_value FROM ' . self::table_name() . ' WHERE setting_group = %s', sanitize_key( $group ) ) );
-        return $value === null ? null : maybe_unserialize( $value );
-    }
-
-    private static function delete_legacy_group( string $group ): void {
-        global $wpdb;
-        $wpdb->delete( self::table_name(), [ 'setting_group' => sanitize_key( $group ) ], [ '%s' ] );
-    }
-
+    /**
+     * Get the logical group name for a given setting key.
+     *
+     * @param string $key
+     * @return string
+     * @since 1.0.0
+     */
     private static function group_for_key( string $key ): string {
         $key = sanitize_key( $key );
         if ( isset( self::$registered_keys[ $key ] ) ) {
@@ -245,6 +335,7 @@ final class SettingsManager {
      * Return core and extension defaults for activation and fallback reads.
      *
      * @return array<string, array<string, mixed>>
+     * @since 1.0.0
      */
     private static function registered_defaults(): array {
         $defaults = self::defaults();
@@ -254,7 +345,14 @@ final class SettingsManager {
 
         return $defaults;
     }
-
+    /**
+     * Get the registered default for a specific setting key.
+     *
+     * @param string $key
+     * @param mixed $fallback
+     * @return mixed
+     * @since 1.0.0
+     */
     private static function registered_default( string $key, $fallback ) {
         $key = sanitize_key( $key );
         foreach ( self::registered_defaults() as $settings ) {
@@ -265,11 +363,24 @@ final class SettingsManager {
 
         return $fallback;
     }
-
+    /**
+     * Normalize a group name by replacing dashes and spaces with underscores and removing the 'pluginname_' prefix if present.
+     *
+     * @param string $group
+     * @return string
+     * @since 1.0.0
+     */
     private static function normalize_group( string $group ): string {
-        $group = sanitize_key( $group );
-        return str_starts_with( $group, 'pluginname_' ) ? substr( $group, 10 ) : $group;
+        $group = str_replace( '-', '_', sanitize_key( $group ) );
+        $group = str_replace( ' ', '_', $group );
+
+        if ( str_starts_with( $group, 'pluginname_' ) ) {
+            return preg_replace( '/^pluginname_/', '', $group ) ?: $group;
+        }
+
+        return $group;
     }
 }
+
 
 
