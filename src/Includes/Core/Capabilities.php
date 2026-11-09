@@ -42,6 +42,16 @@ class Capabilities {
 					'label'       => __( 'Edit Licence Settings', 'pluginname' ),
 					'description' => __( 'Allows editing the licence management settings.', 'pluginname' ),
 				),
+				'pluginname_settings_layout_view'      => array(
+					'group'       => 'PluginName Settings',
+					'label'       => __( 'View Layout Settings', 'pluginname' ),
+					'description' => __( 'Allows viewing PluginName layout and presentation settings.', 'pluginname' ),
+				),
+				'pluginname_settings_layout_edit'      => array(
+					'group'       => 'PluginName Settings',
+					'label'       => __( 'Edit Layout Settings', 'pluginname' ),
+					'description' => __( 'Allows changing PluginName layout and presentation settings.', 'pluginname' ),
+				),
 				'pluginname_settings_access_view'      => array(
 					'group'       => 'PluginName Settings',
 					'label'       => __( 'View Access Controls', 'pluginname' ),
@@ -61,6 +71,11 @@ class Capabilities {
 					'group'       => 'PluginName Settings',
 					'label'       => __( 'Edit Security Settings', 'pluginname' ),
 					'description' => __( 'Allows editing export passwords, encryption controls, and security flags.', 'pluginname' ),
+				),
+				'pluginname_tools_general'              => array(
+					'group'       => 'PluginName Tools',
+					'label'       => __( 'View General Tools', 'pluginname' ),
+					'description' => __( 'Allows viewing general tools and settings in PluginName.', 'pluginname' ),
 				),
 				'pluginname_tools_import'              => array(
 					'group'       => 'PluginName Tools',
@@ -107,6 +122,46 @@ class Capabilities {
 					'label'       => __( 'Edit External Plugin Settings', 'pluginname' ),
 					'description' => __( 'Allows editing settings for external PluginName plugins.', 'pluginname' ),
 				),
+				'pluginname_manager_dashboard' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'View Mod Management Dashboard', 'pluginname' ),
+					'description' => __( 'Allows viewing the PluginName Mod Management Dashboard.', 'pluginname' ),
+				),
+				'pluginname_manager_mods_view' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'Manage Mods', 'pluginname' ),
+					'description' => __( 'Allows viewing mods within Mod Management.', 'pluginname' ),
+				),
+				'pluginname_manager_mods_edit' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'Edit Mods', 'pluginname' ),
+					'description' => __( 'Allows editing mods within Mod Management.', 'pluginname' ),
+				),
+				'pluginname_manager_mods_edit_others' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'Edit Other Mods', 'pluginname' ),
+					'description' => __( 'Allows editing mods created by other users within Mod Management.', 'pluginname' ),
+				),
+				'pluginname_manager_groups_view' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'Manage Groups', 'pluginname' ),
+					'description' => __( 'Allows viewing user groups within Mod Management.', 'pluginname' ),
+				),
+				'pluginname_manager_groups_edit' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'Edit Groups', 'pluginname' ),
+					'description' => __( 'Allows editing user groups within Mod Management.', 'pluginname' ),
+				),
+				'pluginname_manager_tags_view' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'View Tags', 'pluginname' ),
+					'description' => __( 'Allows viewing tags within Mod Management.', 'pluginname' ),
+				),
+				'pluginname_manager_tags_edit' => array(
+					'group'       => 'Mod Management',
+					'label'       => __( 'Edit Tags', 'pluginname' ),
+					'description' => __( 'Allows editing tags within Mod Management.', 'pluginname' ),
+				),
 			),
 			self::$extensions
 		);
@@ -141,6 +196,10 @@ class Capabilities {
 		}
 	}
 }
+
+
+
+
 
 
 

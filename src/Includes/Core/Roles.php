@@ -16,19 +16,14 @@ final class Roles {
 	 * Role identifiers for PluginName.
 	 * 
 	 * @since 1.0.0
-	 * @var string The role identifier for the customer role.
+	 * @var string The role identifier for the manager role.
 	 */
-	public const CUSTOMER_ROLE = 'pluginname_customer';
-	/**
-	 * Role identifier for the internal customer role.
-	 *
-	 * @since 1.0.0
-	 * @var string The role identifier for the internal customer role.
-	 */
-	public const INTERNAL_CUSTOMER_ROLE = 'pluginname_internal_customer';
+	public const MANAGER_ROLE = 'pluginname_manager';
+	public const AUTHOR_ROLE = 'pluginname_author';
+
 
 	/**
-	 * Install the default customer roles used by PluginName.
+	 * Install the default PluginName roles used by PluginName.
 	 *
 	 * @return void
 	 */
@@ -37,56 +32,57 @@ final class Roles {
 			return;
 		}
 
-		self::customer_role();
-		self::internal_customer_role();
+		self::manager_role();
+		self::author_role();
 	}
 	/**
-	 * Get the customer role identifier.
+	 * Get the manager role identifier.
 	 *
 	 * @since 1.0.0
-	 * @return string The customer role identifier.
+	 * @return string The manager role identifier.
 	 */
-	public static function customer_role(): string {
-		if ( ! get_role( self::CUSTOMER_ROLE ) ) {
+	public static function manager_role(): string {
+		if ( ! get_role( self::MANAGER_ROLE ) ) {
 			add_role(
-				self::CUSTOMER_ROLE,
-				__( 'Customers', 'pluginname' ),
+				self::MANAGER_ROLE,
+				__( 'Mod Manager', 'pluginname' ),
 				array(
-					'read'                              	=> true,
-					'pluginname_customer_manage'       	=> true,
-					'pluginname_customer_edit'         	=> true,
-					'pluginname_customer_add'          	=> true,
-					'pluginname_customer_licence_create'  => true,
-					'pluginname_customer_licence_manage'  => true,
+					'read'                       => true,
+					'add_users'       			 => true,
+					'edit_users'        		 => true,
+					'create_users'      		 => true,
+					'delete_users'  			 => true,
+					'pluginname_suspend_users'  	 => true,
+					'pluginname_ban_users'  	 	 => true,
 				)
 			);
 		}
-		return self::CUSTOMER_ROLE;
+		return self::MANAGER_ROLE;
 	}
-
 	/**
-	 * Get the internal customer role identifier.
+	 * Get the author role identifier.
 	 *
 	 * @since 1.0.0
-	 * @return string The internal customer role identifier.
+	 * @return string The author role identifier.
 	 */
-	public static function internal_customer_role(): string {
-		if ( ! get_role( self::INTERNAL_CUSTOMER_ROLE ) ) {
+	public static function author_role(): string {
+		if ( ! get_role( self::AUTHOR_ROLE ) ) {
 			add_role(
-				self::INTERNAL_CUSTOMER_ROLE,
-				__( 'Internal Customers', 'pluginname' ),
+				self::AUTHOR_ROLE,
+				__( 'Mod Author', 'pluginname' ),
 				array(
-					'read'                                 	 => true,
-					'pluginname_customer_manage'         	 => true,
-					'pluginname_customer_edit'           	 => true,
-					'pluginname_customer_add'            	 => true,
-					'pluginname_customer_delete'         	 => true,
-					'pluginname_customer_licence_create' 	 => true,
-					'pluginname_customer_licence_manage' 	 => true,
-					'pluginname_customer_licence_transfer' => true,
+					'read' => true,
+					'pluginname_manager_mods_view' => true,
+					'pluginname_manager_mods_edit' => true,
+					'pluginname_manager_mods_delete' => true,
+					'pluginname_manager_groups_view' => true,
 				)
 			);
 		}
-		return self::INTERNAL_CUSTOMER_ROLE;
+		return self::AUTHOR_ROLE;
 	}
 }
+
+
+
+

@@ -9,6 +9,7 @@ namespace PluginName\Includes\Plugins\FontAwesome\Assets;
 use PluginName\Assets\Assets as RootAssets;
 use PluginName\Includes\Functions\Helpers\LoaderHelper;
 use PluginName\Includes\Plugins\FontAwesome\Includes\Settings\Settings as FontAwesomeSettings;
+use PluginName\Includes\Plugins\FontAwesome\Includes\IconPicker;
 
 final class Assets extends RootAssets {
     /**
@@ -34,6 +35,7 @@ final class Assets extends RootAssets {
                 ),
             )
         )->run();
+        add_filter('script_loader_tag', array( $this, 'add_crossorigin_attribute' ), 10, 3);
     }
 
     /**
@@ -56,7 +58,8 @@ final class Assets extends RootAssets {
             $assets['scripts'][] = array(
                 'handle' => 'pluginname-fontawesome-kit',
                 'src' => 'https://kit.fontawesome.com/' . rawurlencode( $kit_id ) . '.js',
-                'deps' => array( 'pluginname-bootstrap' ),
+                'deps' => array(),
+                'version' => null,
                 'in_footer' => false
             );
         } elseif ( 'cdn' === $type && 'webfont' === $cdn_technology ) {
@@ -115,13 +118,13 @@ final class Assets extends RootAssets {
         if ( FontAwesomeSettings::enable_icon_picker() ) {
             $assets['styles'][] = array(
                 'handle' => 'pluginname-fontawesome-icon-picker',
-                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/css/fontawesome.icon-picker.css',
+                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/css/icon-picker.css',
                 'deps' => array( 'pluginname-bootstrap' ),
                 'version' => PLUGINNAME_VERSION,
             );
             $assets['scripts'][] = array(
                 'handle' => 'pluginname-fontawesome-icon-picker',
-                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/js/fontawesome.icon-picker.js',
+                'src' => PLUGINNAME_PLUGINS_URL . '/FontAwesome/Assets/dist/js/icon-picker.js',
                 'deps' => array( 'jquery' ),
                 'version' => PLUGINNAME_VERSION,
                 'in_footer' => true,
@@ -130,6 +133,7 @@ final class Assets extends RootAssets {
                     'data' => array(
                         'ajax_url' => admin_url( 'admin-ajax.php' ),
                         'nonce' => wp_create_nonce( 'pluginname_fontawesome_picker' ),
+                        'icons' => IconPicker::get_default_icon_catalog(),
                         'strings' => array(
                             'search_placeholder' => __( 'Search icons...', 'pluginname' ),
                             'no_icons_found' => __( 'No icons found', 'pluginname' ),
@@ -186,6 +190,18 @@ final class Assets extends RootAssets {
 
         return $assets;
     }
+    /**
+     * Add crossorigin attribute to the script tag
+     */
+    public function add_crossorigin_attribute($tag, $handle, $src) {
+
+        if ('pluginname-fontawesome-kit' === $handle) {
+            // Add crossorigin="anonymous" safely
+            $tag = '<script src="' . esc_url($src) . '" crossorigin="anonymous"></script>' . "\n";
+        }
+        return $tag;
+    }
+
 }
 
 

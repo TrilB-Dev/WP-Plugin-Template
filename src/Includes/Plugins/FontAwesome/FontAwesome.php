@@ -17,7 +17,6 @@ use PluginName\Includes\Plugins\SettingsProviderInterface;
 use PluginName\Includes\Plugins\SettingsPageProviderInterface;
 use PluginName\Includes\Plugins\FontAwesome\Assets\Assets;
 use PluginName\Includes\Plugins\FontAwesome\Includes\IconPicker;
-use PluginName\Includes\Plugins\FontAwesome\API\FontAwesomeAPI;
 use PluginName\Includes\Plugins\FontAwesome\Includes\Core\I18n;
 use PluginName\Includes\Plugins\FontAwesome\Includes\Includes;
 use PluginName\Includes\Core\WP\Activator;
@@ -27,6 +26,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Singleton instance of the FontAwesome plugin.
      *
      * @var self|null
+     * @since 1.0.0
      */
     private static ?self $instance = null;
 
@@ -34,6 +34,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * IconPicker instance for the FontAwesome plugin.
      *
      * @var IconPicker|null
+     * @since 1.0.0
      */
     private ?IconPicker $icon_picker = null;
 
@@ -41,6 +42,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin slug.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_slug(): string {
         return 'pluginname-fontawesome';
@@ -50,6 +52,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin name.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_name(): string {
         return 'FontAwesome';
@@ -59,6 +62,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin icon.
      *
      * @return array{0: string, 1: string}
+     * @since 1.0.0
      */
     public function get_icon(): array {
         return [ 'fab fa-font-awesome', '#74c1fcff' ];
@@ -68,6 +72,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin version.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_version(): string {
 
@@ -78,6 +83,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin author.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_author(): string {
         return 'TrilB.Dev Team';
@@ -87,6 +93,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin author URI.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_author_uri(): string {
         return 'https://trilb.dev/';
@@ -96,6 +103,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin description.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_description(): string {
         return __( 'Provides FontAwesome CDN & Kit enqueueing in Admin, Frontend & Login Page, also adds an enhanced icon picker, and styling APIs for PluginName.', 'pluginname' );
@@ -105,6 +113,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin URI.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_uri(): string {
         return 'https://trilb.dev/collection/web-extension/wordpress/pluginname';
@@ -114,6 +123,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Get the plugin license.
      *
      * @return string
+     * @since 1.0.0
      */
     public function get_license(): string {
         return 'GPL-2.0-or-later';
@@ -123,12 +133,13 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * Check if the plugin is active.
      *
      * @return bool
+     * @since 1.0.0
      */
     public function is_active(): bool {
         return true;
     }
 
-        /**
+    /**
      * Private constructor to prevent direct instantiation.
      *
      * @since 1.0.0
@@ -142,8 +153,6 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
      * @since 1.0.0
      */
     public function init(): void {
-
-        FontAwesomeAPI::configure();
         $this->icon_picker = IconPicker::get_instance();
         Includes::get_instance()->init();
     }
@@ -218,6 +227,7 @@ final class FontAwesome implements PluginInterface, SettingsProviderInterface, S
     public static function get_instance(): self {
         return self::$instance ??= new self();
     }
+
 }
 
 

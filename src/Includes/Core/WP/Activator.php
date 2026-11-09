@@ -12,11 +12,11 @@
 namespace PluginName\Includes\Core\WP;
 
 use PluginName\Includes\Core\Capabilities;
+use PluginName\Includes\Core\Roles;
+use PluginName\Includes\ModManagement\GroupsManager;
 use PluginName\Includes\Plugins\Plugins;
 use PluginName\Includes\Settings\SettingsManager;
 use PluginName\Includes\Settings\Settings;
-use PluginName\Includes\Core\PostType;
-use PluginName\Includes\Core\Taxonomy;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -56,11 +56,12 @@ final class Activator {
 		);
 
 		Plugins::get_instance()->init();
-		Capabilities::install();
 		Database::install();
+		Database::update();
+		GroupsManager::create_default_group();
+		Roles::install();
+		Capabilities::install();
 		SettingsManager::install();
-		( new PostType() )->register();
-		( new Taxonomy() )->register();
 
 		foreach ( $callbacks ?? self::$callbacks as $callback ) {
 			call_user_func( $callback );
@@ -69,6 +70,3 @@ final class Activator {
 		flush_rewrite_rules();
 	}
 }
-
-
-

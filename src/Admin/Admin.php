@@ -22,6 +22,10 @@ use PluginName\Admin\Manager\Tools\ToolsManager;
 use PluginName\Admin\Manager\Dashboard\DashboardManager;
 use PluginName\Admin\Manager\Mods\ModManager;
 use PluginName\Admin\Manager\Settings\SettingsManager;
+use PluginName\Admin\Manager\Tools\Export;
+use PluginName\Admin\Manager\Tools\General;
+use PluginName\Admin\Manager\Tools\Import;
+use PluginName\Admin\Manager\Tools\Reset;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -40,6 +44,12 @@ final class Admin {
 	 * @var SettingsManager
 	 */
 	private SettingsManager $settings_manager;
+	/**
+	 * LicencesManager instance for managing licence-type and issued licence pages.
+	 *
+	 * @var ModManager
+	 */
+	private ModManager $mod_manager;
 	/**
 	 * ToolsManager instance for managing tools-related admin pages.
 	 *
@@ -73,9 +83,10 @@ final class Admin {
 	 */
 	public function __construct( Assets $assets ) {
 		$this->managers = array(
-			'dashboard' => new DashboardManager(),
-			'settings'  => new SettingsManager(),
-			'tools'     => new ToolsManager(),
+			'dashboard' 		=> new DashboardManager(),
+			'settings'  		=> new SettingsManager(),
+			'mod-manager'      	=> new ModManager(),
+			'tools'     		=> new ToolsManager(),
 		);
 		/**
 		 * Initialize the individual manager instances from the registry.
@@ -86,6 +97,10 @@ final class Admin {
 		 */
 		$this->settings_manager  = $this->managers['settings'];
 		/**
+		 * Initialize the mod manager instance from the registry.
+		 */
+		$this->mod_manager      = $this->managers['mod-manager'];
+		/**
 		 * Initialize the tools manager instance from the registry.
 		 */
 		$this->tools_manager     = $this->managers['tools'];
@@ -93,6 +108,10 @@ final class Admin {
 		 * Initialize the loader helper.
 		 */
 		$this->loader = new LoaderHelper();
+		new General( $this->loader );
+		new Reset( $this->loader );
+		new Import( $this->loader );
+		new Export( $this->loader );
 		/**
 		 * Initialize the assets manager.
 		 */
@@ -155,23 +174,29 @@ final class Admin {
 	 * @param string $tab Requested tab slug.
 	 * @return void
 	 */
-	public function route_manager( string $group, string $tab = '' ): void {
+	public function route_manager( string $group, string $tab = '', string $form = '' ): void {
 		$group = sanitize_key( $group );
+		$tab = sanitize_key( $tab );
+		$form = sanitize_key( $form );
 		$normalized_group = array(
 			'pluginname'        => 'dashboard',
 			'dashboard'       => 'dashboard',
+			'mods'            => 'mods',
+			'mod-manager'     => 'mods',
+			'manage-mod'      => 'mods',
+			'manage-mods'     => 'mods',
 			'settings'        => 'settings',
 			'tools'           => 'tools',
 			'reports'         => 'reports',
 		)[ $group ] ?? 'dashboard';
 
-		LoggerHelper::write_log( sprintf( 'PluginName dashboard render triggered. Group=%s Tab=%s', $group, $tab ) );
+		LoggerHelper::write_log( sprintf( 'PluginName dashboard render triggered. Group=%s Tab=%s Form=%s', $group, $tab, $form ) );
 
 		try {
 			switch ( $normalized_group ) {
 				case 'mods':
 					LoggerHelper::write_log( 'PluginName dashboard routed to mods page.' );
-					$this->render_mods();
+					$this->render_mods( $tab, $form );
 					return;
 				case 'settings':
 					LoggerHelper::write_log( 'PluginName dashboard routed to settings page.' );
@@ -207,6 +232,17 @@ final class Admin {
 		Settings::set( 'onboarding_steps_complete', 3 );
 
 		AjaxHelper::success( array( 'dismissed' => true ) );
+	}
+	/**
+	 * Render PluginName mods page.
+	 *
+	 * This method is responsible for rendering the mods page of the PluginName plugin.
+	 * It delegates the rendering to the ModManager instance.
+	 */
+	public function render_mods( string $tab = '', string $form = '' ): void {
+		LoggerHelper::write_log( 'PluginName mods render started.' );
+		$this->mod_manager->render( $tab, $form );
+		LoggerHelper::write_log( 'PluginName mods render complete.' );
 	}
 	/**
 	 * Render the settings page.
@@ -249,3 +285,5 @@ final class Admin {
 		return $fallback;
 	}
 }
+
+

@@ -9,22 +9,22 @@
   "scripts": {
     "build": "webpack --config webpack.config.js",
     "build:watch": "webpack --watch --mode development --config webpack.config.js",
-    "rename": "node Scripts/rename-plugin.js",
-    "search": "powershell -ExecutionPolicy Bypass -File ./scripts/search.ps1",
     "replace": "powershell -ExecutionPolicy Bypass -File ./scripts/search-replace.ps1",
+    "rename": "node Scripts/rename-plugin.js",
     "i18n:pot": "node scripts/generate-pot.js",
     "i18n:mo": "node scripts/generate-mo.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@crestapps/bootstrap-select": "^1.2.1",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@popperjs/core": "^2.11.8",
-    "@trilbdev/boostrap-select-country-data": "^1.0.4",
+    "@trilbdev/bootstrap-select-country-data": "^1.0.4",
     "bootstrap": "^5.3.8",
+    "fontawesome": "^5.6.3",
     "tinymce": "^8.8.2"
   },
   "devDependencies": {
-    "@wordpress/env": "^11.14.0",
     "autoprefixer": "^10.5.4",
     "css-loader": "^7.1.4",
     "gettext-parser": "^9.1.1",

@@ -1,0 +1,101 @@
+.pluginname-admin {
+    --pluginname-blue: #2563eb;        /* WordPress-inspired primary */
+	--pluginname-light-blue: #3b82f6;  /* Lighter accent for hovers */
+	--pluginname-deep-blue: #1e3a8a;   /* Darker accent for headers */
+	--pluginname-microsoft-red: #d83b01;
+	--pluginname-microsoft-green: #107c10;
+	--pluginname-microsoft-yellow: #ffb900;
+
+	--pluginname-ink: #152238;         /* Deep text / dark mode anchor */
+	--pluginname-navy: #102a43;        /* Sidebar / panel background */
+	--pluginname-paper: #f6f8fb;       /* Main background */
+	--pluginname-card: #ffffff;        /* Card surfaces */
+	--pluginname-line: #dce4ed;        /* Borders, dividers */
+	--pluginname-header: #eaf3f7;      /* Header + toolbar background */
+
+	--pluginname-success: #0f9d58;     /* Google/Microsoft hybrid green */
+	--pluginname-warning: #f4b400;     /* Warm amber */
+	--pluginname-danger: #d93025;      /* Strong red */
+	--pluginname-info: #1a73e8;        /* Informational blue */
+
+	--pluginname-text: #1f2937;        /* Primary text */
+	--pluginname-text-muted: #6b7280;  /* Secondary text */
+	--pluginname-link: #2563eb;        /* Links */
+	--pluginname-link-hover: #1d4ed8;  /* Hover links */
+	--pluginname-focus-ring: #3b82f6;  /* Focus outlines */
+
+	--pluginname-dark-bg: #0d1117;
+	--pluginname-dark-card: #161b22;
+	--pluginname-dark-line: #30363d;
+	--pluginname-dark-text: #c9d1d9;
+	--pluginname-dark-text-muted: #8b949e;
+
+	--bs-blue: var(--pluginname-blue);
+	--bs-primary: var(--pluginname-blue);
+	--bs-primary-rgb: 37, 99, 235;
+	--bs-secondary: var(--pluginname-text-muted);
+	--bs-secondary-rgb: 107, 114, 128;
+	--bs-success: var(--pluginname-success);
+	--bs-success-rgb: 15, 157, 88;
+	--bs-warning: var(--pluginname-warning);
+	--bs-warning-rgb: 244, 180, 0;
+	--bs-danger: var(--pluginname-danger);
+	--bs-danger-rgb: 217, 48, 37;
+	--bs-info: var(--pluginname-info);
+	--bs-info-rgb: 26, 115, 232;
+	--bs-light: var(--pluginname-paper);
+	--bs-light-rgb: 246, 248, 251;
+	--bs-dark: var(--pluginname-ink);
+	--bs-dark-rgb: 21, 34, 56;
+	--bs-body-color: var(--pluginname-text);
+	--bs-body-color-rgb: 31, 41, 55;
+	--bs-body-bg: var(--pluginname-paper);
+	--bs-body-bg-rgb: 246, 248, 251;
+	--bs-emphasis-color: var(--pluginname-ink);
+	--bs-emphasis-color-rgb: 21, 34, 56;
+	--bs-secondary-color: var(--pluginname-text-muted);
+	--bs-secondary-color-rgb: 107, 114, 128;
+	--bs-tertiary-color: var(--pluginname-text-muted);
+	--bs-tertiary-color-rgb: 107, 114, 128;
+	--bs-secondary-bg: var(--pluginname-card);
+	--bs-secondary-bg-rgb: 255, 255, 255;
+	--bs-tertiary-bg: var(--pluginname-header);
+	--bs-tertiary-bg-rgb: 234, 243, 247;
+	--bs-heading-color: var(--pluginname-ink);
+	--bs-link-color: var(--pluginname-link);
+	--bs-link-color-rgb: 37, 99, 235;
+	--bs-link-hover-color: var(--pluginname-link-hover);
+	--bs-link-hover-color-rgb: 29, 78, 216;
+	--bs-border-color: var(--pluginname-line);
+    --bs-border-width: 1.25px;
+	--bs-border-color-translucent: rgba(220, 228, 237, 0.75);
+	--bs-focus-ring-color: rgba(59, 130, 246, 0.25);
+
+	&[data-bs-theme='dark'],
+	[data-bs-theme='dark'] & {
+		--bs-primary: var(--pluginname-light-blue);
+		--bs-primary-rgb: 59, 130, 246;
+		--bs-body-color: var(--pluginname-dark-text);
+		--bs-body-color-rgb: 201, 209, 217;
+		--bs-body-bg: var(--pluginname-dark-bg);
+		--bs-body-bg-rgb: 13, 17, 23;
+		--bs-emphasis-color: #f0f6fc;
+		--bs-emphasis-color-rgb: 240, 246, 252;
+		--bs-secondary-color: var(--pluginname-dark-text-muted);
+		--bs-secondary-color-rgb: 139, 148, 158;
+		--bs-tertiary-color: var(--pluginname-dark-text-muted);
+		--bs-tertiary-color-rgb: 139, 148, 158;
+		--bs-secondary-bg: var(--pluginname-dark-card);
+		--bs-secondary-bg-rgb: 22, 27, 34;
+		--bs-tertiary-bg: var(--pluginname-dark-line);
+		--bs-tertiary-bg-rgb: 48, 54, 61;
+		--bs-heading-color: var(--bs-emphasis-color);
+		--bs-link-color: var(--pluginname-light-blue);
+		--bs-link-color-rgb: 59, 130, 246;
+		--bs-link-hover-color: #93c5fd;
+		--bs-link-hover-color-rgb: 147, 197, 253;
+		--bs-border-color: var(--pluginname-dark-line);
+		--bs-border-color-translucent: rgba(48, 54, 61, 0.75);
+		--bs-focus-ring-color: rgba(59, 130, 246, 0.35);
+	}
+}

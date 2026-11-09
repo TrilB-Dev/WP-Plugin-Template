@@ -10,6 +10,7 @@ namespace PluginName\Includes\Functions\Admin;
 
 use PluginName\Includes\Functions\Helpers\AjaxHelper;
 use PluginName\Includes\Functions\Helpers\AlertHelper;
+use PluginName\Includes\Functions\Helpers\LoggerHelper;
 use PluginName\Includes\Plugins\PluginInterface;
 use PluginName\Includes\Plugins\Plugins;
 use PluginName\Includes\Plugins\SettingsPageProviderInterface;
@@ -30,7 +31,7 @@ final class FunctionsPlugins {
             AjaxHelper::unauthorized( __( 'You are not authorized to manage PluginName plugins.', 'pluginname' ) );
         }
 
-        $slug = sanitize_key( wp_unslash( $_POST['slug'] ?? '' ) );
+        $slug = $this->resolve_plugin_slug( wp_unslash( $_POST['slug'] ?? '' ) );
         $enabled = ! empty( $_POST['enabled'] );
         $plugin = Plugins::get_instance()->get_registered_plugins()[ $slug ] ?? null;
 
@@ -49,60 +50,308 @@ final class FunctionsPlugins {
     }
 
     /**
+     * REST toggle endpoint for plugin activation state.
+     *
+     * @param \WP_REST_Request $request Request object.
+     * @return \WP_REST_Response
+     */
+    public function rest_toggle_plugin( \WP_REST_Request $request ) {
+        $slug = $this->resolve_plugin_slug( (string) ( $request->get_param( 'slug' ) ?? '' ) );
+        $enabled = ! empty( $request->get_param( 'enabled' ) );
+        $plugin = Plugins::get_instance()->get_registered_plugins()[ $slug ] ?? null;
+
+        if ( ! $plugin instanceof PluginInterface ) {
+            return new \WP_REST_Response(
+                array( 'message' => __( 'The requested PluginName plugin was not found.', 'pluginname' ) ),
+                404
+            );
+        }
+
+        if ( ! $this->is_internal_plugin( $plugin ) ) {
+            return new \WP_REST_Response(
+                array( 'message' => __( 'You are not authorized to manage external PluginName plugins.', 'pluginname' ) ),
+                403
+            );
+        }
+
+        if ( ! Plugins::get_instance()->set_plugin_enabled( $slug, $enabled ) ) {
+            return new \WP_REST_Response(
+                array( 'message' => __( 'The PluginName plugin state could not be saved.', 'pluginname' ) ),
+                500
+            );
+        }
+
+        return rest_ensure_response(
+            array(
+                'slug' => $slug,
+                'enabled' => $enabled,
+            )
+        );
+    }
+
+    /**
      * Save settings submitted from a PluginName plugin modal.
      *
      * @return void
      */
     public function save_plugin_settings(): void {
-        $slug = sanitize_key( wp_unslash( $_POST['slug'] ?? $_POST['plugin_slug'] ?? '' ) );
-        if ( '' === $slug ) {
-            $message = __( 'The PluginName plugin slug is missing.', 'pluginname' );
-            AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 400 );
-        }
+        try {
+            LoggerHelper::write_log( 'PluginName plugin settings save started.' );
 
-        $plugin = Plugins::get_instance()->get_registered_plugins()[ $slug ] ?? null;
-        if ( ! $plugin instanceof PluginInterface || ! $plugin instanceof SettingsPageProviderInterface ) {
-            $message = __( 'The requested PluginName plugin settings were not found.', 'pluginname' );
-            AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 404 );
-        }
+            $slug = $this->resolve_plugin_slug( wp_unslash( $_POST['slug'] ?? $_POST['plugin_slug'] ?? '' ) );
+            LoggerHelper::write_log( sprintf( 'PluginName plugin settings save slug: %s', $slug ) );
 
-        $capability = $this->is_internal_plugin( $plugin ) ? 'pluginname_settings_plugins_int_edit' : 'pluginname_settings_plugins_ext_edit';
-        $nonce_actions = array( 'pluginname_save_plugin_settings', 'pluginname_plugin_settings' );
-        $has_valid_nonce = false;
-        foreach ( $nonce_actions as $action ) {
-            if ( AjaxHelper::authorized( $action, $capability ) ) {
-                $has_valid_nonce = true;
-                break;
+            if ( '' === $slug ) {
+                $message = __( 'The PluginName plugin slug is missing.', 'pluginname' );
+                LoggerHelper::write_log( 'PluginName plugin settings save failed: missing slug.' );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 400 );
+            }
+
+            $plugin = Plugins::get_instance()->get_registered_plugins()[ $slug ] ?? null;
+            if ( ! $plugin instanceof PluginInterface || ! $plugin instanceof SettingsPageProviderInterface ) {
+                $message = __( 'The requested PluginName plugin settings were not found.', 'pluginname' );
+                LoggerHelper::write_log( sprintf( 'PluginName plugin settings save failed: plugin not found for slug %s.', $slug ) );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 404 );
+            }
+
+            $capability = $this->is_internal_plugin( $plugin ) ? 'pluginname_settings_plugins_int_edit' : 'pluginname_settings_plugins_ext_edit';
+            $nonce_actions = array( 'pluginname_save_plugin_settings', 'pluginname_plugin_settings' );
+            $has_valid_nonce = false;
+            foreach ( $nonce_actions as $action ) {
+                if ( AjaxHelper::authorized( $action, $capability ) ) {
+                    $has_valid_nonce = true;
+                    break;
+                }
+            }
+
+            if ( ! $has_valid_nonce ) {
+                $message = __( 'You are not authorized to save PluginName plugin settings.', 'pluginname' );
+                LoggerHelper::write_log( sprintf( 'PluginName plugin settings save failed: unauthorized for %s.', $slug ) );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 403 );
+            }
+
+            $input = $this->parse_settings_payload();
+            LoggerHelper::write_log( 'PluginName plugin settings payload parsed.', $input );
+
+            if ( ! is_array( $input ) ) {
+                $message = __( 'The PluginName plugin settings payload is invalid.', 'pluginname' );
+                LoggerHelper::write_log( 'PluginName plugin settings save failed: invalid payload.' );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 400 );
+            }
+
+            $settings = $plugin->sanitize_settings( $input );
+            LoggerHelper::write_log( sprintf( 'PluginName plugin settings sanitized for %s.', $slug ), $settings );
+
+            if ( ! is_array( $settings ) ) {
+                $message = __( 'The PluginName plugin settings could not be sanitized.', 'pluginname' );
+                LoggerHelper::write_log( sprintf( 'PluginName plugin settings save failed: sanitization returned invalid data for %s.', $slug ) );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 400 );
+            }
+
+            $page = $plugin->get_settings_page();
+            $group = sanitize_key( $page['slug'] ?? $slug );
+            LoggerHelper::write_log( sprintf( 'PluginName plugin settings target group: %s', $group ) );
+
+            if ( '' === $group ) {
+                $message = __( 'The PluginName plugin settings group could not be resolved.', 'pluginname' );
+                LoggerHelper::write_log( sprintf( 'PluginName plugin settings save failed: unresolved group for %s.', $slug ) );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 400 );
+            }
+
+            if ( ! Settings::set_group( $group, $settings ) ) {
+                $message = __( 'The PluginName plugin settings could not be saved.', 'pluginname' );
+                LoggerHelper::write_log( sprintf( 'PluginName plugin settings save failed: DB write returned false for %s.', $slug ) );
+                AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 500 );
+            }
+
+            LoggerHelper::write_log( sprintf( 'PluginName plugin settings saved successfully for %s.', $slug ), $settings );
+
+            AjaxHelper::success(
+                [
+                    'slug' => $slug,
+                    'settings' => $settings,
+                    'message' => __( 'Plugin settings saved successfully.', 'pluginname' ),
+                    'alert' => AlertHelper::get_admin_notice( __( 'Plugin settings saved successfully.', 'pluginname' ), 'success' ),
+                ]
+            );
+        } catch ( \Throwable $exception ) {
+            $message = __( 'The PluginName plugin settings save failed unexpectedly.', 'pluginname' );
+            LoggerHelper::write_log( sprintf( 'PluginName plugin settings save exception: %s', $exception->getMessage() ) );
+            AjaxHelper::error(
+                [
+                    'message' => $message,
+                    'alert' => AlertHelper::get_admin_notice( $message, 'error' ),
+                    'details' => $exception->getMessage(),
+                ],
+                500
+            );
+        }
+    }
+
+    /**
+     * REST save endpoint for plugin settings.
+     *
+     * @param \WP_REST_Request $request Request object.
+     * @return \WP_REST_Response
+     */
+    public function rest_save_plugin_settings( \WP_REST_Request $request ) {
+        try {
+            $slug = $this->resolve_plugin_slug( (string) ( $request->get_param( 'slug' ) ?? $request->get_param( 'plugin_slug' ) ?? '' ) );
+            if ( '' === $slug ) {
+                return new \WP_REST_Response( array( 'message' => __( 'The PluginName plugin slug is missing.', 'pluginname' ) ), 400 );
+            }
+
+            $plugin = Plugins::get_instance()->get_registered_plugins()[ $slug ] ?? null;
+            if ( ! $plugin instanceof PluginInterface || ! $plugin instanceof SettingsPageProviderInterface ) {
+                return new \WP_REST_Response( array( 'message' => __( 'The requested PluginName plugin settings were not found.', 'pluginname' ) ), 404 );
+            }
+
+            $input = $request->get_param( 'settings' );
+            if ( ! is_array( $input ) ) {
+                $input = $request->get_json_params();
+            }
+            if ( ! is_array( $input ) ) {
+                $input = array();
+            }
+
+            $settings = $plugin->sanitize_settings( $this->normalize_plugin_settings_input( $input ) );
+            $page = $plugin->get_settings_page();
+            $group = sanitize_key( $page['slug'] ?? $slug );
+            if ( '' === $group ) {
+                return new \WP_REST_Response( array( 'message' => __( 'The PluginName plugin settings group could not be resolved.', 'pluginname' ) ), 400 );
+            }
+
+            if ( ! Settings::set_group( $group, $settings ) ) {
+                return new \WP_REST_Response( array( 'message' => __( 'The PluginName plugin settings could not be saved.', 'pluginname' ) ), 500 );
+            }
+
+            return rest_ensure_response(
+                array(
+                    'slug' => $slug,
+                    'settings' => $settings,
+                    'message' => __( 'Plugin settings saved successfully.', 'pluginname' ),
+                )
+            );
+        } catch ( \Throwable $exception ) {
+            return new \WP_REST_Response(
+                array(
+                    'message' => __( 'The PluginName plugin settings save failed unexpectedly.', 'pluginname' ),
+                    'details' => $exception->getMessage(),
+                ),
+                500
+            );
+        }
+    }
+
+    /**
+     * Parse a settings payload from either JSON or bracket-notation form fields.
+     *
+     * @return array<string, mixed>
+     */
+    private function parse_settings_payload(): array {
+        $candidates = array(
+            $_POST['settings'] ?? null,
+            $_POST['plugin_settings'] ?? null,
+        );
+
+        foreach ( $candidates as $candidate ) {
+            if ( is_string( $candidate ) ) {
+                $decoded = json_decode( wp_unslash( $candidate ), true );
+                if ( is_array( $decoded ) ) {
+                    return $this->normalize_plugin_settings_input( wp_unslash( $decoded ) );
+                }
+            }
+
+            if ( is_array( $candidate ) ) {
+                return $this->normalize_plugin_settings_input( wp_unslash( $candidate ) );
             }
         }
 
-        if ( ! $has_valid_nonce ) {
-            $message = __( 'You are not authorized to save PluginName plugin settings.', 'pluginname' );
-            AjaxHelper::error( [ 'message' => $message, 'alert' => AlertHelper::get_admin_notice( $message, 'error' ) ], 403 );
+        $parsed = array();
+        foreach ( $_POST as $key => $value ) {
+            if ( ! is_string( $key ) ) {
+                continue;
+            }
+
+            if ( 0 === strpos( $key, 'settings[' ) || 0 === strpos( $key, 'plugin_settings[' ) ) {
+                $bracket_index = strrpos( $key, '[' );
+                if ( false === $bracket_index ) {
+                    continue;
+                }
+
+                $trail = substr( $key, $bracket_index + 1, -1 );
+                if ( '' !== $trail ) {
+                    $parsed[ $trail ] = $value;
+                }
+            }
         }
 
-        $input = $_POST['settings'] ?? $_POST['plugin_settings'] ?? [];
-        if ( is_string( $input ) ) {
-            $decoded = json_decode( wp_unslash( $input ), true );
-            $input = is_array( $decoded ) ? $decoded : [];
-        }
-        $input = is_array( $input ) ? wp_unslash( $input ) : [];
-        $settings = $plugin->sanitize_settings( $input );
+        return $this->normalize_plugin_settings_input( $parsed );
+    }
 
-        $page = $plugin->get_settings_page();
-        $group = sanitize_key( $page['slug'] ?? $slug );
-        if ( '' !== $group ) {
-            Settings::set_group( $group, $settings );
+    /**
+     * Normalize plugin settings payloads from either settings[] or plugin_settings[] posts.
+     *
+     * @param array $input Submitted settings payload.
+     * @return array<string, mixed>
+     */
+    private function normalize_plugin_settings_input( array $input ): array {
+        $normalized = array();
+
+        foreach ( $input as $key => $value ) {
+            if ( is_array( $value ) ) {
+                $normalized[ $key ] = $this->normalize_plugin_settings_input( $value );
+                continue;
+            }
+
+            $normalized[ $key ] = $value;
         }
 
-        AjaxHelper::success(
-            [
-                'slug' => $slug,
-                'settings' => $settings,
-                'message' => __( 'Plugin settings saved successfully.', 'pluginname' ),
-                'alert' => AlertHelper::get_admin_notice( __( 'Plugin settings saved successfully.', 'pluginname' ), 'success' ),
-            ]
-        );
+        return $normalized;
+    }
+
+    /**
+     * Resolve a submitted plugin slug against the registry without losing the original hyphenated key.
+     *
+     * @param string $slug Submitted slug value.
+     * @return string The matching registered slug or a sanitized fallback.
+     */
+    private function resolve_plugin_slug( string $slug ): string {
+        $candidate = trim( (string) $slug );
+        if ( '' === $candidate ) {
+            return '';
+        }
+
+        $registered = Plugins::get_instance()->get_registered_plugins();
+        if ( isset( $registered[ $candidate ] ) ) {
+            return $candidate;
+        }
+
+        $normalized = $this->canonical_slug( $candidate );
+        foreach ( $registered as $key => $plugin ) {
+            if ( ! $plugin instanceof PluginInterface ) {
+                continue;
+            }
+
+            if ( $this->canonical_slug( (string) $plugin->get_slug() ) === $normalized ) {
+                return (string) $key;
+            }
+        }
+
+        return $candidate;
+    }
+
+    /**
+     * Normalize a plugin slug for comparison by removing separators and case.
+     *
+     * @param string $slug Slug to normalize.
+     * @return string
+     */
+    private function canonical_slug( string $slug ): string {
+        $slug = strtolower( trim( (string) $slug ) );
+        $slug = str_replace( array( '-', '_', ' ' ), '', $slug );
+
+        return preg_replace( '/[^a-z0-9]/', '', $slug ) ?: '';
     }
 
     private function is_internal_plugin( PluginInterface $plugin ): bool {
@@ -132,3 +381,5 @@ final class FunctionsPlugins {
         return $pages;
     }
 }
+
+

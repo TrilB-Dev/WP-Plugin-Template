@@ -77,7 +77,9 @@ final class FunctionsSidebar {
 			$groups[ $group_key ]['items'] = $filtered_items;
 		}
 
-		return array_filter( $groups, static fn ( array $group ): bool => ! empty( $group['items'] ) );
+		$groups = array_filter( $groups, static fn ( array $group ): bool => ! empty( $group['items'] ) );
+
+		return $groups;
 	}
 
 	/**
@@ -85,138 +87,202 @@ final class FunctionsSidebar {
 	 *
 	 * @param string $slug Page slug, optionally followed by a query string.
 	 * @return string
+	 * @since 1.0.0
 	 */
 	public static function get_admin_sidebar_menu_page_url( string $slug ): string {
 		return admin_url( 'admin.php?page=' . $slug );
 	}
 
-	/**
-	 * Get the core WordPress menus for the admin sidebar.
-	 *
-	 * @param Admin $admin Core admin callbacks and capability resolver.
-	 * @return array<int, array<string, mixed>> The core WordPress menus.
+	/** 
+	 * Get the core WordPress admin menus.
+	 * 
+	 * @return array<int, array<string, mixed>>
+	 * @since 1.0.0
 	 */
 	private static function core_wordpress_menus( Admin $admin ): array {
-		return array(
-			array(
+		return [
+			[
 				'name'       => __( 'PluginName', 'pluginname' ),
 				'slug'       => 'pluginname',
-				'icon'       => 'dashicons-vault',
+				'icon'       => 'dashicons-book-alt',
 				'parent'     => '',
-				'callback'   => array( $admin, 'render_dashboard' ),
+				'callback'   => [ $admin, 'render_dashboard' ],
 				'capability' => 'pluginname_admin_view',
 				'position'   => 30,
-			),
-			array(
+			],
+			[
 				'name'       => __( 'Dashboard', 'pluginname' ),
 				'slug'       => 'pluginname',
 				'parent'     => 'pluginname',
-				'callback'   => array( $admin, 'render_dashboard' ),
-				'capability' => 'pluginname_dashboard_view',
-			),
-			array(
+				'callback'   => [ $admin, 'render_dashboard' ],
+				'capability' => 'pluginname_admin_view',
+			],
+			[
+				'name'       => __( 'Manage Mods', 'pluginname' ),
+				'slug'       => 'pluginname&group=mod-manager&tab=dashboard',
+				'parent'     => 'pluginname',
+				'callback'   => [ $admin, 'render_mods' ],
+				'capability' => 'pluginname_admin_view',
+			],
+			[
 				'name'       => __( 'Settings', 'pluginname' ),
 				'slug'       => 'pluginname&group=settings&tab=general',
 				'parent'     => 'pluginname',
-				'callback'   => array( $admin, 'render_settings' ),
+				'callback'   => [ $admin, 'render_settings' ],
 				'capability' => 'pluginname_settings_general_view',
-			),
-			array(
+			],
+			[
 				'name'       => __( 'Tools', 'pluginname' ),
-				'slug'       => 'pluginname&group=tools&tool=general',
+				'slug'       => 'pluginname&group=tools&tab=general',
 				'parent'     => 'pluginname',
-				'callback'   => array( $admin, 'render_tools' ),
-				'capability' => 'pluginname_tools_general',
-			),
-		);
+				'callback'   => [ $admin, 'render_tools' ],
+				'capability' => 'pluginname_tools_debug',
+			],
+		];
 	}
 
 	/**
-	 * Get the core sidebar groups for the admin sidebar.
+	 * Get the core sidebar groups.
 	 *
-	 * @return array<string, array<string, mixed>> The core sidebar groups.
+	 * @return array<string, array<string, mixed>>
+	 * @since 1.0.0
 	 */
 	private static function core_sidebar_groups(): array {
-		return array(
-			'settings' => array(
+		return [
+			'mod-manager' => [
+				'label' => __( 'Manage Mods', 'pluginname' ),
+				'icon'  => 'fa-solid fa-file-lines',
+				'items' => [
+					'dashboard' => [
+						'label'      => __( 'Overview', 'pluginname' ),
+						'icon'       => 'fa-solid fa-gauge',
+						'link'       => 'pluginname&group=mod-manager&tab=dashboard',
+						'capability' => 'pluginname_manager_dashboard',
+					],
+					'mods' => [
+						'label'      => __( 'Mods', 'pluginname' ),
+						'icon'       => 'fa-solid fa-cubes',
+						'link'       => 'pluginname&group=mod-manager&tab=mods',
+						'capability' => 'pluginname_manager_mods_view',
+					],
+					'changelog' => [
+						'label'      => __( 'Change Logs', 'pluginname' ),
+						'icon'       => 'fa-solid fa-file-lines',
+						'link'       => 'pluginname&group=mod-manager&tab=changelog',
+						'capability' => 'pluginname_manager_mods_view',
+					],
+					'files' => [
+						'label'      => __( 'Files', 'pluginname' ),
+						'icon'       => 'fa-solid fa-file',
+						'link'       => 'pluginname&group=mod-manager&tab=files',
+						'capability' => 'pluginname_manager_mods_view',
+					],
+					'groups' => [
+						'label'      => __( 'Groups', 'pluginname' ),
+						'icon'       => 'fa-solid fa-layer-group',
+						'link'       => 'pluginname&group=mod-manager&tab=groups',
+						'capability' => 'pluginname_manager_groups_view',
+					],
+					'tags' => [
+						'label'      => __( 'Tags', 'pluginname' ),
+						'icon'       => 'fa-solid fa-tag',
+						'link'       => 'pluginname&group=mod-manager&tab=tags',
+						'capability' => 'pluginname_manager_tags_view',
+					],
+					'new' => [
+						'label'      => __( 'New Mod', 'pluginname' ),
+						'icon'       => 'fa-solid fa-plus',
+						'link'       => 'pluginname&group=mod-manager&tab=new',
+						'capability' => 'pluginname_manager_mods_edit',
+					],
+				],
+			],
+			'settings' => [
 				'label' => __( 'Settings', 'pluginname' ),
 				'icon'  => 'fa-solid fa-gear',
-				'items' => array(
-					'general' => array(
+				'items' => [
+					'general' => [
 						'label'      => __( 'General', 'pluginname' ),
 						'icon'       => 'fa-solid fa-sliders',
 						'link'       => 'pluginname&group=settings&tab=general',
 						'capability' => 'pluginname_settings_general_view',
-					),
-					'layout' => array(
+					],
+					'layout' => [
 						'label'      => __( 'Layout', 'pluginname' ),
-						'icon'       => 'fa-solid fa-object-group',
+						'icon'       => 'fa-solid fa-table-columns',
 						'link'       => 'pluginname&group=settings&tab=layout',
 						'capability' => 'pluginname_settings_layout_view',
-					),
-					'access' => array(
+					],
+					'access' => [
 						'label'      => __( 'Access', 'pluginname' ),
 						'icon'       => 'fa-solid fa-user-shield',
 						'link'       => 'pluginname&group=settings&tab=access',
 						'capability' => 'pluginname_settings_access_view',
-					),
-					'plugins' => array(
+					],
+					'plugins' => [
 						'label'      => __( 'Plugins', 'pluginname' ),
 						'icon'       => 'fa-solid fa-puzzle-piece',
 						'link'       => 'pluginname&group=settings&tab=plugins',
 						'capability' => 'pluginname_settings_plugins_view',
-					),
-					'third-party' => array(
+					],
+					'third-party' => [
 						'label'      => __( '3rd Party', 'pluginname' ),
 						'icon'       => 'fa-solid fa-plug',
 						'link'       => 'pluginname&group=settings&tab=third-party',
 						'capability' => 'pluginname_settings_plugins_ext_view',
-					),
-				),
-			),
-			'tools'    => array(
+					],
+				],
+			],
+			'tools' => [
 				'label' => __( 'Tools', 'pluginname' ),
 				'icon'  => 'fa-solid fa-toolbox',
-				'items' => array(
-					'general' => array(
+				'items' => [
+					'general' => [
 						'label'      => __( 'General', 'pluginname' ),
 						'icon'       => 'fa-solid fa-sliders',
-						'link'       => 'pluginname&group=tools&tool=general',
+						'link'       => 'pluginname&group=tools&tab=general',
 						'capability' => 'pluginname_tools_general',
-					),
-					'debug' => array(
+					],
+					'debug' => [
 						'label'      => __( 'Debug', 'pluginname' ),
 						'icon'       => 'fa-solid fa-bug-slash',
-						'link'       => 'pluginname&group=tools&tool=debug',
+						'link'       => 'pluginname&group=tools&tab=debug',
 						'capability' => 'pluginname_tools_debug',
-					),
-					'reset' => array(
-						'label'      => __( 'Reset', 'pluginname' ),
-						'icon'       => 'fa-solid fa-rotate',
-						'link'       => 'pluginname&group=tools&tool=reset',
-						'capability' => 'pluginname_tools_reset',
-					),
-					'import' => array(
+					],
+					'import' => [
 						'label'      => __( 'Import', 'pluginname' ),
 						'icon'       => 'fa-solid fa-file-import',
-						'link'       => 'pluginname&group=tools&tool=import',
+						'link'       => 'pluginname&group=tools&tab=import',
 						'capability' => 'pluginname_tools_import',
-					),
-					'export' => array(
+					],
+					'export' => [
 						'label'      => __( 'Export', 'pluginname' ),
 						'icon'       => 'fa-solid fa-file-export',
-						'link'       => 'pluginname&group=tools&tool=export',
+						'link'       => 'pluginname&group=tools&tab=export',
 						'capability' => 'pluginname_tools_export',
-					),
-				),
-			),
-		);
+					],
+					'reset' => [
+						'label'      => __( 'Reset', 'pluginname' ),
+						'icon'       => 'fa-solid fa-rotate-left',
+						'link'       => 'pluginname&group=tools&tab=reset',
+						'capability' => 'pluginname_tools_reset',
+					],
+					'analytics' => [
+						'label'      => __( 'Analytics', 'pluginname' ),
+						'icon'       => 'fa-solid fa-chart-line',
+						'link'       => 'pluginname&group=tools&tab=analytics',
+						'capability' => 'pluginname_tools_analytics',
+					],
+				],
+			],
+		];
 	}
 	/**
 	 * Register a WordPress menu.
 	 *
 	 * @param array<string, mixed> $menu The menu definition.
 	 * @return void
+	 * @since 1.0.0
 	 */
 	private static function register_wordpress_menu( array $menu ): void {
 		$callback   = $menu['callback'] ?? null;
@@ -257,6 +323,7 @@ final class FunctionsSidebar {
 	 * Get the WordPress menus provided by active PluginName plugins.
 	 *
 	 * @return array<int, array<string, mixed>> The WordPress menus.
+	 * @since 1.0.0
 	*/
 	private static function plugin_wordpress_menus(): array {
 		$menus = array();
@@ -293,6 +360,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param array<string, mixed> $definition The menu definition.
 	 * @return array<string, mixed> The normalized menu.
+	 * @since 1.0.0
 	 */
 	private static function normalize_wordpress_menu( array $definition ): array {
 		return array(
@@ -310,6 +378,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param string $parent The parent slug to sanitize.
 	 * @return string The sanitized parent slug.
+	 * @since 1.0.0
 	 */
 	private static function admin_parent_slug( string $parent ): string {
 		$parent = strtolower( sanitize_text_field( $parent ) );
@@ -320,6 +389,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param string $slug The menu page slug.
 	 * @return string The sanitized menu page slug.
+	 * @since 1.0.0
 	 */
 	private static function menu_page_slug( string $slug ): string {
 		$slug = trim( (string) $slug );
@@ -343,6 +413,7 @@ final class FunctionsSidebar {
 	 * Get the sidebar menus provided by active PluginName plugins.
 	 *
 	 * @return array<int, array<string, mixed>> The sidebar menus.
+	 * @since 1.0.0
 	 */
 	private static function plugin_sidebar_menus(): array {
 		$menus = array();
@@ -383,6 +454,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param array<string, mixed> $definition The menu definition.
 	 * @return string The generated sidebar slug.
+	 * @since 1.0.0
 	 */
 	private static function sidebar_slug( array $definition ): string {
 		$page  = (string) ( $definition['page'] ?? $definition['slug'] ?? '' );
@@ -401,6 +473,7 @@ final class FunctionsSidebar {
 	 * @param array<string, array<string, mixed>> $groups The collection of sidebar groups.
 	 * @param array<string, mixed> $menu The menu definition for the group.
 	 * @return void
+	 * @since 1.0.0
 	 */
 	private static function add_sidebar_group( array &$groups, array $menu ): void {
 		$slug  = self::menu_slug( $menu );
@@ -423,6 +496,7 @@ final class FunctionsSidebar {
 	 * @param string $parent The parent group slug.
 	 * @param array<string, mixed> $menu The menu definition for the item.
 	 * @return void
+	 * @since 1.0.0
 	 */
 	private static function add_sidebar_item( array &$groups, string $parent, array $menu ): void {
 		$slug  = trim( (string) ( $menu['slug'] ?? '' ) );
@@ -444,6 +518,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param array<string, mixed> $menu The menu definition.
 	 * @return string The parent slug.
+	 * @since 1.0.0
 	 */
 	private static function parent_slug( array $menu ): string {
 		return sanitize_key( (string) ( $menu['parent'] ?? '' ) );
@@ -454,6 +529,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param array<string, mixed> $menu The menu definition.
 	 * @return string The menu slug.
+	 * @since 1.0.0
 	 */
 	private static function menu_slug( array $menu ): string {
 		return sanitize_key( (string) ( $menu['slug'] ?? '' ) );
@@ -467,6 +543,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param string $capability The capability to check.
 	 * @return bool True if the menu item should be visible.
+	 * @since 1.0.0
 	 */
 	private static function can_view_menu_item( string $capability ): bool {
 		if ( '' === $capability ) {
@@ -488,6 +565,7 @@ final class FunctionsSidebar {
 	 *
 	 * @param string $capability The capability to normalize.
 	 * @return string The effective capability.
+	 * @since 1.0.0
 	 */
 	private static function resolve_menu_capability( string $capability ): string {
 		if ( '' === $capability ) {
@@ -501,3 +579,4 @@ final class FunctionsSidebar {
 		return $capability;
 	}
 }
+

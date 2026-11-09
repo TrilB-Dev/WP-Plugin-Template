@@ -6,6 +6,8 @@
  */
 namespace PluginName\Includes\Core\WP;
 
+use PluginName\Includes\Core\Schema;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -122,9 +124,11 @@ final class Database {
 			return false;
 		}
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		if ( file_exists( ABSPATH . 'wp-admin/includes/upgrade.php' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		}
 
-		$statement = call_user_func( $schema, self::table_name( $table ), $wpdb->get_charset_collate() );
+		$statement = call_user_func( $schema, self::table_name( $table ), method_exists( $wpdb, 'get_charset_collate' ) ? $wpdb->get_charset_collate() : '' );
 		if ( ! is_string( $statement ) || '' === trim( $statement ) ) {
 			return false;
 		}
@@ -191,15 +195,57 @@ final class Database {
 	 * @return void
 	 */
 	public static function install(): void {
+		Schema::register_tables();
+
 		foreach ( self::$registered_core_tables as $table => $schema ) {
+			if ( self::table_exists( $table ) ) {
+				continue;
+			}
 			self::create_table( $table );
 		}
 
 		foreach ( self::$registered_plugin_tables as $table => $schema ) {
+			if ( self::table_exists( $table ) ) {
+				continue;
+			}
 			self::create_table( $table );
 		}
 
-		update_option( 'pluginname_db_version', defined( 'PLUGINNAME_VERSION' ) ? PLUGINNAME_VERSION : '1.0.0' );
+		if ( function_exists( 'update_option' ) ) {
+			update_option( 'pluginname_db_version', defined( 'PLUGINNAME_VERSION' ) ? PLUGINNAME_VERSION : '1.0.0' );
+		}
+	}
+
+	/**
+	 * Run database upgrade work only after the registered tables exist.
+	 *
+	 * This method intentionally avoids mutating data while the schema is
+	 * incomplete. Any migration work should be guarded by the presence of the
+	 * expected PluginName tables before inserts, updates, or row-level changes.
+	 *
+	 * @return void
+	 */
+	public static function update(): void {
+		Schema::register_tables();
+
+		$tables = array_merge( self::$registered_core_tables, self::$registered_plugin_tables );
+		if ( empty( $tables ) ) {
+			return;
+		}
+
+		foreach ( array_keys( $tables ) as $table ) {
+			if ( ! self::table_exists( $table ) ) {
+				return;
+			}
+		}
+
+		foreach ( array_keys( $tables ) as $table ) {
+			self::create_table( $table );
+		}
+
+		if ( function_exists( 'update_option' ) ) {
+			update_option( 'pluginname_db_version', defined( 'PLUGINNAME_VERSION' ) ? PLUGINNAME_VERSION : '1.0.0' );
+		}
 	}
 
 	/**
@@ -213,3 +259,9 @@ final class Database {
 		return $wpdb->prefix . 'pluginname_' . self::normalize_table_key( $table );
 	}
 }
+
+
+
+
+
+

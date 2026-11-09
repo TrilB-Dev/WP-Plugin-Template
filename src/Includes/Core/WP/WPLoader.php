@@ -193,9 +193,15 @@ class WPLoader {
 			return;
 		}
 		foreach ( $this->filters as $record ) {
+			if ( ! $this->is_callable_record( $record ) ) {
+				continue;
+			}
 			add_filter( $record['hook'], $this->record_callback( $record ), $record['priority'], $record['accepted_args'] );
 		}
 		foreach ( $this->actions as $record ) {
+			if ( ! $this->is_callable_record( $record ) ) {
+				continue;
+			}
 			add_action( $record['hook'], $this->record_callback( $record ), $record['priority'], $record['accepted_args'] );
 		}
 		$this->has_run = true;
@@ -245,6 +251,10 @@ class WPLoader {
 	 * @return void
 	 */
 	private function register_record( string $type, array $record ): void {
+		if ( ! $this->is_callable_record( $record ) ) {
+			return;
+		}
+
 		$property            = 'action' === $type ? 'actions' : 'filters';
 		$this->{$property}[] = $record;
 		if ( ! $this->has_run ) {
@@ -252,6 +262,21 @@ class WPLoader {
 		}
 		$callback = $this->record_callback( $record );
 		'action' === $type ? add_action( $record['hook'], $callback, $record['priority'], $record['accepted_args'] ) : add_filter( $record['hook'], $callback, $record['priority'], $record['accepted_args'] );
+	}
+
+	/**
+	 * Check whether a hook record resolves to a callable callback.
+	 *
+	 * @param array $record The hook record array.
+	 * @return bool True when the hook can be registered, false otherwise.
+	 */
+	private function is_callable_record( array $record ): bool {
+		try {
+			$this->record_callback( $record );
+			return true;
+		} catch ( \InvalidArgumentException $exception ) {
+			return false;
+		}
 	}
 	/**
 	 * Get the callable for a hook record.
@@ -287,6 +312,8 @@ class WPLoader {
 		throw new \InvalidArgumentException( sprintf( 'Hook callback %s is not callable.', is_string( $callback ) ? $callback : 'unknown' ) );
 	}
 }
+
+
 
 
 

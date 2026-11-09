@@ -25,6 +25,13 @@ final class Taxonomy {
 	private static array $registered = array();
 
 	/**
+	 * Prefix applied to dynamically created taxonomies.
+	 *
+	 * @var string
+	 */
+	private static string $taxonomy_prefix = 'pluginname_';
+
+	/**
 	 * Register the configured taxonomies.
 	 *
 	 * @since 1.0.0
@@ -44,12 +51,17 @@ final class Taxonomy {
 	 */
 	public static function create( string $taxonomy, array $config = array() ): bool {
 		$taxonomy = self::normalize_taxonomy( $taxonomy );
-		if ( '' === $taxonomy || taxonomy_exists( $taxonomy ) ) {
+		if ( '' === $taxonomy ) {
 			return false;
 		}
 
 		$definition = self::normalize_definition( $taxonomy, $config );
 		self::$registered[ $taxonomy ] = $definition;
+
+		if ( taxonomy_exists( $taxonomy ) ) {
+			return true;
+		}
+
 		self::register_single( $taxonomy, $definition );
 
 		return true;
@@ -62,10 +74,13 @@ final class Taxonomy {
 	 * @return bool
 	 */
 	public static function dynamically_create( array $data = array() ): bool {
-		$taxonomy = self::normalize_taxonomy( $data['taxonomy'] ?? $data['slug'] ?? '' );
-		if ( '' === $taxonomy ) {
+		$taxonomy_slug = self::normalize_taxonomy( $data['taxonomy'] ?? $data['slug'] ?? '' );
+		$group_key     = trim( (string) ( $data['group_key'] ?? $data['taxonomy_key'] ?? '' ) );
+		if ( '' === $taxonomy_slug ) {
 			return false;
 		}
+
+		$taxonomy = '' !== $group_key ? self::normalize_taxonomy( $group_key ) : ( 0 === strpos( $taxonomy_slug, self::$taxonomy_prefix ) ? $taxonomy_slug : self::normalize_taxonomy( self::$taxonomy_prefix . $taxonomy_slug ) );
 
 		$labels = array(
 			'name'          => $data['name'] ?? self::humanize_slug( $taxonomy ),
@@ -136,7 +151,7 @@ final class Taxonomy {
 	 * @return array<string, array<string, mixed>>
 	 */
 	public static function definitions(): array {
-		return apply_filters( 'pluginname_taxonomy_definitions', self::$registered );
+		return \apply_filters( 'pluginname_taxonomy_definitions', self::$registered );
 	}
 
 	/**
@@ -174,7 +189,12 @@ final class Taxonomy {
 			unset( $args['custom_meta'] );
 		}
 
-		register_taxonomy( $taxonomy, self::normalize_post_types( $post_types ), $args );
+		$normalized_post_types = self::normalize_post_types( $post_types );
+		register_taxonomy( $taxonomy, $normalized_post_types, $args );
+
+		foreach ( $normalized_post_types as $post_type ) {
+			register_taxonomy_for_object_type( $taxonomy, $post_type );
+		}
 
 		if ( ! empty( $meta ) ) {
 			foreach ( $meta as $meta_key => $meta_config ) {
@@ -456,3 +476,4 @@ final class Taxonomy {
 		return $singular ? trim( $label ) : trim( $label );
 	}
 }
+

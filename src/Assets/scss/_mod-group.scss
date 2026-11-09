@@ -1,0 +1,80 @@
+.pluginname-admin {
+  .modal-dialog-scrollable .modal-content {
+    max-height: calc(100vh - 2rem);
+  }
+  .modal-dialog-scrollable .modal-body {
+    overflow-y: auto;
+  }
+  .pluginname-groups-page .tab-pane {
+    min-height: 280px;
+  }
+  .pluginname-groups-page .group-nav-item {
+    position: relative;
+  }
+  .pluginname-groups-page .group-nav-item .nav-link {
+    padding-right: 2.8rem;
+  }
+  .pluginname-groups-page .pluginname-tab-edit-btn {
+    display: none;
+    position: absolute;
+    right: 0.55rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+  .pluginname-groups-page
+    .group-nav-item
+    .nav-link.active
+    + .pluginname-tab-edit-btn,
+  .pluginname-groups-page
+    .group-nav-item
+    .nav-link.show
+    + .pluginname-tab-edit-btn {
+    display: inline-flex;
+  }
+  .pluginname-groups-page .pluginname-custom-fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .pluginname-groups-page .pluginname-custom-field-row {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: var(--bs-tertiary-bg);
+  }
+  .pluginname-groups-page .pluginname-custom-field-row .accordion-header {
+    margin-bottom: 0;
+  }
+  .pluginname-groups-page .pluginname-custom-field-row .accordion-button {
+    box-shadow: none;
+  }
+  .pluginname-groups-page .pluginname-custom-field-row .accordion-button:focus {
+    box-shadow: none;
+  }
+  .pluginname-groups-page .pluginname-option-repeater {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .pluginname-groups-page .pluginname-option-repeater-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .pluginname-groups-page .pluginname-option-row {
+    margin-bottom: 0;
+  }
+  .pluginname-groups-page .pluginname-field-options {
+    display: none;
+  }
+  .pluginname-groups-page .pluginname-field-options.is-visible {
+    display: block;
+  }
+  .pluginname-groups-page .btn-delete-selected:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+

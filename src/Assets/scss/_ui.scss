@@ -1,10 +1,4 @@
 .pluginname-admin {
-	--pluginname-ink: #152238;
-	--pluginname-navy: #102a43;
-	--pluginname-blue: #2563eb;
-	--pluginname-paper: #f6f8fb;
-	--pluginname-line: #dce4ed;
-	--pluginname-header: #eaf3f7;
 	min-height: 100vh;
 	background: var(--pluginname-paper);
 	color: var(--pluginname-ink);
@@ -229,6 +223,4 @@
 	.pluginname-admin .pluginname-sidebar-link,
 	.pluginname-admin .nav-link { transition: none; }
 }
-
-
 
