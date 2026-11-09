@@ -1,0 +1,431 @@
+<?php
+/**
+ * SettingsManager class for PluginName plugin.
+ *
+ * @package PluginName
+ * @subpackage Admin\Manager\Settings
+ * @since 1.0.0
+ */
+namespace PluginName\Admin\Manager\Settings;
+
+use PluginName\Admin\Manager\Manager;
+use PluginName\Assets\Assets;
+use PluginName\Includes\Functions\Admin\FunctionsPlugins;
+use PluginName\Includes\Functions\Admin\FunctionsSettings;
+use PluginName\Includes\Settings\Settings;
+use PluginName\Admin\Manager\Settings\SettingsPlugins;
+use PluginName\Includes\Functions\Helpers\SanitizationHelper;
+use PluginName\Includes\Functions\Helpers\FormFieldHelper;
+use PluginName\Includes\Functions\Helpers\AlertHelper;
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
+final class SettingsManager extends Manager {
+    /**
+     * The SettingsGeneral instance.
+     *
+     * @since 1.0.0
+     * @access private
+     * @var SettingsGeneral $general_page The SettingsGeneral instance.
+     */
+    private SettingsGeneral $general_page;
+    /**
+     * The SettingsLayout instance.
+     *
+     * @since 1.0.0
+     * @access private
+     * @var SettingsLayout $layout_page The SettingsLayout instance.
+     */
+    private SettingsLayout $layout_page;
+    /**
+     * The SettingsAccess instance.
+     *
+     * @since 1.0.0
+     * @access private
+     * @var SettingsAccess $access_page The SettingsAccess instance.
+     */
+    private SettingsAccess $access_page;
+    /**
+     * The SettingsPlugins instance.
+     *
+     * @since 1.0.0
+     * @access private
+     * @var SettingsPlugins $plugins_page The SettingsPlugins instance.
+     */
+    private SettingsPlugins $plugins_page;
+
+    /**
+     * The settings handler instance.
+     *
+     * @var FunctionsSettings
+     */
+    private FunctionsSettings $settings_functions;
+
+    /**
+     * The plugin admin handler instance.
+     *
+     * @var FunctionsPlugins
+     */
+    private FunctionsPlugins $plugin_functions;
+
+    /**
+     * The Page variable.
+     *
+     * @since 1.0.0
+     * @access protected
+     * @var string $page The page variable.
+     */
+    protected string $page;
+    /**
+     * `Constructor` method for the `DashboardManager` class. 
+     *
+     * @since 1.0.0
+     * @return void
+     */
+
+    public function __construct() {
+        /**
+         * Set the page variable to 'settinigs'.
+         *
+         * @since 1.0.0
+         */
+        $this->page = 'settings';
+        /**
+         * Initialize the General Settings pages.
+         *
+         * @since 1.0.0
+         */
+        $this->general_page = new SettingsGeneral();
+        /**
+         * Initialize the Layout Settings pages.
+         *
+         * @since 1.0.0
+         */
+        $this->layout_page = new SettingsLayout();
+        /**
+         * Initialize the Access Settings page.
+         *
+         * @since 1.0.0
+         */
+        $this->access_page = new SettingsAccess();
+        /**
+         * Initialize the Plugins Settings pages.
+         *
+         * @since 1.0.0
+         */
+        $this->plugins_page = new SettingsPlugins();
+        /**
+         * Initialize the Plugin and Settings function handlers.
+         *
+         * @since 1.0.0
+         */
+        $this->plugin_functions = new FunctionsPlugins();
+        /**
+         * Initialize the Settings function handler.
+         *
+         * @since 1.0.0
+         */
+        $this->settings_functions = new FunctionsSettings( $this->plugin_functions );
+        /**
+         * Register the admin actions for the settings manager.
+         *
+         * @since 1.0.0
+         */
+        $this->register_actions();
+    }
+
+    /**
+     * Register the Settings Manager admin actions.
+     *
+     * @return void
+     */
+    private function register_actions(): void {
+        add_action( 'rest_api_init', array( $this, 'register_rest_routes' ) );
+        add_action( 'admin_post_pluginname_save_settings', array( $this->settings_functions, 'save_settings' ) );
+        add_action( 'admin_post_pluginname_save_general_settings', array( $this->settings_functions, 'general_save' ) );
+        add_action( 'admin_post_pluginname_save_access_settings', array( $this->settings_functions, 'access_save' ) );
+        add_action( 'admin_post_pluginname_save_layout_settings', array( $this->settings_functions, 'layout_save' ) );
+    }
+
+    /**
+     * Register the REST routes used by the settings manager.
+     *
+     * @return void
+     */
+    public function register_rest_routes(): void {
+        \register_rest_route(
+            'pluginname/v1',
+            '/settings/tab/(?P<tab>[a-z0-9_\-]+)',
+            array(
+                'methods'             => \WP_REST_Server::READABLE,
+                'callback'            => array( $this, 'rest_get_tab' ),
+                'permission_callback' => function () {
+                    return current_user_can( 'manage_options' )
+                        || current_user_can( 'pluginname_settings_general_view' )
+                        || current_user_can( 'pluginname_settings_layout_view' )
+                        || current_user_can( 'pluginname_settings_access_view' )
+                        || current_user_can( 'pluginname_settings_plugins_view' );
+                },
+                'args' => array(
+                    'tab' => array(
+                        'required' => true,
+                        'sanitize_callback' => 'sanitize_key',
+                    ),
+                    'layout_section' => array(
+                        'required' => false,
+                        'sanitize_callback' => 'sanitize_key',
+                    ),
+                ),
+            )
+        );
+
+        \register_rest_route(
+            'pluginname/v1',
+            '/plugins/toggle',
+            array(
+                'methods'             => \WP_REST_Server::CREATABLE,
+                'callback'            => array( $this->plugin_functions, 'rest_toggle_plugin' ),
+                'permission_callback' => function () {
+                    return current_user_can( 'manage_options' )
+                        || current_user_can( 'pluginname_settings_plugins_int_edit' )
+                        || current_user_can( 'pluginname_settings_plugins_ext_edit' );
+                },
+            )
+        );
+
+        \register_rest_route(
+            'pluginname/v1',
+            '/plugins/settings',
+            array(
+                'methods'             => \WP_REST_Server::CREATABLE,
+                'callback'            => array( $this->plugin_functions, 'rest_save_plugin_settings' ),
+                'permission_callback' => function () {
+                    return current_user_can( 'manage_options' )
+                        || current_user_can( 'pluginname_settings_plugins_int_edit' )
+                        || current_user_can( 'pluginname_settings_plugins_ext_edit' );
+                },
+            )
+        );
+    }
+
+    /**
+     * Render a settings tab via REST.
+     *
+     * @param \WP_REST_Request $request Request instance.
+     * @return \WP_REST_Response
+     */
+    public function rest_get_tab( \WP_REST_Request $request ) {
+        $tab = $this->normalize_tab( (string) $request->get_param( 'tab' ) );
+        $layout_section = in_array( (string) ( $request->get_param( 'layout_section' ) ?: 'general' ), array( 'general', 'search', 'sidebar', 'page' ), true )
+            ? (string) $request->get_param( 'layout_section' )
+            : 'general';
+
+        ob_start();
+        $this->render_tab_content( $tab, $layout_section );
+        $html = ob_get_clean();
+
+        return \rest_ensure_response(
+            array(
+                'tab' => $tab,
+                'layout_section' => $layout_section,
+                'html' => $html,
+            )
+        );
+    }
+    /**
+     * Register the settings page asset bundles.
+     *
+     * @param Assets $assets Asset registry.
+     * @return void
+     */
+    public function register_assets( Assets $assets ): void {
+        $this->register_page_assets( $assets, array( 'pluginname' ), 'settings' );
+        $this->register_page_assets( $assets, array( 'pluginname' ), 'plugins' );
+    }
+
+    /**
+     * Renders the settings page.
+     *
+     * @since 1.0.0
+     * @return void
+     */
+    public function render(): void {
+        $tab = SanitizationHelper::key( wp_unslash( $_GET['tab'] ?? 'general' ), 'general' );
+        $layout_section = SanitizationHelper::key( wp_unslash( $_GET['s'] ?? $_GET['layout_section'] ?? 'general' ), 'general' );
+        $tab = $this->normalize_tab( $tab );
+        $tab_context = [
+            'general' => [ 
+                'description' => __( 'Configure PluginName names, URL slugs, and permalink settings.', 'pluginname' ), 
+                'tooltip' => __( 'These settings affect how PluginName content is identified and linked throughout the site.', 'pluginname' ) 
+            ],
+            'layout' => [ 
+                'description' => __( 'Choose which navigation and page layout features PluginName displays.', 'pluginname' ), 
+                'tooltip' => __( 'Layout settings control the visitor-facing PluginName interface.', 'pluginname' ) 
+            ],
+            'access' => [ 
+                'description' => __( 'Set the minimum WordPress capabilities required for PluginName tasks.', 'pluginname' ), 
+                'tooltip' => __( 'Choose carefully so editors and administrators retain the access they need.', 'pluginname' ) 
+            ],
+            'plugins' => [ 
+                'description' => __( 'View the PluginName plugins installed on this site.', 'pluginname' ), 
+                'tooltip' => __( 'Plugin-specific configuration is available from each plugin settings page when provided.', 'pluginname' ) 
+            ],
+            'third-party' => [ 
+                'description' => __( 'View third-party plugins installed on this site.', 'pluginname' ), 
+                'tooltip' => __( 'Third-party plugin settings are managed through WordPress or the plugin author’s own settings page.', 'pluginname' ) 
+            ],
+        ];
+        $this->header( __( 'Settings', 'pluginname' ) );
+
+        if ( ! empty( $_GET['settings_saved'] ) ) {
+            $message = isset( $_GET['settings_message'] ) ? rawurldecode( wp_unslash( $_GET['settings_message'] ) ) : __( 'PluginName settings saved successfully.', 'pluginname' );
+            echo AlertHelper::get_admin_notice( $message, 'success' );
+        } elseif ( ! empty( $_GET['settings_failed'] ) ) {
+            $message = isset( $_GET['settings_message'] ) ? rawurldecode( wp_unslash( $_GET['settings_message'] ) ) : __( 'Failed to save PluginName settings. Please try again.', 'pluginname' );
+            echo AlertHelper::get_admin_notice( $message, 'error' );
+        }
+
+        if ( function_exists( 'settings_errors' ) ) {
+            settings_errors( 'pluginname_settings' );
+        }
+        echo '<div id="pluginname-settings-panel" data-current-tab="' . esc_attr( $tab ) . '" data-current-section="' . esc_attr( $layout_section ) . '">';
+        $this->render_tab_content( $tab, $layout_section );
+        echo '</div>';
+        $this->footer();
+    }
+
+    /**
+     * Render the settings panel returned by the AJAX tab loader.
+     * @since 1.0.0
+     * @param string $tab The tab to render.
+     */
+    public function render_tab_content( string $tab, string $layout_section = 'general' ): void {
+        $tab = $this->normalize_tab( $tab );
+        $layout_section = in_array( $layout_section, [ 'general', 'search', 'sidebar', 'page' ], true ) ? $layout_section : 'general';
+        $view_capabilities = [
+            'general' => [ 
+                'pluginname_settings_general_view' 
+            ],
+            'layout' => [ 
+                'pluginname_settings_layout_view' 
+            ],
+            'access' => [ 
+                'pluginname_settings_access_view' 
+            ],
+            'plugins' => [ 
+                'pluginname_settings_plugins_view' 
+            ],
+            'third-party' => [ 
+                'pluginname_settings_plugins_view', 
+                'pluginname_settings_plugins_ext_view' 
+            ],
+        ];
+        $can_view = true;
+        foreach ( $view_capabilities[ $tab ] ?? [] as $capability ) {
+            if ( current_user_can( 'manage_options' ) || current_user_can( $capability ) ) {
+                continue;
+            }
+
+            $can_view = false;
+            break;
+        }
+        if ( ! $can_view ) {
+            wp_die( esc_html__( 'You are not authorized to view these PluginName settings.', 'pluginname' ) );
+        }
+        $edit_capabilities = [
+            'general' => 'pluginname_settings_general_edit',
+            'layout' => 'pluginname_settings_layout_edit',
+            'access' => 'pluginname_settings_access_edit',
+        ];
+        $can_edit = isset( $edit_capabilities[ $tab ] ) && ( current_user_can( 'manage_options' ) || current_user_can( $edit_capabilities[ $tab ] ) );
+        $tab_context = [
+            'general' => [
+                'description' => __( 'Configure PluginName names, URL slugs, and permalink settings.', 'pluginname' ),
+                'tooltip' => __( 'These settings affect how PluginName content is identified and linked throughout the site.', 'pluginname' ),
+            ],
+            'layout' => [
+                'description' => __( 'Choose which navigation and page layout features PluginName displays.', 'pluginname' ),
+                'tooltip' => __( 'Layout settings control the visitor-facing PluginName interface.', 'pluginname' ),
+            ],
+            'access' => [
+                'description' => __( 'Set the minimum WordPress capabilities required for PluginName tasks.', 'pluginname' ),
+                'tooltip' => __( 'Choose carefully so editors and administrators retain the access they need.', 'pluginname' ),
+            ],
+            'plugins' => [
+                'description' => __( 'View the PluginName plugins installed on this site.', 'pluginname' ),
+                'tooltip' => __( 'Plugin-specific configuration is available from each plugin settings page when provided.', 'pluginname' ),
+            ],
+            'third-party' => [
+                'description' => __( 'View third-party plugins installed on this site.', 'pluginname' ),
+                'tooltip' => __( 'Third-party plugin settings are managed through WordPress or the plugin author’s own settings page.', 'pluginname' ),
+            ],
+        ];
+        ?>
+        <div class="pluginname-settings-tab-content" role="tabpanel">
+            <?php if ( isset( $tab_context[ $tab ] ) ) : ?>
+                <p class="text-secondary mb-4">
+                    <?php echo esc_html( $tab_context[ $tab ]['description'] ); ?>
+                    <?php echo FormFieldHelper::label(
+                        'pluginname-settings-context',
+                        __( 'Settings information', 'pluginname' ),
+                        [
+                            'tooltip' => $tab_context[ $tab ]['tooltip'],
+                            'tooltip_type' => 'info',
+                            'tooltip_icon' => 'fa-circle-info',
+                            'class' => 'visually-hidden',
+                        ]
+                    ); ?>
+                </p>
+            <?php endif; ?>
+
+            <?php if ( in_array( $tab, [ 'plugins', 'third-party' ], true ) ) : ?>
+                <?php $this->plugins_page->render( $tab ); ?>
+            </div>
+            <?php return; ?>
+            <?php endif; ?>
+
+            <div class="pluginname-settings-page">
+            <div class="pluginname-settings-card card shadow-sm">
+                <div class="card-body">
+                    <?php if ( 'layout' === $tab ) : ?>
+                        <?php $this->layout_page->render( $values = Settings::get_group( 'layout' ), SanitizationHelper::key( $layout_section, 'general' ) ); ?>
+                    <?php else : ?>
+                        <table class="form-table table align-middle" role="presentation">
+                            <tbody>
+                                <?php if ( 'general' === $tab ) : ?>
+                                    <?php $this->general_page->render( $values = Settings::get_group( 'general' )); ?>
+                                <?php elseif ( 'access' === $tab ) : ?>
+                                    <?php $this->access_page->render( $values = Settings::get_group( 'access' )); ?>
+                                <?php elseif ( $this->plugins_page->has_settings_page( $tab ) ) : ?>
+                                    <?php $this->plugins_page->render_settings_page( $tab, $values = Settings::get_all() ); ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+        <?php
+    }
+    /**
+     * Normalize the tab name to ensure it is valid.
+     *
+     * @since 1.0.0
+     * @param string $tab The tab name to normalize.
+     * @return string The normalized tab name.
+     */
+    private function normalize_tab( string $tab ): string {
+        $allowed = [ 'general', 'layout', 'access', 'tools', 'plugins', 'third-party' ];
+        if ( in_array( $tab, $allowed, true ) || $this->plugins_page->has_settings_page( $tab ) ) {
+            return $tab;
+        }
+        return 'general';
+    }
+    
+
+}
+
+
